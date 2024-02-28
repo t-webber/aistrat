@@ -39,8 +39,10 @@ def build(kind, y, x) -> bool:
 
 def getData():
     global turn_data
-    try: turn_data=requests.get(f"{ip}/view/{player}/{token}").json()
+    try: res = requests.get(f"{ip}/view/{player}/{token}")
     except: return False
+    print("res", res)
+    turn_data = res.json()
     return True
 
 def getMap(): 
@@ -95,9 +97,13 @@ def getMoves(y,x):
             moves.append((y,x+i))
     return moves
 
-createPlayer()
-M=getMap()
-taille=[len(M),len(M[0])]
+
+def init():
+    return createPlayer()[0]
+
+print(getData())
+INITIAL_MAP=getMap()
+taille=[len(INITIAL_MAP), len(INITIAL_MAP[0])]
 
 if __name__ == "__main__":
     createPlayer()
