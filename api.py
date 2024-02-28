@@ -41,7 +41,6 @@ def getData():
     global turn_data
     try: res = requests.get(f"{ip}/view/{player}/{token}")
     except: return False
-    print("res", res)
     turn_data = res.json()
     return True
 
@@ -89,6 +88,8 @@ def getKinds() -> dict[str, list[Coord]]:
     return result
 
 def getMoves(y,x):
+    INITIAL_MAP = getMap()
+    taille = [len(INITIAL_MAP), len(INITIAL_MAP[0])]
     moves=[]
     for i in [-1,1]:
         if taille[0]>y+i>=0:
@@ -101,15 +102,17 @@ def getMoves(y,x):
 def init():
     return createPlayer()[0]
 
-print(getData())
-INITIAL_MAP=getMap()
-taille=[len(INITIAL_MAP), len(INITIAL_MAP[0])]
+#print(getData())
+#INITIAL_MAP=getMap()
+#taille=[len(INITIAL_MAP), len(INITIAL_MAP[0])]
 
 if __name__ == "__main__":
     createPlayer()
+    getData()
     R=getMap()
-    print(R['map'])
+    print(R[0])
     move("C",0,0,1,0)
     move("C",0,1,1,1)
+    getData()
     R=getMap()
-    print(R['map'])
+    print(R)
