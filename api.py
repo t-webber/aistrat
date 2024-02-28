@@ -80,7 +80,7 @@ def getMoves(y,x):
 
 getPlayer()
 M=getMap()
-taille=[len(M),len(M)[0]]
+taille=[len(M),len(M[0])]
 
 if __name__ == "__main__":
     getPlayer()
