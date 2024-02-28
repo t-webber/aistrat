@@ -3,6 +3,7 @@ ip="http://localhost:8080"
 player=""
 token=""
 taille=[0,0]
+turn_data = []
 
 PAWN = "C"
 CASTLE = "B"
@@ -15,7 +16,7 @@ def endTurn():
         return(False)
     return(True)
 
-def getPlayer():
+def createPlayer():
     global player
     global token
     if ""==player:
@@ -36,10 +37,26 @@ def build(kind, y, x) -> bool:
     try: print(requests.get(f"{ip}/build/{player}/{y}/{x}/{kind}/{token}", timeout=1).json()); return True
     except: return False
 
-def getMap():
-    try: carte=requests.get(f"{ip}/view/{player}/{token}").json()
-    except: return None
-    return carte["map"]
+def getData():
+    global turn_data
+    try: turn_data=requests.get(f"{ip}/view/{player}/{token}").json()
+    except: return False
+    return True
+
+def getMap(): 
+    return turn_data["map"]
+
+def currentPlayer():
+    return turn_data["player"]
+
+def getGold():
+    return turn_data["gold"]
+
+def getScore():
+    return turn_data["score"]
+
+def getWinner():
+    return turn_data["winner"]
 
 def farm(y, x) -> bool:
     try: print(requests.get(f"{ip}/farm/{player}/{y}/{x}/{token}", timeout=1).json()); return True
@@ -50,7 +67,7 @@ def autoFarm() -> bool:
     except: return False
 
 def getInfo(y,x): 
-    return getMap(player,token)[y][x]
+    return turn_data[y][x]
 
 class Coord: pass
 
@@ -78,12 +95,12 @@ def getMoves(y,x):
             moves.append((y,x+i))
     return moves
 
-getPlayer()
+createPlayer()
 M=getMap()
 taille=[len(M),len(M[0])]
 
 if __name__ == "__main__":
-    getPlayer()
+    createPlayer()
     R=getMap()
     print(R['map'])
     move("C",0,0,1,0)
