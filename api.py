@@ -4,42 +4,44 @@ player=""
 token=""
 taille=[0,0]
 turn_data = []
-
+time_out = 0.05
 PAWN = "C"
 CASTLE = "B"
 KNIGHT = "M"
-
-def endTurn():
-    try: requests.get(f"{ip}/endturn/{player}/{token}",timeout=1)
+GOLD = 'G'
+def endTurn(player,token):
+    try: requests.get(f"{ip}/endturn/{player}/{token}",timeout=time_out)
     except ValueError: 
         print("Erreur move", ValueError)
         return(False)
     return(True)
 
 def createPlayer():
-    global player
-    global token
-    if ""==player:
-        dataplayer=requests.get(ip+"/getToken",timeout=2.5).json()
+    #global player
+    #global token
+    if ""=="":
+        dataplayer=requests.get(ip+"/getToken",timeout=time_out).json()
         print(dataplayer)
         player=dataplayer['player']
         token=dataplayer['token']
+    else:
+        print('deja pris')
     return(player,token)
 
-def move(kind,oldy,oldx,newy,newx) -> bool:
-    try: requests.get(f"{ip}/move/{player}/{kind}/{oldy}/{oldx}/{newy}/{newx}/{token}",timeout=1)
+def move(kind,oldy,oldx,newy,newx,player,token) -> bool:
+    try: requests.get(f"{ip}/move/{player}/{kind}/{oldy}/{oldx}/{newy}/{newx}/{token}",timeout=time_out)
     except ValueError: 
         print("Erreur move", ValueError)
         return(False)
     return(True)
     
-def build(kind, y, x) -> bool:
-    try: print(requests.get(f"{ip}/build/{player}/{y}/{x}/{kind}/{token}", timeout=1).json()); return True
+def build(kind, y, x,player,token) -> bool:
+    try: print(requests.get(f"{ip}/build/{player}/{y}/{x}/{kind}/{token}", timeout=time_out).json()); return True
     except: return False
 
-def getData():
+def getData(player,token):
     global turn_data
-    try: res = requests.get(f"{ip}/view/{player}/{token}")
+    try: res = requests.get(f"{ip}/view/{player}/{token}",timeout=time_out)
     except: return False
     turn_data = res.json()
     return True
@@ -59,32 +61,37 @@ def getScore():
 def getWinner():
     return turn_data["winner"]
 
-def farm(y, x) -> bool:
-    try: print(requests.get(f"{ip}/farm/{player}/{y}/{x}/{token}", timeout=1).json()); return True
+def farm(y, x,player,token) -> bool:
+    try: print(requests.get(f"{ip}/farm/{player}/{y}/{x}/{token}", timeout=time_out).json()); return True
     except: return False
    
-def autoFarm() -> bool:
-    try: print(requests.get(f"{ip}/autofarm/{player}/{token}", timeout=1).json()); return True
+def autoFarm(player,token) -> bool:
+    try: print(requests.get(f"{ip}/autofarm/{player}/{token}", timeout=time_out).json()); return True
     except: return False
 
-def getInfo(y,x): 
+def getInfo(y,x):
     return turn_data[y][x]
 
 class Coord: pass
 
-def getKinds() -> dict[str, list[Coord]]:
-    result = { PAWN: [], CASTLE: [], KNIGHT: [] }
+def getKinds(player) -> dict[str, list[Coord]]:
+    result = { PAWN: [], CASTLE: [], KNIGHT: [], GOLD : [] ,'fog': []}
     carte = getMap()
     for y in range(len(carte)):
         for x in range(len(carte[y])):
-            try:d = carte[y][x][player]         
-            except:continue  
-            if d[PAWN]:
-                for _ in range(d[PAWN]): result[PAWN].append((y, x))
-            if d[CASTLE]: 
-                for _ in range(d[CASTLE]): result[CASTLE].append((y, x))
-            if d[KNIGHT]:
-                for _ in range(d[KNIGHT]): result[KNIGHT].append((y, x))
+            if carte[y][x]=={}:
+                result['fog'].append((y, x))
+            else:
+                d = carte[y][x][player]
+                if d[PAWN]:
+                    for _ in range(d[PAWN]): result[PAWN].append((y, x))
+                if d[CASTLE]:
+                    for _ in range(d[CASTLE]): result[CASTLE].append((y, x))
+                if d[KNIGHT]:
+                    for _ in range(d[KNIGHT]): result[KNIGHT].append((y, x))
+
+                g = carte[y][x][GOLD]
+                if g: result[GOLD].append((y, x))
     return result
 
 def getMoves(y,x):
