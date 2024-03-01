@@ -1,6 +1,6 @@
 # Suivi
 
-##Avant le debut du projet 
+## Avant le debut du projet 
 - (Nicolas) Modification du jeu pour pouvoir jouer uniquement au clavier sur le site du jeu pour permettre un enchaînement plus rapide des parties
 
 ## 14/02
