@@ -5,7 +5,7 @@ from joueur import naif as p
 player1,token1 = api.createPlayer()
 player2,token2 = api.createPlayer()
 
-while True:
+while True: # fonction qui récupère le joueur à qui c'est le tour, le fait jouer et met fin à son tour
     api.getData(player1,token1)
     if api.currentPlayer() == player1:
         p.nexturn(player1, token1)
