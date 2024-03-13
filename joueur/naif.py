@@ -2,8 +2,8 @@ import api
 import random as rd
 from scipy.optimize import linear_sum_assignment as hongrois
 import numpy as np
-from backbone import client_logic as cl
-import casltes
+import joueur.backbone.client_logic as cl
+import joueur.castles as build
 
 
 def distance(x1, y1, x2, y2):
@@ -76,7 +76,7 @@ def nexturn(player, token):
     explore
     defense/attaque
     '''
-    castles.ckeck_build(pawns, castles, player, token)
+    build.check_build(pawns, castles, player, token)
     farm(pawns, golds, player, token)  # je farm d'abord ce que je vois
     # j'explore ensuite dans la direction opposée au spawn
     explore(pawns, player, token)
