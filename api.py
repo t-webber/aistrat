@@ -69,7 +69,7 @@ def autoFarm(player,token) -> bool:
     try: print(requests.get(f"{ip}/autofarm/{player}/{token}", timeout=time_out).json()); return True
     except: return False
 
-def prediction_combat(a,d):
+def prediction_combat(a,d): #prédit le vainqueur d'un combat
     while a > 0 and d > 0:
         a = a - (d + 1)//2
         d = d - (a + 1)//2
