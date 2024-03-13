@@ -7,14 +7,6 @@ import api
 import joueur.backbone.client_logic as cl
 import joueur.castles as build
 
-
-def distance(x1, y1, x2, y2):
-    """ 
-    distance between coordinates
-    """
-    return abs(x1-x2)+abs(y1-y2)
-
-
 def farm(pawns, golds, player, token):
     """ 
     Farm gold when possible, else go to nearest avaible gold
@@ -23,14 +15,14 @@ def farm(pawns, golds, player, token):
         # affecation problem
         # choisis les mines d'or vers lesquelles vont se diriger les peons
         # pour en minimiser le nombre total de mouvements
-        print(golds)
+        simpleGold=cl.cleanGolds(golds)
         goldLocation=dict()
-        goldLocation=[(item[0],item[1]) for item in golds]
+        goldLocation=[(item[0],item[1]) for item in simpleGold]
         vus = []
         for p, g in cl.hongroisDistance(pawns,goldLocation):  # Je fais bouger les peons vers leur mine d'or
             vus.append(pawns[p])
             y, x = pawns[p]
-            i, j , _ = golds[g]
+            i, j , _ = simpleGold[g]
             if rd.random() > 0.5:  # pour ne pas que le peon aille toujours d'abord en haut puis à gauche
                 if x > j:
                     api.move(api.PAWN, y, x, y, x - 1, player, token)
@@ -95,7 +87,7 @@ def nexturn(player, token):
     # explore
     # defense/attaque
 
-    build.check_build(pawns, castles, player, token)
+    #build.check_build(pawns, castles, player, token)
     farm(pawns, golds, player, token)  # je farm d'abord ce que je vois
     # j'explore ensuite dans la direction opposée au spawn
     explore(pawns, player, token)
