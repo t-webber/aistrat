@@ -14,7 +14,8 @@ def farm(pawns,golds, player, token):
         # choisis les mines d'or vers lesquelles vont se diriger les peons
         # pour en minimiser le nombre total de mouvements
         cost = np.abs(np.array(pawns)[:, np.newaxis] - np.array(golds)).sum(axis=2)
-        pawn_ind, gold_ind = linear_sum_assignment(cost)
+        pawn_ind, gold_ind = linear_sum_assignment(cost) # algorithme hondrois ou algorithme de Kuhn-Munkres
+        # https://fr.wikipedia.org/wiki/Algorithme_hongrois#Repr%C3%A9sentation_par_l'optimisation_lin%C3%A9aire
 
         vus = []
         for p, g in zip(pawn_ind, gold_ind):  # Je fais bouger les peons vers leur mine d'or
