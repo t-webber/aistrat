@@ -18,11 +18,11 @@
 
 - [10 Avril] Création d'un algortihme de suivi: Permet de trouver ce dont on a besoin (pas assez de chateaux, manque des chevaliers, trop d'or par rapport au nombre de péons..., occupation de la map)
 
-- [24 Avril] Adaptation des trois autres bloques (château, péon, chevalier) pour pouvoir répondre aux objectifs qui sont maintenant déterminés. 
+- [24 Avril] Adaptation des trois autres blocs (château, péon, chevalier) pour pouvoir répondre aux objectifs qui sont maintenant déterminés. 
 
-- [8 Mai] travail sur les bloques afin de les liers entre eux (3 équipes : lien château-peon , lien château chevalier, lien chevalier-peon) pour pouvoir agir de concert.
+- [8 Mai] travail sur les blocs afin de les liers entre eux (3 équipes : lien château-peon , lien château chevalier, lien chevalier-peon) pour pouvoir agir de concert.
 
-- [15 Mai] raffinage du bloque d'objectifs
+- [15 Mai] raffinage du bloc d'objectifs
 
 - [29 Mai] Construction des châteaux et production d'unité + Amélioration des techniques pour les péons  + Gestion de chevaliers en attaque/défense 
 
@@ -43,9 +43,9 @@
 - Pôle Recherche: Pierre + Jules : Recherche d'algorithmes plus efficaces (temps et résultats)
 - Pôle tests/amélioration des algorithmes: Martin + Jules : Tests des stratégies implémentées, rendu fait au membre en question
 
-### Tâches régulièrestâches
+### Tâches régulières
 
 - Construction des châteaux et production d'unité
 - Amélioration des techniques pour les péons : récolte d'or, exploration, fuite
 - Gestion de chevaliers : attaque, défense, exploration
-- Dertemination des objectifs : plus de chateau de chevalier de peon prise du centre protection d'une région manque d'or, manque d'information...
+- Dertemination des objectifs : plus de chateaux, de chevalier, de peon, de prise du centre, de protection d'une région manque d'or, manque d'information...
