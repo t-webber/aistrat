@@ -1,7 +1,7 @@
 """ naïve algorithm """
 
 import random as rd
-# import numpy as np
+import numpy as np
 # from scipy.optimize import linear_sum_assignment as hongrois
 import api
 import joueur.backbone.client_logic as cl
@@ -93,3 +93,27 @@ def nexturn(player, token):
     farm(pawns, golds, player, token)  # je farm d'abord ce que je vois
     # j'explore ensuite dans la direction opposée au spawn
     explore(pawns, player, token)
+
+class Gold:
+
+    def __init__(self) -> None:
+        self.cases={}
+
+    def actualiser(self,Golds):
+        for i,j,g in Golds :
+            self.cases[(i,j)]=g
+
+class Seen:
+
+    def __init__(self) -> None:
+        self.cases = {}
+        Y, X = api.size_map()
+        for y in range(Y):
+            for x in range(X):
+                self.cases[(y, x)] = np.inf
+
+    def actualiser(self,seen):
+        for pos in self.cases:
+            self.cases[pos]+=1
+        for (y,x) in seen:
+            self.cases[(y,x)]=0
