@@ -1,16 +1,24 @@
-import api
+""" Naïve algorithm """
+
 import random as rd
-from scipy.optimize import linear_sum_assignment as hongrois
-import numpy as np
+# import numpy as np
+# from scipy.optimize import linear_sum_assignment as hongrois
+import api
 import joueur.backbone.client_logic as cl
 import joueur.castles as build
 
 
 def distance(x1, y1, x2, y2):
+    """ 
+    distance between coordinates
+    """
     return abs(x1-x2)+abs(y1-y2)
 
 
 def farm(pawns, golds, player, token):
+    """ 
+    Farm gold when possible, else go to nearest avaible gold
+    """
     if golds and pawns:
         # affecation problem
         # choisis les mines d'or vers lesquelles vont se diriger les peons
@@ -48,6 +56,9 @@ def farm(pawns, golds, player, token):
 
 
 def explore(pawns, player, token):
+    """ 
+    Call on farm for every player
+    """
     dico = {'A': [(0, 1), (1, 0)], 'B': [(0, -1), (-1, 0)]}
     for y, x in pawns:
         moves = []
@@ -64,18 +75,24 @@ def explore(pawns, player, token):
 
 
 def nexturn(player, token):
+    """ 
+    Run next turn for the current player 
+        - Build a castle
+        - Farm coins
+    """
     kinds = api.getKinds(player)
     pawns: list[api.Coord] = kinds[api.PAWN]
     golds: list[api.Coord] = kinds[api.GOLD]
     castles: list[api.Coord] = kinds[api.CASTLE]
 
-    ''' Pour moi, on appelle dans l'ordre : 
-    fuite qui dit au peons de fuire s'ils vont se faire tuer (i.e un méchant est à côté et pas de gentil assez prêt pour l'aider)
-    construction forteresse
-    farm 
-    explore
-    defense/attaque
-    '''
+    # Pour moi, on appelle dans l'ordre :
+    # fuite qui dit au peons de fuire s'ils vont se faire tuer
+    # (i.e un méchant est à côté et pas de gentil assez prêt pour l'aider)
+    # construction forteresse
+    # farm
+    # explore
+    # defense/attaque
+
     build.check_build(pawns, castles, player, token)
     farm(pawns, golds, player, token)  # je farm d'abord ce que je vois
     # j'explore ensuite dans la direction opposée au spawn
