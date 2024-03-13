@@ -1,4 +1,4 @@
-""" Naïve algorithm """
+""" naïve algorithm """
 
 import random as rd
 # import numpy as np
@@ -17,20 +17,21 @@ def distance(x1, y1, x2, y2):
 
 def farm(pawns, golds, player, token):
     """ 
-    Farm gold when possible, else go to nearest avaible gold
+    farm gold when possible, else go to nearest avaible gold
     """
     if golds and pawns:
         # affecation problem
         # choisis les mines d'or vers lesquelles vont se diriger les peons
         # pour en minimiser le nombre total de mouvements
         print(golds)
-        goldLocation=dict()
-        goldLocation=[(item[0],item[1]) for item in golds]
+        gold_location = {}
+        gold_location = [(item[0], item[1]) for item in golds]
         vus = []
-        for p, g in cl.hongroisDistance(pawns,goldLocation):  # Je fais bouger les peons vers leur mine d'or
+        # je fais bouger les peons vers leur mine d'or
+        for p, g in cl.hongrois_distance(pawns, gold_location):
             vus.append(pawns[p])
             y, x = pawns[p]
-            i, j , _ = golds[g]
+            i, j, _ = golds[g]
             if rd.random() > 0.5:  # pour ne pas que le peon aille toujours d'abord en haut puis à gauche
                 if x > j:
                     api.move(api.PAWN, y, x, y, x - 1, player, token)
@@ -59,12 +60,12 @@ def farm(pawns, golds, player, token):
 
 def explore(pawns, player, token):
     """ 
-    Call on farm for every player
+    call on farm for every player
     """
-    dico = {'A': [(0, 1), (1, 0)], 'B': [(0, -1), (-1, 0)]}
+    dico = {'a': [(0, 1), (1, 0)], 'b': [(0, -1), (-1, 0)]}
     for y, x in pawns:
         moves = []
-        moves_p = api.getMoves(y, x)
+        moves_p = api.get_moves(y, x)
         for i, j in moves_p:
             if (i-y, j-x) in dico[player]:
                 moves.append((i, j))
@@ -78,16 +79,16 @@ def explore(pawns, player, token):
 
 def nexturn(player, token):
     """ 
-    Run next turn for the current player 
-        - Build a castle
-        - Farm coins
+    run next turn for the current player 
+        - build a castle
+        - farm coins
     """
-    kinds = api.getKinds(player)
+    kinds = api.get_kinds(player)
     pawns: list[api.Coord] = kinds[api.PAWN]
     golds: list[api.Coord] = kinds[api.GOLD]
     castles: list[api.Coord] = kinds[api.CASTLE]
 
-    # Pour moi, on appelle dans l'ordre :
+    # pour moi, on appelle dans l'ordre :
     # fuite qui dit au peons de fuire s'ils vont se faire tuer
     # (i.e un méchant est à côté et pas de gentil assez prêt pour l'aider)
     # construction forteresse

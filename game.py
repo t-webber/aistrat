@@ -1,24 +1,26 @@
+""" main client program to launch """
+
 import api
-from joueur import rand
+# from joueur import rand
 from joueur import naif as p
 
-player1, token1 = api.createPlayer()
-player2, token2 = api.createPlayer()
+player1, token1 = api.create_player()
+player2, token2 = api.create_player()
 
 
 def main():
     """ 
-    fonction qui récupère le joueur à qui c'est le tour, le fait jouer et met fin à son tour
+    function to get the player who need to play, plays its turn and ends it
     """
 
-    api.getData(player1, token1)
-    if api.currentPlayer() == player1:
+    api.get_data(player1, token1)
+    if api.current_player() == player1:
         p.nexturn(player1, token1)
-        api.endTurn(player1, token1)
+        api.end_turn(player1, token1)
     else:
-        api.getData(player2, token2)
+        api.get_data(player2, token2)
         p.nexturn(player2, token2)
-        api.endTurn(player2, token2)
+        api.end_turn(player2, token2)
 
 
 if __name__ == "__main__":

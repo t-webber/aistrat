@@ -7,45 +7,43 @@ PAWN = "C"
 CASTLE = "B"
 KNIGHT = "M"
 GOLD = 'G'
-player = ""
-token = ""
 taille = [0, 0]
 turn_data = []
 
 
-def endTurn(player, token):
+def end_turn(player, token):
+    """ End the turn of the player """
     try:
-        requests.get(f"{IP}/endturn/{player}/{token}", timeout=TIME_OUT)
+        requests.get(
+            f"{IP}/endturn/{player}/{token}", timeout=TIME_OUT)
     except ValueError:
         print("Erreur move", ValueError)
         return False
     return True
 
 
-def createPlayer():
-    # global player
-    # global token
-    if "" == "":
-        dataplayer = requests.get(IP+"/getToken", timeout=TIME_OUT).json()
-        print(dataplayer)
-        player = dataplayer['player']
-        token = dataplayer['token']
-    else:
-        print('deja pris')
-    return (player, token)
+def create_player():
+    """ Create the player """
+    dataplayer = requests.get(IP+"/getToken", timeout=TIME_OUT).json()
+    print(dataplayer)
+    player = dataplayer['player']
+    token = dataplayer['token']
+    return player, token
 
 
 def move(kind, oldy, oldx, newy, newx, player, token) -> bool:
+    """ Try moving """
     try:
         requests.get(
             f"{IP}/move/{player}/{kind}/{oldy}/{oldx}/{newy}/{newx}/{token}", timeout=TIME_OUT)
     except ValueError:
         print("Erreur move", ValueError)
-        return (False)
-    return (True)
+        return False
+    return True
 
 
 def build(kind, y, x, player, token) -> bool:
+    """ Build a castle at (y,x) """
     try:
         print(requests.get(
             f"{IP}/build/{player}/{y}/{x}/{kind}/{token}", timeout=TIME_OUT).json())
@@ -54,7 +52,8 @@ def build(kind, y, x, player, token) -> bool:
         return False
 
 
-def getData(player, token):
+def get_data(player, token):
+    """ get all data for the turn """
     global turn_data
     try:
         res = requests.get(f"{IP}/view/{player}/{token}", timeout=TIME_OUT)
@@ -64,27 +63,32 @@ def getData(player, token):
     return True
 
 
-def getMap():
+def get_map():
     return turn_data["map"]
 
 
-def currentPlayer():
+INITIAL_MAP = get_map()
+MAP_SIZE = (len(INITIAL_MAP), len(INITIAL_MAP[0]))
+
+
+def current_player():
     return turn_data["player"]
 
 
-def getGold():
+def get_gold():
     return turn_data["gold"]
 
 
-def getScore():
+def get_score():
     return turn_data["score"]
 
 
-def getWinner():
+def get_winner():
     return turn_data["winner"]
 
 
 def farm(y, x, player, token) -> bool:
+    """ Farm a peon on (y, x) """
     try:
         print(requests.get(
             f"{IP}/farm/{player}/{y}/{x}/{token}", timeout=TIME_OUT).json())
@@ -93,7 +97,8 @@ def farm(y, x, player, token) -> bool:
         return False
 
 
-def autoFarm(player, token) -> bool:
+def auto_farm(player, token) -> bool:
+    """ Farm all peons """
     try:
         print(requests.get(
             f"{IP}/autofarm/{player}/{token}", timeout=TIME_OUT).json())
@@ -102,23 +107,24 @@ def autoFarm(player, token) -> bool:
         return False
 
 
-def getInfo(y, x):
+def get_info(y, x):
     return turn_data[y][x]
 
 
 class Coord:
-    pass
+    """ (y, x) """
 
 
-def getKinds(player) -> dict[str, list[Coord]]:
+def get_kinds(player) -> dict[str, list[Coord]]:
+    """ returns the list of the coordinates of all the present units on the map """
     result = {PAWN: [], CASTLE: [], KNIGHT: [], GOLD: [], 'fog': []}
-    carte = getMap()
-    for y in range(len(carte)):
-        for x in range(len(carte[y])):
-            if carte[y][x] == {}:
+    carte = get_map()
+    for (y, line) in enumerate(carte):
+        for (x, col) in enumerate(line):
+            if col == {}:
                 result['fog'].append((y, x))
             else:
-                d = carte[y][x][player]
+                d = col[player]
                 if d[PAWN]:
                     for _ in range(d[PAWN]):
                         result[PAWN].append((y, x))
@@ -130,37 +136,29 @@ def getKinds(player) -> dict[str, list[Coord]]:
                         result[KNIGHT].append((y, x))
 
                 g = carte[y][x][GOLD]
-                if g: result[GOLD].append((y, x, g))
+                if g:
+                    result[GOLD].append((y, x, g))
     return result
 
 
-def getMoves(y, x):
-    INITIAL_MAP = getMap()
-    taille = [len(INITIAL_MAP), len(INITIAL_MAP[0])]
+def get_moves(y, x):
+    """ Function to get the avaible cells around the current position """
     moves = []
     for i in [-1, 1]:
-        if taille[0] > y+i >= 0:
+        if MAP_SIZE[0] > y+i >= 0:
             moves.append((y+i, x))
-        if taille[1] > x+i >= 0:
+        if MAP_SIZE[1] > x+i >= 0:
             moves.append((y, x+i))
     return moves
 
 
-def init():
-    return createPlayer()[0]
-
-# print(getData())
-# INITIAL_MAP=getMap()
-# taille=[len(INITIAL_MAP), len(INITIAL_MAP[0])]
-
-
 if __name__ == "__main__":
-    createPlayer()
-    getData()
-    R = getMap()
+    current_player, current_token = create_player()
+    get_data(current_player, current_token)
+    R = get_map()
     print(R[0])
-    move("C", 0, 0, 1, 0)
-    move("C", 0, 1, 1, 1)
-    getData()
-    R = getMap()
+    move("C", 0, 0, 1, 0, current_player, current_token)
+    move("C", 0, 1, 1, 1, current_player, current_token)
+    get_data(current_player, current_token)
+    R = get_map()
     print(R)
