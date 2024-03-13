@@ -9,7 +9,7 @@ def distance(x1, y1, x2, y2):
     """
     return abs(x1-x2)+abs(y1-y2)
 
-def hongroisDistance(acteurs,objets):
+def hongrois_distance(acteurs,objets):
     matriceCost= np.abs(np.array(acteurs)[:, np.newaxis] - np.array(objets)).sum(axis=2)
     return algoHongrois(matriceCost)
 

@@ -16,7 +16,8 @@ def farm(pawns, golds, player, token):
         # choisis les mines d'or vers lesquelles vont se diriger les peons
         # pour en minimiser le nombre total de mouvements
         print(golds)
-        simpleGold=cl.cleanGolds(golds)
+        #simpleGold=cl.cleanGolds(golds)
+        simpleGold=golds
         gold_location = {}
         gold_location = [(item[0], item[1]) for item in simpleGold]
         vus = []
