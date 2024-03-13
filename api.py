@@ -73,7 +73,7 @@ def prediction_combat(a,d):
     while a > 0 and d > 0:
         a = a - (d + 1)//2
         d = d - (a + 1)//2
-    return d == 0
+    return d <= 0
 
 def getInfo(y,x):
     return turn_data[y][x]
