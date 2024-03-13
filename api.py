@@ -65,7 +65,9 @@ def getData(player, token):
 def getMap():
     return turn_data["map"]
 
-
+def dim_map():
+    return (len(getMap(),len(getMap()[0])))
+                
 def currentPlayer():
     return turn_data["player"]
 
@@ -109,12 +111,12 @@ class Coord:
 
 
 def getKinds(player) -> dict[str, list[Coord]]:
-    result = {PAWN: [], CASTLE: [], KNIGHT: [], GOLD: [], 'fog': []}
+    result = {PAWN: [], CASTLE: [], KNIGHT: [], GOLD: [], 'seen': []}
     carte = getMap()
     for y in range(len(carte)):
         for x in range(len(carte[y])):
-            if carte[y][x] == {}:
-                result['fog'].append((y, x))
+            if carte[y][x] != {}:
+                result['seen'].append((y, x))
             else:
                 d = carte[y][x][player]
                 if d[PAWN]:
