@@ -64,5 +64,14 @@ def nexturn(player,token):
     kinds = api.getKinds(player)
     pawns = kinds[api.PAWN]
     golds = kinds[api.GOLD]
+
+    
+    ''' Pour moi, on appelle dans l'ordre : 
+    fuite qui dit au peons de fuire s'ils vont se faire tuer (i.e un méchant est à côté et pas de gentil assez prêt pour l'aider)
+    construction forteresse
+    farm 
+    explore
+    defense/attaque
+    '''
     farm(pawns, golds, player, token)  # je farm d'abord ce que je vois
     explore(pawns, player, token)  # j'explore ensuite dans la direction opposée au spawn
