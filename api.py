@@ -71,6 +71,10 @@ INITIAL_MAP = get_map()
 MAP_SIZE = (len(INITIAL_MAP), len(INITIAL_MAP[0]))
 
 
+def size_map():
+    return MAP_SIZE
+
+
 def current_player():
     return turn_data["player"]
 
