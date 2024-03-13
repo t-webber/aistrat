@@ -1,30 +1,32 @@
+""" API to communicate between client and serve """
+
 import requests
-ip = "http://localhost:8080"
-player = ""
-token = ""
-taille = [0, 0]
-turn_data = []
-time_out = 0.05
+IP = "http://localhost:8080"
+TIME_OUT = 0.05
 PAWN = "C"
 CASTLE = "B"
 KNIGHT = "M"
 GOLD = 'G'
+player = ""
+token = ""
+taille = [0, 0]
+turn_data = []
 
 
 def endTurn(player, token):
     try:
-        requests.get(f"{ip}/endturn/{player}/{token}", timeout=time_out)
+        requests.get(f"{IP}/endturn/{player}/{token}", timeout=TIME_OUT)
     except ValueError:
         print("Erreur move", ValueError)
-        return (False)
-    return (True)
+        return False
+    return True
 
 
 def createPlayer():
     # global player
     # global token
     if "" == "":
-        dataplayer = requests.get(ip+"/getToken", timeout=time_out).json()
+        dataplayer = requests.get(IP+"/getToken", timeout=TIME_OUT).json()
         print(dataplayer)
         player = dataplayer['player']
         token = dataplayer['token']
@@ -36,7 +38,7 @@ def createPlayer():
 def move(kind, oldy, oldx, newy, newx, player, token) -> bool:
     try:
         requests.get(
-            f"{ip}/move/{player}/{kind}/{oldy}/{oldx}/{newy}/{newx}/{token}", timeout=time_out)
+            f"{IP}/move/{player}/{kind}/{oldy}/{oldx}/{newy}/{newx}/{token}", timeout=TIME_OUT)
     except ValueError:
         print("Erreur move", ValueError)
         return (False)
@@ -46,7 +48,7 @@ def move(kind, oldy, oldx, newy, newx, player, token) -> bool:
 def build(kind, y, x, player, token) -> bool:
     try:
         print(requests.get(
-            f"{ip}/build/{player}/{y}/{x}/{kind}/{token}", timeout=time_out).json())
+            f"{IP}/build/{player}/{y}/{x}/{kind}/{token}", timeout=TIME_OUT).json())
         return True
     except:
         return False
@@ -55,7 +57,7 @@ def build(kind, y, x, player, token) -> bool:
 def getData(player, token):
     global turn_data
     try:
-        res = requests.get(f"{ip}/view/{player}/{token}", timeout=time_out)
+        res = requests.get(f"{IP}/view/{player}/{token}", timeout=TIME_OUT)
     except:
         return False
     turn_data = res.json()
@@ -85,7 +87,7 @@ def getWinner():
 def farm(y, x, player, token) -> bool:
     try:
         print(requests.get(
-            f"{ip}/farm/{player}/{y}/{x}/{token}", timeout=time_out).json())
+            f"{IP}/farm/{player}/{y}/{x}/{token}", timeout=TIME_OUT).json())
         return True
     except:
         return False
@@ -94,7 +96,7 @@ def farm(y, x, player, token) -> bool:
 def autoFarm(player, token) -> bool:
     try:
         print(requests.get(
-            f"{ip}/autofarm/{player}/{token}", timeout=time_out).json())
+            f"{IP}/autofarm/{player}/{token}", timeout=TIME_OUT).json())
         return True
     except:
         return False
