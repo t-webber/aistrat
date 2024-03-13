@@ -1,24 +1,20 @@
 import api
 import random as rd
-from scipy.optimize import linear_sum_assignment
+from scipy.optimize import linear_sum_assignment as hongrois
 import numpy as np
+from backbone import client_logic as cl
 
 
 def distance(x1, y1, x2, y2):
     return abs(x1-x2)+abs(y1-y2)
-
 
 def farm(pawns,golds, player, token):
     if golds and pawns:
         # affecation problem
         # choisis les mines d'or vers lesquelles vont se diriger les peons
         # pour en minimiser le nombre total de mouvements
-        cost = np.abs(np.array(pawns)[:, np.newaxis] - np.array(golds)).sum(axis=2)
-        pawn_ind, gold_ind = linear_sum_assignment(cost) # algorithme hondrois ou algorithme de Kuhn-Munkres
-        # https://fr.wikipedia.org/wiki/Algorithme_hongrois#Repr%C3%A9sentation_par_l'optimisation_lin%C3%A9aire
-
         vus = []
-        for p, g in zip(pawn_ind, gold_ind):  # Je fais bouger les peons vers leur mine d'or
+        for p, g in cl.hongroisDistance(pawns,golds):  # Je fais bouger les peons vers leur mine d'or
             vus.append(pawns[p])
             y, x = pawns[p]
             i, j = golds[g]
