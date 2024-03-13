@@ -1,15 +1,14 @@
 from scipy.optimize import linear_sum_assignment
 import numpy as np
 
-
-def hongroisDistance(acteurs, objets):
-    matrice = np.abs(np.array(acteurs)[:, np.newaxis] - np.array(objets))
-    return algoHongrois(matrice)
+def hongroisDistance(acteurs,objets):
+    matriceCost= np.abs(np.array(acteurs)[:, np.newaxis] - np.array(objets)).sum(axis=2)
+    return algoHongrois(matriceCost)
 
 
 def algoHongrois(matriceHongrois):
-    return zip(linear_sum_assignment(matriceHongrois))
-
+    a,b=linear_sum_assignment(matriceHongrois)
+    return zip(a,b)
 
 def prediction_combat(a, d):  # prédit le vainqueur d'un combat
     pertes_a = 0

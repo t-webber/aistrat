@@ -23,12 +23,14 @@ def farm(pawns, golds, player, token):
         # affecation problem
         # choisis les mines d'or vers lesquelles vont se diriger les peons
         # pour en minimiser le nombre total de mouvements
+        print(golds)
+        goldLocation=dict()
+        goldLocation=[(item[0],item[1]) for item in golds]
         vus = []
-        # Je fais bouger les peons vers leur mine d'or
-        for p, g in cl.hongroisDistance(pawns, golds):
+        for p, g in cl.hongroisDistance(pawns,goldLocation):  # Je fais bouger les peons vers leur mine d'or
             vus.append(pawns[p])
             y, x = pawns[p]
-            i, j = golds[g]
+            i, j , _ = golds[g]
             if rd.random() > 0.5:  # pour ne pas que le peon aille toujours d'abord en haut puis à gauche
                 if x > j:
                     api.move(api.PAWN, y, x, y, x - 1, player, token)

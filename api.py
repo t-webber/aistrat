@@ -128,8 +128,7 @@ def getKinds(player) -> dict[str, list[Coord]]:
                         result[KNIGHT].append((y, x))
 
                 g = carte[y][x][GOLD]
-                if g:
-                    result[GOLD].append((y, x))
+                if g: result[GOLD].append((y, x, g))
     return result
 
 
