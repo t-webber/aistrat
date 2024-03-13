@@ -70,10 +70,14 @@ def autoFarm(player,token) -> bool:
     except: return False
 
 def prediction_combat(a,d): #prédit le vainqueur d'un combat
+    pertes_a = 0
+    pertes_b = 0
     while a > 0 and d > 0:
+        pertes_a += (d + 1)//2
+        pertes_b += (a + 1)//2
         a = a - (d + 1)//2
         d = d - (a + 1)//2
-    return d <= 0 # true si l'attaque gagne
+    return (d <= 0, pertes_a, pertes_b) # true si l'attaque gagne
 
 def getInfo(y,x):
     return turn_data[y][x]
