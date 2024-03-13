@@ -13,10 +13,10 @@ def algoHongrois(matriceHongrois):
 
 def prediction_combat(a, d):  # prédit le vainqueur d'un combat
     pertes_a = 0
-    pertes_b = 0
+    pertes_d = 0
     while a > 0 and d > 0:
-        pertes_a += (d + 1)//2
-        pertes_b += (a + 1)//2
+        pertes_a += min(a,(d + 1)//2)
         a = a - (d + 1)//2
+        pertes_d += min(d,(a + 1)//2)
         d = d - (a + 1)//2
-    return (d <= 0, pertes_a, pertes_b)  # true si l'attaque gagne
+    return (d <= 0, pertes_a, pertes_d)  # true si l'attaque gagne
