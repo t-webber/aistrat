@@ -1,9 +1,6 @@
 import api
 import random as rd
-from scipy.optimize import linear_sum_assignment as hongrois
-import numpy as np
-from backbone import client_logic as cl
-
+import joueur.backbone.client_logic as cl #Pour quand on part de aistrat
 
 def distance(x1, y1, x2, y2):
     return abs(x1-x2)+abs(y1-y2)
@@ -13,11 +10,14 @@ def farm(pawns,golds, player, token):
         # affecation problem
         # choisis les mines d'or vers lesquelles vont se diriger les peons
         # pour en minimiser le nombre total de mouvements
+        print(golds)
+        goldLocation=dict()
+        goldLocation=[(item[0],item[1]) for item in golds]
         vus = []
-        for p, g in cl.hongroisDistance(pawns,golds):  # Je fais bouger les peons vers leur mine d'or
+        for p, g in cl.hongroisDistance(pawns,goldLocation):  # Je fais bouger les peons vers leur mine d'or
             vus.append(pawns[p])
             y, x = pawns[p]
-            i, j = golds[g]
+            i, j , _ = golds[g]
             if rd.random() > 0.5:  # pour ne pas que le peon aille toujours d'abord en haut puis à gauche
                 if x > j:
                     api.move(api.PAWN, y, x, y, x - 1, player, token)
