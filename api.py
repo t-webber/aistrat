@@ -7,6 +7,9 @@ PAWN = "C"
 CASTLE = "B"
 KNIGHT = "M"
 GOLD = 'G'
+
+map_size = None
+
 taille = [0, 0]
 turn_data = []
 
@@ -67,12 +70,12 @@ def get_map():
     return turn_data["map"]
 
 
-INITIAL_MAP = get_map()
-MAP_SIZE = (len(INITIAL_MAP), len(INITIAL_MAP[0]))
-
-
 def size_map():
-    return MAP_SIZE
+    global size_map
+    if size_map is None:
+        initial_map = get_map()
+        size_map = (len(initial_map), len(initial_map[0]))
+    return size_map
 
 
 def current_player():
@@ -149,9 +152,9 @@ def get_moves(y, x):
     """ Function to get the avaible cells around the current position """
     moves = []
     for i in [-1, 1]:
-        if MAP_SIZE[0] > y+i >= 0:
+        if size_map()[0] > y+i >= 0:
             moves.append((y+i, x))
-        if MAP_SIZE[1] > x+i >= 0:
+        if size_map()[1] > x+i >= 0:
             moves.append((y, x+i))
     return moves
 
