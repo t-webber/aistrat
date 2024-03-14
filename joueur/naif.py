@@ -56,7 +56,7 @@ def explore(pawns, player, token):
     """ 
     call on farm for every player
     """
-    dico = {'a': [(0, 1), (1, 0)], 'b': [(0, -1), (-1, 0)]}
+    dico = {'A': [(0, 1), (1, 0)], 'B': [(0, -1), (-1, 0)]}
     for y, x in pawns:
         moves = []
         moves_p = api.get_moves(y, x)
@@ -70,6 +70,18 @@ def explore(pawns, player, token):
             i, j = rd.choice(moves_p)
             api.move(api.PAWN, y, x, i, j, player, token)
 
+def defend(pawns, defense, eknights, token):
+    needing_help=[[],[],[]] 
+
+    for i in range(len(pawns)):
+        for j in range(len(eknights)):
+            (x1,y1),(x2,y2)=pawns[i],eknights[j]
+            d=cl.distance(x1,y1,x2,y2)
+            if (d<3):
+                needing_help[d-1]= (x1,y1)
+
+    attribution_hongroise=cl.hongrois_distance(defense,needing_help[0])
+    return          
 
 def nexturn(player, token):
     """ 
@@ -79,16 +91,18 @@ def nexturn(player, token):
     """
     kinds = api.get_kinds(player)
     pawns: list[api.Coord] = kinds[api.PAWN]
+    knights: list[api.Coord]= kinds[api.KNIGHT]
+    defense: list[api.Coord]= kinds[api.KNIGHT] #liste des chevaliers attribués à la défense 
     golds: list[api.Coord] = kinds[api.GOLD]
     castles: list[api.Coord] = kinds[api.CASTLE]
 
     # pour moi, on appelle dans l'ordre :
     # fuite qui dit au peons de fuire s'ils vont se faire tuer
-    # (i.e un méchant est à côté et pas de gentil assez prêt pour l'aider)
+    # (i.e un méchant est à côté et pas de gentil assez près pour l'aider)
     # construction forteresse
     # farm
     # explore
-    # defense/attaque
+    # defense/attaque 
 
     #build.check_build(pawns, castles, player, token)
     farm(pawns, golds, player, token)  # je farm d'abord ce que je vois
