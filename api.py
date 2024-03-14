@@ -7,6 +7,7 @@ PAWN = "C"
 CASTLE = "B"
 KNIGHT = "M"
 GOLD = 'G'
+EKNIGHT= "M2"
 
 map_size = None
 
@@ -71,11 +72,11 @@ def get_map():
 
 
 def size_map():
-    global size_map
-    if size_map is None:
+    global map_size
+    if map_size is None:
         initial_map = get_map()
-        size_map = (len(initial_map), len(initial_map[0]))
-    return size_map
+        map_size = (len(initial_map), len(initial_map[0]))
+    return map_size
 
 
 def current_player():
@@ -121,10 +122,15 @@ def get_info(y, x):
 class Coord:
     """ (y, x) """
 
+def other(player):
+    if (player=='A'):
+        return 'B'
+    return 'A'
+
 
 def get_kinds(player) -> dict[str, list[Coord]]:
     """ returns the list of the coordinates of all the present units on the map """
-    result = {PAWN: [], CASTLE: [], KNIGHT: [], GOLD: [], 'fog': []}
+    result = {PAWN: [], CASTLE: [], KNIGHT: [], GOLD: [], 'fog': [], EKNIGHT: []}
     carte = get_map()
     for (y, line) in enumerate(carte):
         for (x, col) in enumerate(line):
@@ -141,6 +147,11 @@ def get_kinds(player) -> dict[str, list[Coord]]:
                 if d[KNIGHT]:
                     for _ in range(d[KNIGHT]):
                         result[KNIGHT].append((y, x))
+
+                d2= col[other(player)]
+                if d2[KNIGHT]:
+                    for _ in range(d[KNIGHT]):
+                        result[EKNIGHT].append((y, x))
 
                 g = carte[y][x][GOLD]
                 if g:
