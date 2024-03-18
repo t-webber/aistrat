@@ -7,6 +7,7 @@ import api
 import joueur.backbone.client_logic as cl
 import joueur.castles as build
 
+
 def farm(pawns, golds, player, token):
     """ 
     farm gold when possible, else go to nearest avaible gold
@@ -16,16 +17,16 @@ def farm(pawns, golds, player, token):
         # choisis les mines d'or vers lesquelles vont se diriger les peons
         # pour en minimiser le nombre total de mouvements
         print(golds)
-        #simpleGold=cl.cleanGolds(golds)
-        simpleGold=golds
+        # simple_gold=cl.clean_golds(golds)
+        simple_gold = golds
         gold_location = {}
-        gold_location = [(item[0], item[1]) for item in simpleGold]
+        gold_location = [(item[0], item[1]) for item in simple_gold]
         vus = []
         # je fais bouger les peons vers leur mine d'or
         for p, g in cl.hongrois_distance(pawns, gold_location):
             vus.append(pawns[p])
             y, x = pawns[p]
-            i, j , _ = golds[g]
+            i, j, _ = golds[g]
             if rd.random() > 0.5:  # pour ne pas que le peon aille toujours d'abord en haut puis à gauche
                 if x > j:
                     api.move(api.PAWN, y, x, y, x - 1, player, token)
@@ -70,18 +71,32 @@ def explore(pawns, player, token):
             i, j = rd.choice(moves_p)
             api.move(api.PAWN, y, x, i, j, player, token)
 
+
 def defend(pawns, defense, eknights, token):
-    needing_help=[[],[],[]] 
+    """
+    Defends the pawns using the defense strategy against enemy knights.
+
+    Args:
+        pawns (list): A list of tuples representing the positions of the pawns.
+        defense (list): A list of tuples representing the positions of the defense units.
+        eknights (list): A list of tuples representing the positions of the enemy knights.
+        token (str): A token representing the player.
+
+    Returns:
+        None
+    """
+    needing_help = [[], [], []]
 
     for i in range(len(pawns)):
         for j in range(len(eknights)):
-            (x1,y1),(x2,y2)=pawns[i],eknights[j]
-            d=cl.distance(x1,y1,x2,y2)
-            if (d<3):
-                needing_help[d-1]= (x1,y1)
+            (x1, y1), (x2, y2) = pawns[i], eknights[j]
+            d = cl.distance(x1, y1, x2, y2)
+            if (d < 3):
+                needing_help[d-1] = (x1, y1)
 
-    attribution_hongroise=cl.hongrois_distance(defense,needing_help[0])
-    return          
+    attribution_hongroise = cl.hongrois_distance(defense, needing_help[0])
+    return
+
 
 def nexturn(player, token):
     """ 
@@ -91,8 +106,9 @@ def nexturn(player, token):
     """
     kinds = api.get_kinds(player)
     pawns: list[api.Coord] = kinds[api.PAWN]
-    knights: list[api.Coord]= kinds[api.KNIGHT]
-    defense: list[api.Coord]= kinds[api.KNIGHT] #liste des chevaliers attribués à la défense 
+    knights: list[api.Coord] = kinds[api.KNIGHT]
+    # liste des chevaliers attribués à la défense
+    defense: list[api.Coord] = kinds[api.KNIGHT]
     golds: list[api.Coord] = kinds[api.GOLD]
     castles: list[api.Coord] = kinds[api.CASTLE]
 
@@ -102,33 +118,36 @@ def nexturn(player, token):
     # construction forteresse
     # farm
     # explore
-    # defense/attaque 
+    # defense/attaque
 
-    #build.check_build(pawns, castles, player, token)
+    build.create_pawns(castles, player, token)
+    build.check_build(pawns, castles, player, token)
     farm(pawns, golds, player, token)  # je farm d'abord ce que je vois
     # j'explore ensuite dans la direction opposée au spawn
     explore(pawns, player, token)
 
-class Gold:
 
-    def __init__(self) -> None:
-        self.cases={}
+# class gold:
 
-    def actualiser(self,Golds):
-        for i,j,g in Golds :
-            self.cases[(i,j)]=g
+#     def __init__(self) -> none:
+#         self.cases = {}
 
-class Seen:
+#     def actualiser(self, golds):
+#         for i, j, g in golds:
+#             self.cases[(i, j)] = g
 
-    def __init__(self) -> None:
-        self.cases = {}
-        Y, X = api.size_map()
-        for y in range(Y):
-            for x in range(X):
-                self.cases[(y, x)] = np.inf
 
-    def actualiser(self,seen):
-        for pos in self.cases:
-            self.cases[pos]+=1
-        for (y,x) in seen:
-            self.cases[(y,x)]=0
+# class seen:
+
+#     def __init__(self) -> none:
+#         self.cases = {}
+#         y, x = api.size_map()
+#         for y in range(y):
+#             for x in range(x):
+#                 self.cases[(y, x)] = np.inf
+
+#     def actualiser(self, seen):
+#         for pos in self.cases:
+#             self.cases[pos] += 1
+#         for (y, x) in seen:
+#             self.cases[(y, x)] = 0

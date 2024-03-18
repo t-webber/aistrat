@@ -3,6 +3,7 @@
 import api
 # from joueur import rand
 from joueur import naif as p
+import time
 
 player1, token1 = api.create_player()
 player2, token2 = api.create_player()
@@ -26,3 +27,4 @@ def main():
 if __name__ == "__main__":
     while True:
         main()
+        time.sleep(1)

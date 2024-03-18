@@ -7,7 +7,7 @@ PAWN = "C"
 CASTLE = "B"
 KNIGHT = "M"
 GOLD = 'G'
-EKNIGHT= "M2"
+EKNIGHT = "M2"
 
 map_size = None
 
@@ -47,7 +47,7 @@ def move(kind, oldy, oldx, newy, newx, player, token) -> bool:
 
 
 def build(kind, y, x, player, token) -> bool:
-    """ Build a castle at (y,x) """
+    """ Build a kind at at (y,x) """
     try:
         print(requests.get(
             f"{IP}/build/{player}/{y}/{x}/{kind}/{token}", timeout=TIME_OUT).json())
@@ -122,15 +122,17 @@ def get_info(y, x):
 class Coord:
     """ (y, x) """
 
+
 def other(player):
-    if (player=='A'):
+    if player == 'A':
         return 'B'
     return 'A'
 
 
 def get_kinds(player) -> dict[str, list[Coord]]:
     """ returns the list of the coordinates of all the present units on the map """
-    result = {PAWN: [], CASTLE: [], KNIGHT: [], GOLD: [], 'fog': [], EKNIGHT: []}
+    result = {PAWN: [], CASTLE: [], KNIGHT: [],
+              GOLD: [], 'fog': [], EKNIGHT: []}
     carte = get_map()
     for (y, line) in enumerate(carte):
         for (x, col) in enumerate(line):
@@ -148,7 +150,7 @@ def get_kinds(player) -> dict[str, list[Coord]]:
                     for _ in range(d[KNIGHT]):
                         result[KNIGHT].append((y, x))
 
-                d2= col[other(player)]
+                d2 = col[other(player)]
                 if d2[KNIGHT]:
                     for _ in range(d[KNIGHT]):
                         result[EKNIGHT].append((y, x))
