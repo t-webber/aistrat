@@ -40,12 +40,13 @@ def clean_golds(golds):
     to_be_removed = [0 for _ in range(len(golds))]
     for num in range(len(golds)):
         pile = golds[num]
-        if pile[2] < 16 and to_be_removed[num] == 0:
+        if pile[2] <= 16 and to_be_removed[num] == 0:
             for i in range(len(golds)):
-                if i != num and distance(pile[0], pile[1], golds[i][0], golds[i][1]) <= 1:
-                    to_be_removed[i] = 1
+                if i != num and to_be_removed[i]==0 and distance(pile[0], pile[1], golds[i][0], golds[i][1]) <= 2:
+                    to_be_removed[num] = 1
+                    break
     gold_clean = [golds[i] for i in range(len(golds)) if to_be_removed[i] == 0]
-    print(golds, gold_clean, to_be_removed)
+    #print(golds, gold_clean, to_be_removed)
     return gold_clean
 
 
