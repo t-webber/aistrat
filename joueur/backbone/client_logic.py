@@ -124,6 +124,6 @@ def neighbors(case, knights):
     """
     dir_case = {(0,1):0,(1,0):0,(0,-1):0,(-1,0):0}
     for k in knights:
-        if (k[0]-case[0],k[1]-case[1] in dir_case):
+        if (k[0]-case[0],k[1]-case[1]) in dir_case:
             dir_case[(k[0]-case[0],k[1]-case[1])] +=1
-    return dir_case
+    return dir_case, sum(dir_case.values())
