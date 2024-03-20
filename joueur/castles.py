@@ -35,7 +35,7 @@ def create_pawns(castles, player, token, eknight, knight):
     except:
         gold = 0
     for (y, x) in castles:
-        print("CASLTE = GOOOOOOOOOOOLD", gold)
+        print("GOOOOOOOOOOOLD", gold)
         if n > 0 or gold > 40:
             print("BUILD KNIGHT")
             api.build(api.KNIGHT, y, x, player, token)

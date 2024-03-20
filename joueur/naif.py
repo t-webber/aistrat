@@ -202,6 +202,10 @@ def nexturn(player, token):
     defense: list[api.Coord] = kinds[api.KNIGHT]
     golds: list[api.Coord] = kinds[api.GOLD]
     castles: list[api.Coord] = kinds[api.CASTLE]
+    try:
+        gold = api.get_gold()[player]
+    except:
+        gold = 0
 
     # pour moi, on appelle dans l'ordre :
     # fuite qui dit au peons de fuire s'ils vont se faire tuer
@@ -210,8 +214,8 @@ def nexturn(player, token):
     # farm
     # explore
     # defense/attaque
-    build.create_pawns(castles, player, token, eknights, knights)
-    build.check_build(pawns, castles, player, token)
+    build.create_pawns(castles, player, token, eknights, knights, gold)
+    build.check_build(pawns, castles, player, token, gold)
     farm(pawns, golds, player, token)  # je farm d'abord ce que je vois
     # j'explore ensuite dans la direction opposée au spawn
     explore(pawns, player, token)
