@@ -12,7 +12,7 @@ def farm(pawns, golds, player, token):
     """ 
     farm gold when possible, else go to nearest avaible gold
     """
-    good_gold, bad_gold = cl.clean_golds(golds)
+    good_gold, bad_gold = cl.clean_golds(golds,pawns)
     # simple_gold = golds
     if good_gold and pawns:
         # affecation problem
@@ -67,11 +67,24 @@ def path_one(units_to_move, other_units):
                 other_boy for other_boy in units_to_move if other_boy != boy]
             new_pawns.append(move)
             new_map = api.get_visible(new_pawns+other_units)
-            score = cl.visibility_score(new_map, 0)
+            score = cl.visibility_score(new_map, 1/100)
             if score > maxscore:
                 maxscore = score
                 bestpawn = boy
                 bestmove = move
+            elif abs(score-maxscore) <= 0.5:
+                # print("On résoud un conflit")
+                vector1 = (move[0]-boy[0], move[1]-boy[1])
+                vector2 = (bestmove[0]-bestpawn[0], bestmove[1]-bestpawn[1])
+                if api.current_player() == "A":
+                    ideal = api.size_map()
+                else:
+                    temp = api.size_map()
+                    ideal = (-temp[0], -temp[1])
+                if vector1[0]*ideal[0]+vector1[1]*ideal[1] > vector2[0]*ideal[0]+vector2[1]*ideal[1]:
+                    # print("On prend le nouveau")
+                    bestpawn = boy
+                    bestmove = move
     return bestpawn, bestmove
 
 
@@ -232,8 +245,11 @@ def nexturn(player, token):
             knights.remove(d)
 
     defend(pawns, defense, eknights, player, token)
-    build.create_pawns(castles, player, token, eknights,
-                       knights, gold, attack, defense)
+
+    print(player, "CASTLES", castles)
+
+    build.create_pawns(castles, player, token,
+                       eknights, knights, gold, defense)
     build.check_build(pawns, castles, player, token, gold)
     farm(pawns, golds, player, token)  # je farm d'abord ce que je vois
     # j'explore ensuite dans la direction opposée au spawn
