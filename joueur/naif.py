@@ -236,9 +236,9 @@ def defend(pawns, defense, eknights, player, token):
     # on priorise les pions selon la distance à un chevalier ennemi
     compteur = 0
     left_defense = defense.copy()
-    while (left_defense != []):
-        left_defense = move_defense(
-            left_defense, needing_help[0], player, token)
+    # while (left_defense != []):
+    # left_defense = move_defense(
+    #     left_defense, needing_help[0], player, token)
 
 
 def nexturn(player, token):
