@@ -12,8 +12,8 @@ def farm(pawns, golds, player, token):
     """ 
     farm gold when possible, else go to nearest avaible gold
     """
-    good_gold,bad_gold=cl.clean_golds(golds)
-    #simple_gold = golds
+    good_gold, bad_gold = cl.clean_golds(golds)
+    # simple_gold = golds
     if good_gold and pawns:
         # affecation problem
         # choisis les mines d'or vers lesquelles vont se diriger les peons
@@ -53,35 +53,39 @@ def farm(pawns, golds, player, token):
         for p in vus:  # j'enlève ceux que je bouge
             pawns.remove(p)
 
-def path_one(units_to_move,other_units):
+
+def path_one(units_to_move, other_units):
     '''Cherche le meilleur chemin pour une unité de units_to_move pour voir plus de la map'''
     # print(len(units_to_move))
-    maxscore=-float('inf')
-    bestpawn=(-1,-1)
-    bestmove=(-1,-1)
+    maxscore = -float('inf')
+    bestpawn = (-1, -1)
+    bestmove = (-1, -1)
     for boy in units_to_move:
-        moves=api.get_moves(boy[0],boy[1])
+        moves = api.get_moves(boy[0], boy[1])
         for move in moves:
-            new_pawns=[other_boy for other_boy in units_to_move if other_boy!=boy]
+            new_pawns = [
+                other_boy for other_boy in units_to_move if other_boy != boy]
             new_pawns.append(move)
-            new_map=api.get_visible(new_pawns+other_units)
-            score=cl.visibility_score(new_map,1/10)
-            if score>maxscore:
-                maxscore=score
-                bestpawn=boy
-                bestmove=move
-    return bestpawn,bestmove
+            new_map = api.get_visible(new_pawns+other_units)
+            score = cl.visibility_score(new_map, 1/10)
+            if score > maxscore:
+                maxscore = score
+                bestpawn = boy
+                bestmove = move
+    return bestpawn, bestmove
 
-def path(units_to_move,other_units=[]):
+
+def path(units_to_move, other_units=[]):
     '''Essaye de chercher un chemin d'exploration optimal pour les units_to_move pour révéler
     le maximum de la carte pour les péons. Prend en compte other_units pour la visibilité'''
-    results=[]
+    results = []
     # print("Entrées : ",units_to_move)
     for _ in range(len(units_to_move)):
-        bestpawn,bestmove=path_one(units_to_move,other_units)
-        results.append((bestpawn,bestmove))
+        bestpawn, bestmove = path_one(units_to_move, other_units)
+        results.append((bestpawn, bestmove))
         other_units.append(bestpawn)
-        units_to_move=[units_to_move[i] for i in range(len(units_to_move)) if units_to_move[i] is not bestpawn]
+        units_to_move = [units_to_move[i] for i in range(
+            len(units_to_move)) if units_to_move[i] is not bestpawn]
     #     print('Units updated : ',units_to_move)
     # print("Résultats de path : ",results)
     return results
@@ -91,21 +95,25 @@ def explore(pawns, player, token):
     """ 
     call on farm for every player
     """
-    dico = {'A': [(0, 1), (1, 0)], 'B': [(0, -1), (-1, 0)]}
-    for y, x in pawns:
-        moves = []
-        moves_p = api.get_moves(y, x)
-        for i, j in moves_p:
-            if (i-y, j-x) in dico[player]:
-                moves.append((i, j))
-        if moves:
-            i, j = rd.choice(moves)
-            api.move(api.PAWN, y, x, i, j, player, token)
-        else:
-            i, j = rd.choice(moves_p)
-            api.move(api.PAWN, y, x, i, j, player, token)
+    moves=path(pawns)
+    for one_move in moves:
+        api.move(api.PAWN,one_move[0][0],one_move[0][1],one_move[1][0],one_move[0][1],player,token)
+    #dico = {'A': [(0, 1), (1, 0)], 'B': [(0, -1), (-1, 0)]}
+        #for y, x in pawns:
+        #moves = []
+        # moves_p = api.get_moves(y, x)
+        # for i, j in moves_p:
+        #     if (i-y, j-x) in dico[player]:
+        #         moves.append((i, j))
+        # if moves:
+        #     i, j = rd.choice(moves)
+        #     api.move(api.PAWN, y, x, i, j, player, token)
+        # else:
+        #     i, j = rd.choice(moves_p)
+        #     api.move(api.PAWN, y, x, i, j, player, token)
 
-def move_defense(defense,pawns,player,token):
+
+def move_defense(defense, pawns, player, token):
     """
     Moves the knights according to their attributed pawn to defend.
 
@@ -119,16 +127,16 @@ def move_defense(defense,pawns,player,token):
     Returns
         defense knight that still need to move
     """
-    hongroise= cl.hongrois_distance(defense,pawns)
-    for d,p in hongroise :
-        xd,yd=defense[d]
-        xp,yp=pawns[p]
-        restant=defense.copy()
+    hongroise = cl.hongrois_distance(defense, pawns)
+    for d, p in hongroise:
+        xd, yd = defense[d]
+        xp, yp = pawns[p]
+        restant = defense.copy()
 
         if rd.random() > 0.5:  # pour ne pas que le defenseur aille toujours d'abord en haut puis à gauche
             if xd > xp:
-               api.move(api.KNIGHT, yd, xd, yd, xd - 1, player, token)
-            elif xd< xp:
+                api.move(api.KNIGHT, yd, xd, yd, xd - 1, player, token)
+            elif xd < xp:
                 api.move(api.KNIGHT, yd, xd, yd, xd + 1, player, token)
             elif yd > yp:
                 api.move(api.KNIGHT, yd, xd, yd - 1, xd, player, token)
@@ -145,9 +153,10 @@ def move_defense(defense,pawns,player,token):
                 api.move(api.PAWN, yd, xd, yd, xd + 1, player, token)
 
         restant.remove(defense[p])
-        return restant 
+        return restant
 
-def defend(pawns, defense, eknights,player, token):
+
+def defend(pawns, defense, eknights, player, token):
     """
     Defends the pawns using the defense strategy against enemy knights.
 
@@ -169,9 +178,10 @@ def defend(pawns, defense, eknights,player, token):
             if (d < 3):
                 needing_help[d] = (x1, y1)
 
-    left_defense= move_defense(defense, needing_help[0], player,token) # on priorise les pions selon la distance à un chevalier ennemi
-    left_defense= move_defense(left_defense, needing_help[1], player, token)
-    left_defense= move_defense(left_defense, needing_help[2], player, token)
+    # on priorise les pions selon la distance à un chevalier ennemi
+    left_defense = move_defense(defense, needing_help[0], player, token)
+    left_defense = move_defense(left_defense, needing_help[1], player, token)
+    left_defense = move_defense(left_defense, needing_help[2], player, token)
     return left_defense
 
 
@@ -184,6 +194,7 @@ def nexturn(player, token):
     kinds = api.get_kinds(player)
     pawns: list[api.Coord] = kinds[api.PAWN]
     knights: list[api.Coord] = kinds[api.KNIGHT]
+    eknights: list[api.Coord] = kinds[api.EKNIGHT]
     # liste des chevaliers attribués à la défense
     defense: list[api.Coord] = kinds[api.KNIGHT]
     golds: list[api.Coord] = kinds[api.GOLD]
@@ -196,8 +207,8 @@ def nexturn(player, token):
     # farm
     # explore
     # defense/attaque
-    print(path(pawns,[]))
-    build.create_pawns(castles, player, token)
+    print(path(pawns, []))
+    build.create_pawns(castles, player, token, eknights, knights)
     build.check_build(pawns, castles, player, token)
     farm(pawns, golds, player, token)  # je farm d'abord ce que je vois
     # j'explore ensuite dans la direction opposée au spawn
