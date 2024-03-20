@@ -95,9 +95,11 @@ def explore(pawns, player, token):
     """ 
     call on farm for every player
     """
+    print("J'explore")
     moves=path(pawns)
+    print(moves)
     for one_move in moves:
-        api.move(api.PAWN,one_move[0][0],one_move[0][1],one_move[1][0],one_move[0][1],player,token)
+        api.move(api.PAWN,one_move[0][0],one_move[0][1],one_move[1][0],one_move[1][1],player,token)
     #dico = {'A': [(0, 1), (1, 0)], 'B': [(0, -1), (-1, 0)]}
         #for y, x in pawns:
         #moves = []
@@ -207,7 +209,6 @@ def nexturn(player, token):
     # farm
     # explore
     # defense/attaque
-    print(path(pawns, []))
     build.create_pawns(castles, player, token, eknights, knights)
     build.check_build(pawns, castles, player, token)
     farm(pawns, golds, player, token)  # je farm d'abord ce que je vois
