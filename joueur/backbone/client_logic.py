@@ -103,4 +103,4 @@ def prediction_combat(a, d):
         a = a - (d + 1)//2
         pertes_d += min(d, (a + 1)//2)
         d = d - (a + 1)//2
-    return (d <= 0, pertes_a, pertes_d)
+    return (d <= 0, pertes_a <= pertes_d, pertes_a, pertes_d)
