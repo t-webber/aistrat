@@ -12,7 +12,7 @@ def farm(pawns, golds, player, token):
     """ 
     farm gold when possible, else go to nearest avaible gold
     """
-    good_gold, bad_gold = cl.clean_golds(golds)
+    good_gold, bad_gold = cl.clean_golds(golds,pawns)
     # simple_gold = golds
     if good_gold and pawns:
         # affecation problem
