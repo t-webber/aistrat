@@ -3,6 +3,19 @@
 from scipy.optimize import linear_sum_assignment
 import numpy as np
 
+defense_knights=[]
+attack_knights=[]
+
+def move_attack(x,y,nx,ny):
+    for knight in attack_knights:
+        if knight==(x,y):
+            knight=(nx,ny)
+
+def move_defense (x,y,nx,ny):
+    for knight in defense_knights:
+        if knight==(x,y):
+            knight=(nx,ny)
+            
 def visibility_score(carte,punishment):
     '''Permet de donner un score à une carte de visibilité
     Punishment représente le nombre de points retirés par sur-visibilité
