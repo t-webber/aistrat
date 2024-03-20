@@ -46,5 +46,5 @@ def create_pawns(castles, player, token, eknight, knight, gold, attackers, defen
             if api.build(api.KNIGHT, y, x, player, token):
                 attackers.append((y, x))
                 gold -= 10
-        else:
+        elif gold > 20:
             api.build(api.PAWN, y, x, player, token)
