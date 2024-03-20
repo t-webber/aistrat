@@ -117,3 +117,13 @@ def prediction_combat(a, d):
         pertes_d += min(d, (a + 1)//2)
         d = d - (a + 1)//2
     return (d <= 0, pertes_a <= pertes_d, pertes_a, pertes_d)
+
+def neighbors(case, knights):
+    """
+    return the number of knights in the 4 directions of a case
+    """
+    dir_case = {(0,1):0,(1,0):0,(0,-1):0,(-1,0):0}
+    for k in knights:
+        if (k[0]-case[0],k[1]-case[1] in dir_case):
+            dir_case[(k[0]-case[0],k[1]-case[1])] +=1
+    return dir_case
