@@ -204,6 +204,10 @@ def nexturn(player, token):
     defense: list[api.Coord] = kinds[api.KNIGHT]
     golds: list[api.Coord] = kinds[api.GOLD]
     castles: list[api.Coord] = kinds[api.CASTLE]
+    try:
+        gold = api.get_gold()[player]
+    except:
+        gold = 0
 
     # pour moi, on appelle dans l'ordre :
     # fuite qui dit au peons de fuire s'ils vont se faire tuer
