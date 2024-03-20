@@ -12,14 +12,14 @@ def farm(pawns, golds, player, token):
     """ 
     farm gold when possible, else go to nearest avaible gold
     """
-    good_gold, bad_gold = cl.clean_golds(golds,pawns)
+    good_gold, bad_gold = cl.clean_golds(golds, pawns)
     # simple_gold = golds
     if good_gold and pawns:
         # affecation problem
         # choisis les mines d'or vers lesquelles vont se diriger les peons
         # pour en minimiser le nombre total de mouvements
-        print(golds)
-        print(good_gold)
+        # print(golds)
+        # print(good_gold)
         gold_location = {}
         gold_location = [(item[0], item[1]) for item in good_gold]
         vus = []
@@ -108,9 +108,9 @@ def explore(pawns, player, token):
     """ 
     Envoie en exploration les "pawns" inactifs pour le tour
     """
-    print("J'explore")
+    # print("J'explore")
     moves = path(pawns)
-    print(moves)
+    # print(moves)
     for one_move in moves:
         api.move(api.PAWN, one_move[0][0], one_move[0][1],
                  one_move[1][0], one_move[1][1], player, token)
@@ -151,29 +151,29 @@ def move_defense(defense, pawns, player, token, eknight):
         restant = defense.copy()
 
         if rd.random() > 0.5:  # pour ne pas que le defenseur aille toujours d'abord en haut puis à gauche
-            if xd > xp and (yd,xd-1) not in eknight:
+            if xd > xp and (yd, xd-1) not in eknight:
                 api.move(api.KNIGHT, yd, xd, yd, xd - 1, player, token)
                 cl.move_defense(yd, xd, yd, xd - 1)
-            elif xd < xp and (yd,xd+1) not in eknight:
+            elif xd < xp and (yd, xd+1) not in eknight:
                 api.move(api.KNIGHT, yd, xd, yd, xd + 1, player, token)
                 cl.move_defense(yd, xd, yd, xd + 1)
-            elif yd > yp and (yd-1,xd) not in eknight:
+            elif yd > yp and (yd-1, xd) not in eknight:
                 api.move(api.KNIGHT, yd, xd, yd, xd, player, token)
                 cl.move_defense(yd, xd, yd-1, xd)
-            elif yd < yp and (yd + 1,xd) not in eknight:
+            elif yd < yp and (yd + 1, xd) not in eknight:
                 api.move(api.KNIGHT, yd, xd, yd + 1, xd, player, token)
                 cl.move_defense(yd, xd, yd-1, xd)
         else:
-            if yd > yp and (yd - 1,xd) not in eknight:
+            if yd > yp and (yd - 1, xd) not in eknight:
                 api.move(api.PAWN, yd, xd, yd - 1, xd, player, token)
                 cl.move_defense(yd, xd, yd-1, xd)
-            elif yd < yp and (yd + 1,xd) not in eknight:
+            elif yd < yp and (yd + 1, xd) not in eknight:
                 api.move(api.PAWN, yd, xd, yd + 1, xd, player, token)
                 cl.move_defense(yd, xd, yd + 1, xd)
-            elif xd > xp and (yd,xd - 1) not in eknight:
+            elif xd > xp and (yd, xd - 1) not in eknight:
                 api.move(api.PAWN, yd, xd, yd, xd - 1, player, token)
                 cl.move_defense(yd, xd, yd, xd - 1)
-            elif xd < xp and (yd,xd + 1) not in eknight:
+            elif xd < xp and (yd, xd + 1) not in eknight:
                 api.move(api.PAWN, yd, xd, yd, xd + 1, player, token)
                 cl.move_defense(yd, xd, yd, xd + 1)
 
@@ -245,8 +245,6 @@ def nexturn(player, token):
             knights.remove(d)
 
     defend(pawns, defense, eknights, player, token)
-
-    print(player, "CASTLES", castles)
 
     build.create_pawns(castles, player, token,
                        eknights, knights, gold, defense)
