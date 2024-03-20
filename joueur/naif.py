@@ -93,13 +93,14 @@ def path(units_to_move, other_units=[]):
 
 def explore(pawns, player, token):
     """ 
-    call on farm for every player
+    Envoie en exploration les "pawns" inactifs pour le tour
     """
     print("J'explore")
     moves=path(pawns)
     print(moves)
     for one_move in moves:
         api.move(api.PAWN,one_move[0][0],one_move[0][1],one_move[1][0],one_move[1][1],player,token)
+
     #dico = {'A': [(0, 1), (1, 0)], 'B': [(0, -1), (-1, 0)]}
         #for y, x in pawns:
         #moves = []

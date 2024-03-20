@@ -41,8 +41,7 @@ def move(kind, oldy, oldx, newy, newx, player, token) -> bool:
     try:
         requests.get(
             f"{IP}/move/{player}/{kind}/{oldy}/{oldx}/{newy}/{newx}/{token}", timeout=TIME_OUT)
-    except ValueError:
-        print("Erreur move", ValueError)
+    except:
         return False
     return True
 
