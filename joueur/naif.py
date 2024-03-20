@@ -205,7 +205,7 @@ def nexturn(player, token):
     # explore
     # defense/attaque
     print(path(pawns, []))
-    build.create_pawns(castles, player, token)
+    build.create_pawns(castles, player, token, eknights, knights)
     build.check_build(pawns, castles, player, token)
     farm(pawns, golds, player, token)  # je farm d'abord ce que je vois
     # j'explore ensuite dans la direction opposée au spawn
