@@ -55,13 +55,11 @@ def farm(pawns, golds, player, token):
 
 
 def path(pawns):
-    carte=api.get_map()
-    falsemap=np.zeros((len(carte),len(carte[0])))
-    falsemap=api.visible(falsemap,pawns)
+    cases_visibles=api.generate_visible(pawns)
     # for i in pawns:
     #     falsemap[i[0]][i[1]]=5
     # print(carte)
-    print(falsemap)
+    print(cases_visibles)
 
 def explore(pawns, player, token):
     """ 

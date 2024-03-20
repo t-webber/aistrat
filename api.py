@@ -1,5 +1,5 @@
 """ API to communicate between client and serve """
-
+import numpy as np
 import requests
 IP = "http://localhost:8080"
 TIME_OUT = 0.05
@@ -170,6 +170,14 @@ def get_moves(y, x):
         if size_map()[1] > x+i >= 0:
             moves.append((y, x+i))
     return moves
+
+def generate_visible(pawns):
+    '''Crée une fausse carte de la taille de la carte de jeu et lance visible à partir
+    des pions. Cela renvoie à partir d'une fausse carte de la taille de la carte de jeu et des pions
+    une carte avec des nombres donnant le "nombre de fois" que la case est visible'''
+    carte=get_map()
+    falsemap=np.zeros((len(carte),len(carte[0])))
+    return visible(falsemap,pawns)
 
 def visible(carte,pawns):
     '''Renvoie à partir d'une fausse carte de la taille de la carte de jeu et des pions
