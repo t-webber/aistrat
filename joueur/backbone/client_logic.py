@@ -30,24 +30,31 @@ def hongrois_distance(acteurs, objets):
 
 def clean_golds(golds):
     """
-    Gives the priority to the small piles near big piles, and sends only one pawn.
+    Gives the priority to the big piles near other small piles, and sends only one pawn.
 
     Args:
         golds: list of gold piles, where each pile is represented as a tuple (x, y, amount).
 
     Returns: list of gold piles after removing the close piles.
     """
+    threshold_bad=16
+    distance_overlook=1
     to_be_removed = [0 for _ in range(len(golds))]
-    for num in range(len(golds)):
+    for num in range(len(golds)) :
         pile = golds[num]
-        if pile[2] <= 16 and to_be_removed[num] == 0:
+        if pile[2] <= threshold_bad and to_be_removed[num] == 0:
             for i in range(len(golds)):
-                if i != num and to_be_removed[i]==0 and distance(pile[0], pile[1], golds[i][0], golds[i][1]) <= 2:
+                if i != num and to_be_removed[i]==0 and distance(pile[0], pile[1], golds[i][0], golds[i][1]) <= distance_overlook:
                     to_be_removed[num] = 1
                     break
-    gold_clean = [golds[i] for i in range(len(golds)) if to_be_removed[i] == 0]
-    #print(golds, gold_clean, to_be_removed)
-    return gold_clean
+    gold_clean = []
+    gold_bad = []
+    for i in range(len(to_be_removed)):
+        if to_be_removed[i]==0:
+            gold_clean.append(golds[i])
+        else: 
+            gold_bad.append(golds[i])
+    return (gold_clean,gold_bad)
 
 
 def algo_hongrois(matrice_hongrois):

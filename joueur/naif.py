@@ -12,23 +12,22 @@ def farm(pawns, golds, player, token):
     """ 
     farm gold when possible, else go to nearest avaible gold
     """
-    simple_gold=cl.clean_golds(golds)
+    good_gold,bad_gold=cl.clean_golds(golds)
     #simple_gold = golds
-    if simple_gold and pawns:
+    if good_gold and pawns:
         # affecation problem
         # choisis les mines d'or vers lesquelles vont se diriger les peons
         # pour en minimiser le nombre total de mouvements
-        
         print(golds)
-        print(simple_gold)
+        print(good_gold)
         gold_location = {}
-        gold_location = [(item[0], item[1]) for item in simple_gold]
+        gold_location = [(item[0], item[1]) for item in good_gold]
         vus = []
         # je fais bouger les peons vers leur mine d'or
         for p, g in cl.hongrois_distance(pawns, gold_location):
             vus.append(pawns[p])
             y, x = pawns[p]
-            i, j, _ = simple_gold[g]
+            i, j, _ = good_gold[g]
             if rd.random() > 0.5:  # pour ne pas que le peon aille toujours d'abord en haut puis à gauche
                 if x > j:
                     api.move(api.PAWN, y, x, y, x - 1, player, token)
