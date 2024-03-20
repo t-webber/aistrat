@@ -72,6 +72,46 @@ def explore(pawns, player, token):
             i, j = rd.choice(moves_p)
             api.move(api.PAWN, y, x, i, j, player, token)
 
+def move_defense(hongroise,defense,pawns,player,token):
+    """
+    Moves the knights according to their attributed pawn to defend.
+
+    Args:
+        hongroise: result of hungarian method on pawns and defense
+        defense (list): A list of tuples representing the position of defense unit that havent moved already
+        pawns (list): A list of tuples representing the positions of the pawns.
+        player (string): describes the playing player
+        token (str): A token representing the player
+
+    Returns
+        defense knight that still need to move
+    """
+    for d,p in hongroise :
+        xd,yd=defense[d]
+        xp,yp=pawns[p]
+        restant=defense.copy()
+
+        if rd.random() > 0.5:  # pour ne pas que le defenseur aille toujours d'abord en haut puis à gauche
+            if xd > xp:
+               api.move(api.KNIGHT, yd, xd, yd, xd - 1, player, token)
+            elif xd< xp:
+                api.move(api.KNIGHT, yd, xd, yd, xd + 1, player, token)
+            elif yd > yp:
+                api.move(api.KNIGHT, yd, xd, yd - 1, xd, player, token)
+            elif yd < yp:
+                api.move(api.KNIGHT, yd, xd, yd + 1, xd, player, token)
+        else:
+            if yd > yp:
+                api.move(api.PAWN, yd, xd, yd - 1, xd, player, token)
+            elif yd < yp:
+                api.move(api.PAWN, yd, xd, yd + 1, xd, player, token)
+            elif xd > xp:
+                api.move(api.PAWN, yd, xd, yd, xd - 1, player, token)
+            elif xd < xp:
+                api.move(api.PAWN, yd, xd, yd, xd + 1, player, token)
+
+        restant.remove(defense[p])
+        return restant 
 
 def defend(pawns, defense, eknights, token):
     """
@@ -93,10 +133,12 @@ def defend(pawns, defense, eknights, token):
             (x1, y1), (x2, y2) = pawns[i], eknights[j]
             d = cl.distance(x1, y1, x2, y2)
             if (d < 3):
-                needing_help[d-1] = (x1, y1)
+                needing_help[d] = (x1, y1)
 
-    attribution_hongroise = cl.hongrois_distance(defense, needing_help[0])
-    return
+    left_defense= cl.hongrois_distance(defense, needing_help[0]) # on priorise les pions selon la distance à un chevalier ennemi
+    left_defense= cl.hongrois_distance(defense, needing_help[1])
+    left_defense= cl.hongrois_distance(defense, needing_help[2])
+    return left_defense
 
 
 def nexturn(player, token):
