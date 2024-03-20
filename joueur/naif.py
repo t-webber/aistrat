@@ -117,7 +117,7 @@ def explore(pawns, player, token):
         #     api.move(api.PAWN, y, x, i, j, player, token)
 
 
-def move_defense(defense, pawns, player, token):
+def move_defense(defense, pawns, player, token, eknight):
     """
     Moves the knights according to their attributed pawn to defend.
 
@@ -138,29 +138,29 @@ def move_defense(defense, pawns, player, token):
         restant = defense.copy()
 
         if rd.random() > 0.5:  # pour ne pas que le defenseur aille toujours d'abord en haut puis à gauche
-            if xd > xp:
+            if xd > xp and (yd,xd-1) not in eknight:
                 api.move(api.KNIGHT, yd, xd, yd, xd - 1, player, token)
                 cl.move_defense(yd, xd, yd, xd - 1)
-            elif xd < xp:
+            elif xd < xp and (yd,xd+1) not in eknight:
                 api.move(api.KNIGHT, yd, xd, yd, xd + 1, player, token)
                 cl.move_defense(yd, xd, yd, xd + 1)
-            elif yd > yp:
-                api.move(api.KNIGHT, yd, xd, yd - 1, xd, player, token)
+            elif yd > yp and (yd-1,xd) not in eknight:
+                api.move(api.KNIGHT, yd, xd, yd, xd, player, token)
                 cl.move_defense(yd, xd, yd-1, xd)
-            elif yd < yp:
+            elif yd < yp and (yd + 1,xd) not in eknight:
                 api.move(api.KNIGHT, yd, xd, yd + 1, xd, player, token)
                 cl.move_defense(yd, xd, yd-1, xd)
         else:
-            if yd > yp:
+            if yd > yp and (yd - 1,xd) not in eknight:
                 api.move(api.PAWN, yd, xd, yd - 1, xd, player, token)
                 cl.move_defense(yd, xd, yd-1, xd)
-            elif yd < yp:
+            elif yd < yp and (yd + 1,xd) not in eknight:
                 api.move(api.PAWN, yd, xd, yd + 1, xd, player, token)
                 cl.move_defense(yd, xd, yd + 1, xd)
-            elif xd > xp:
+            elif xd > xp and (yd,xd - 1) not in eknight:
                 api.move(api.PAWN, yd, xd, yd, xd - 1, player, token)
                 cl.move_defense(yd, xd, yd, xd - 1)
-            elif xd < xp:
+            elif xd < xp and (yd,xd + 1) not in eknight:
                 api.move(api.PAWN, yd, xd, yd, xd + 1, player, token)
                 cl.move_defense(yd, xd, yd, xd + 1)
 
