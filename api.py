@@ -8,7 +8,7 @@ CASTLE = "B"
 KNIGHT = "M"
 GOLD = 'G'
 EKNIGHT = "M2"
-EPAWN="C2"
+EPAWN = "C2"
 
 map_size = None
 
@@ -184,16 +184,18 @@ def get_moves(y, x):
             moves.append((y, x+i))
     return moves
 
+
 def get_visible(units):
     '''Renvoie à partir d'une fausse carte de la taille de la carte de jeu et des pions
     une carte avec des nombres donnant le "nombre de fois" que la case est visible'''
     carte=np.zeros(size_map())
     for boy in units:
-        for y in [boy[0]+k for k in [-2,-1,0,1,2]]:
-            for x in [boy[1]+k for k in [-2,-1,0,1,2]]:
-                if (0<=(y)<len(carte)) and (0<=(x)<len(carte[0])):
-                    carte[y][x]+=1
+        for y in [boy[0]+k for k in [-2, -1, 0, 1, 2]]:
+            for x in [boy[1]+k for k in [-2, -1, 0, 1, 2]]:
+                if (0 <= (y) < len(carte)) and (0 <= (x) < len(carte[0])):
+                    carte[y][x] += 1
     return carte
+
 
 if __name__ == "__main__":
     current_player, current_token = create_player()
