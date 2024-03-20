@@ -96,14 +96,15 @@ def explore(pawns, player, token):
     Envoie en exploration les "pawns" inactifs pour le tour
     """
     print("J'explore")
-    moves=path(pawns)
+    moves = path(pawns)
     print(moves)
     for one_move in moves:
-        api.move(api.PAWN,one_move[0][0],one_move[0][1],one_move[1][0],one_move[1][1],player,token)
+        api.move(api.PAWN, one_move[0][0], one_move[0][1],
+                 one_move[1][0], one_move[1][1], player, token)
 
-    #dico = {'A': [(0, 1), (1, 0)], 'B': [(0, -1), (-1, 0)]}
-        #for y, x in pawns:
-        #moves = []
+    # dico = {'A': [(0, 1), (1, 0)], 'B': [(0, -1), (-1, 0)]}
+        # for y, x in pawns:
+        # moves = []
         # moves_p = api.get_moves(y, x)
         # for i, j in moves_p:
         #     if (i-y, j-x) in dico[player]:
@@ -179,13 +180,14 @@ def defend(pawns, defense, eknights, player, token):
             (x1, y1), (x2, y2) = pawns[i], eknights[j]
             d = cl.distance(x1, y1, x2, y2)
             if (d < 50):
-                needing_help[d].append( (x1, y1) )
+                needing_help[d].append((x1, y1))
 
     # on priorise les pions selon la distance à un chevalier ennemi
-    compteur=0
-    left_defense=defense.copy()
-    while (left_defense!=[]):
-        left_defense = move_defense(left_defense, needing_help[0], player, token)    
+    compteur = 0
+    left_defense = defense.copy()
+    while (left_defense != []):
+        left_defense = move_defense(
+            left_defense, needing_help[0], player, token)
 
 
 def nexturn(player, token):
@@ -202,10 +204,6 @@ def nexturn(player, token):
     defense: list[api.Coord] = kinds[api.KNIGHT]
     golds: list[api.Coord] = kinds[api.GOLD]
     castles: list[api.Coord] = kinds[api.CASTLE]
-    try:
-        gold = api.get_gold()[player]
-    except:
-        gold = 0
 
     # pour moi, on appelle dans l'ordre :
     # fuite qui dit au peons de fuire s'ils vont se faire tuer

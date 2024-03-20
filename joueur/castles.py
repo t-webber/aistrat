@@ -12,7 +12,7 @@ def distance_2_castle(y_curr, x_curr, castles):
     return d
 
 
-def check_build(pawns, castles, player, token):
+def check_build(pawns, castles, player, token, gold):
     """ Add castles if none built and a pawn is enough away """
     len_y, len_x = api.size_map()
     if len(castles) >= 3:
@@ -27,7 +27,7 @@ def check_build(pawns, castles, player, token):
             return
 
 
-def create_pawns(castles, player, token, eknight, knight):
+def create_pawns(castles, player, token, eknight, knight, gold):
     """ Create pawns on every castle """
     n = 2 * len(eknight) - len(knight)
     try:
