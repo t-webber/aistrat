@@ -53,6 +53,27 @@ def farm(pawns, golds, player, token):
         for p in vus:  # j'enlève ceux que je bouge
             pawns.remove(p)
 
+def intelligence(carte,pawns):
+    for boy in pawns:
+        # carte[boy[0]][boy[1]]+=1
+        # print(carte)
+        for y in [boy[0]+k for k in [-2,-1,0,1,2]]:
+            for x in [boy[1]+k for k in [-2,-1,0,1,2]]:
+                if (0<=(y)<len(carte)) and (0<=(x)<len(carte[0])):
+                    # print("Eclairage:",boy,y,x)
+                    carte[y][x]+=1
+    # print(carte)
+    return carte
+
+
+def path(pawns):
+    carte=api.get_map()
+    falsemap=np.zeros((len(carte),len(carte[0])))
+    falsemap=intelligence(falsemap,pawns)
+    # for i in pawns:
+    #     falsemap[i[0]][i[1]]=5
+    # print(carte)
+    print(falsemap)
 
 def explore(pawns, player, token):
     """ 
@@ -162,7 +183,7 @@ def nexturn(player, token):
     # farm
     # explore
     # defense/attaque
-
+    print(path(pawns))
     build.create_pawns(castles, player, token)
     build.check_build(pawns, castles, player, token)
     farm(pawns, golds, player, token)  # je farm d'abord ce que je vois
