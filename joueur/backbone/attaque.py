@@ -37,12 +37,12 @@ def compte_soldats_cases_adjacentes(player,case):
 def attaque(player,case_attaquee):
     carte=api.get_map
     Y,X=case_attaquee
-    attaquants = 0
-    voisins = api.get_moves(Y,X)
+    attaquants, defenseurs_voisins = compte_soldats_cases_adjacentes(player,case_attaquee)
     defenseurs = carte[Y][X][player][api.EKNIGHT]
-    for i in voisins:
-    attaquants = carte[Y-1][X][player][api.KNIGHT]
-    p1,p2,p3,p4 = prediction_combat(a,d)
-    if p1 and p2:
-
-        move(,,,case_attaquee[0],case_attaquee[1],,)
+    b1,b2,pertes_attaque,pertes_defense = prediction_combat(attaquants,defenseurs)
+    if b1 and b2:
+        attaquants -= pertes_attaque
+        defenseurs = defenseurs_voisins
+        b1,b2,pertes_attaque2,pertes_defense2 = prediction_combat(attaquants,defenseurs)
+        if (pertes_attaque + pertes_attaque2) > (pertes_defense + pertes_defense2):
+            api.move(,,,case_attaquee[0],case_attaquee[1],,)
