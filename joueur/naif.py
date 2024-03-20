@@ -55,6 +55,8 @@ def farm(pawns, golds, player, token):
 
 
 def path(pawns):
+    '''Essaye de chercher un chemin d'exploration optimal pour révéler
+    le maximum de la carte pour les péons'''
     cases_visibles=api.generate_visible(pawns)
     # for i in pawns:
     #     falsemap[i[0]][i[1]]=5
