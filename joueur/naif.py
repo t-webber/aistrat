@@ -232,8 +232,8 @@ def nexturn(player, token):
             knights.remove(d)
 
     defend(pawns, defense, eknights, player, token)
-    build.create_pawns(castles, player, token, eknights,
-                       knights, gold, attack, defense)
+    build.create_pawns(castles, player, token,
+                       eknights, knights, gold, defense)
     build.check_build(pawns, castles, player, token, gold)
     farm(pawns, golds, player, token)  # je farm d'abord ce que je vois
     # j'explore ensuite dans la direction opposée au spawn
