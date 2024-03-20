@@ -53,15 +53,32 @@ def farm(pawns, golds, player, token):
         for p in vus:  # j'enlève ceux que je bouge
             pawns.remove(p)
 
+def visibility_score(carte):
+    '''Permet de donner un score à une carte de visibilité'''
+    score=0
+    punishment=1/10 #Combien de point on retire par sur-visibilité
+    for row in carte:
+        for square in row:
+            if square==1:
+                score+=1
+            if square>1:
+                score=score-(square-1)*punishment 
+                #Ligne arbitraire -> Combien retirer de point par case "sur-visible"
+    return score
+
 
 def path(pawns):
     '''Essaye de chercher un chemin d'exploration optimal pour révéler
     le maximum de la carte pour les péons'''
     cases_visibles=api.generate_visible(pawns)
-    # for i in pawns:
-    #     falsemap[i[0]][i[1]]=5
-    # print(carte)
     print(cases_visibles)
+    for boy in pawns:
+        moves=api.get_moves(boy[0],boy[1])
+        for move in moves:
+            new_pawns=[other_boy for other_boy in pawns if other_boy!=boy]
+            new_pawns.append(move)
+            new_map=api.generate_visible(new_pawns)
+            score=visibility_score(new_map)
 
 def explore(pawns, player, token):
     """ 
