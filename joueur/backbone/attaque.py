@@ -20,7 +20,7 @@ def prediction_combat(a, d):
         d = d - (a + 1)//2
     return (d <= 0, pertes_a <= pertes_d, pertes_a, pertes_d)
 
-def compte_soldats_case_adjacente(player,case):
+def compte_soldats_cases_adjacentes(player,case):
     Y,X=case_attaquee
     carte=api.get_map
     voisins = api.get_moves(Y,X)
