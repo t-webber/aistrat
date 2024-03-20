@@ -91,19 +91,22 @@ def explore(pawns, player, token):
     """ 
     call on farm for every player
     """
-    dico = {'A': [(0, 1), (1, 0)], 'B': [(0, -1), (-1, 0)]}
-    for y, x in pawns:
-        moves = []
-        moves_p = api.get_moves(y, x)
-        for i, j in moves_p:
-            if (i-y, j-x) in dico[player]:
-                moves.append((i, j))
-        if moves:
-            i, j = rd.choice(moves)
-            api.move(api.PAWN, y, x, i, j, player, token)
-        else:
-            i, j = rd.choice(moves_p)
-            api.move(api.PAWN, y, x, i, j, player, token)
+    moves=path(pawns)
+    for one_move in moves:
+        api.move(api.PAWN,one_move[0][0],one_move[0][1],one_move[1][0],one_move[0][1])
+    #dico = {'A': [(0, 1), (1, 0)], 'B': [(0, -1), (-1, 0)]}    
+    #for y, x in pawns:
+        #moves = []
+        # moves_p = api.get_moves(y, x)
+        # for i, j in moves_p:
+        #     if (i-y, j-x) in dico[player]:
+        #         moves.append((i, j))
+        # if moves:
+        #     i, j = rd.choice(moves)
+        #     api.move(api.PAWN, y, x, i, j, player, token)
+        # else:
+        #     i, j = rd.choice(moves_p)
+        #     api.move(api.PAWN, y, x, i, j, player, token)
 
 def move_defense(defense,pawns,player,token):
     """
