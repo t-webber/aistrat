@@ -41,11 +41,12 @@ def compte_soldats_ennemis_cases_adjacentes(player,case):
         eknight += carte[Y + c[0]][X + c[1]][player][api.EKNIGHT]
     return eknight
 
-def move_everyone(player, token, case, allies_voisins):
+def move_everyone(player, token, case, allies_voisins, knights):
     Y,X=case
     for i in allies_voisins:
         for j in range (0, allies_voisins[i]):
             api.move(api.KNIGHT, Y + allies_voisins[i][0], X + allies_voisins[i][1], Y, X, player, token)
+            knights.remove((Y + allies_voisins[i][0], X + allies_voisins[i][1]))
     
 
 def attaque(player, case_attaquee, knights, token):
@@ -61,4 +62,4 @@ def attaque(player, case_attaquee, knights, token):
         defenseurs = defenseurs_voisins
         b1,b2,pertes_attaque2,pertes_defense2 = prediction_combat(attaquants,defenseurs)
         if (pertes_attaque + pertes_attaque2) > (pertes_defense + pertes_defense2):
-            move_everyone(player, token, case_attaquee, allies_voisins)
+            move_everyone(player, token, case_attaquee, allies_voisins, knights)

@@ -140,21 +140,29 @@ def move_defense(defense, pawns, player, token):
         if rd.random() > 0.5:  # pour ne pas que le defenseur aille toujours d'abord en haut puis à gauche
             if xd > xp:
                 api.move(api.KNIGHT, yd, xd, yd, xd - 1, player, token)
+                cl.move_defense(yd, xd, yd, xd - 1)
             elif xd < xp:
                 api.move(api.KNIGHT, yd, xd, yd, xd + 1, player, token)
+                cl.move_defense(yd, xd, yd, xd + 1)
             elif yd > yp:
                 api.move(api.KNIGHT, yd, xd, yd - 1, xd, player, token)
+                cl.move_defense(yd, xd, yd-1, xd)
             elif yd < yp:
                 api.move(api.KNIGHT, yd, xd, yd + 1, xd, player, token)
+                cl.move_defense(yd, xd, yd-1, xd)
         else:
             if yd > yp:
                 api.move(api.PAWN, yd, xd, yd - 1, xd, player, token)
+                cl.move_defense(yd, xd, yd-1, xd)
             elif yd < yp:
                 api.move(api.PAWN, yd, xd, yd + 1, xd, player, token)
+                cl.move_defense(yd, xd, yd + 1, xd)
             elif xd > xp:
                 api.move(api.PAWN, yd, xd, yd, xd - 1, player, token)
+                cl.move_defense(yd, xd, yd, xd - 1)
             elif xd < xp:
                 api.move(api.PAWN, yd, xd, yd, xd + 1, player, token)
+                cl.move_defense(yd, xd, yd, xd + 1)
 
         restant.remove(defense[p])
         return restant
@@ -202,7 +210,6 @@ def nexturn(player, token):
     eknights: list[api.Coord] = kinds[api.EKNIGHT]
     # liste des chevaliers attribués à la défense
     defense: list[api.Coord] = cl.defense_knights
-    attack: list[api.Coord] = cl.attack_knights
     golds: list[api.Coord] = kinds[api.GOLD]
     castles: list[api.Coord] = kinds[api.CASTLE]
     try:
@@ -218,6 +225,12 @@ def nexturn(player, token):
     # farm
     # explore
     # attaque
+    for d in defense:
+        if d not in knights:
+            defense.remove(d)
+        else:
+            knights.remove(d)
+
     defend(pawns, defense, eknights, player, token)
     build.create_pawns(castles, player, token, eknights,
                        knights, gold, attack, defense)
