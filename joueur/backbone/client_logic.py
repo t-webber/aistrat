@@ -3,6 +3,19 @@
 from scipy.optimize import linear_sum_assignment
 import numpy as np
 
+def visibility_score(carte,punishment):
+    '''Permet de donner un score à une carte de visibilité
+    Punishment représente le nombre de points retirés par sur-visibilité
+    (on le veut pas trop grand pour favoriser l'exploration)'''
+    score=0
+    for row in carte:
+        for square in row:
+            if square==1:
+                score+=1
+            if square>1:
+                score=score-(square-1)*punishment 
+                #Ligne arbitraire -> Combien retirer de point par case "sur-visible"
+    return score
 
 def distance(x1, y1, x2, y2):
     """
