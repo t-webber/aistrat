@@ -72,6 +72,19 @@ def path_one(units_to_move, other_units):
                 maxscore = score
                 bestpawn = boy
                 bestmove = move
+            elif abs(score-maxscore)<=0.5:
+                #print("On résoud un conflit")
+                vector1=(move[0]-boy[0],move[1]-boy[1])
+                vector2=(bestmove[0]-bestpawn[0],bestmove[1]-bestpawn[1])
+                if api.current_player()=="A":
+                    ideal=api.size_map()
+                else:
+                    temp=api.size_map()
+                    ideal=(-temp[0],-temp[1])
+                if vector1[0]*ideal[0]+vector1[1]*ideal[1]>vector2[0]*ideal[0]+vector2[1]*ideal[1]:
+                    #print("On prend le nouveau")
+                    bestpawn = boy
+                    bestmove = move
     return bestpawn, bestmove
 
 
