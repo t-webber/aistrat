@@ -24,7 +24,7 @@ def check_build(pawns, castles, player, token, gold):
     for pawn in pawns:
         y, x = pawn
         d = distance_2_castle(y, x, castles)
-        if 2 <= x <= len_x - 3 and 2 <= y <= len_y - 3 and d > 3:
+        if 2 <= x <= len_x - 3 and 2 <= y <= len_y - 3 and d >= 3:
             print("Building caste at", y, x)
             # print("BUILT A CASTLE ON D = ", d)
             res = api.build(api.CASTLE, y, x, player, token)
@@ -48,8 +48,8 @@ def create_pawns(castles, player, token, eknight, knight, gold, defenders):
                 defenders.append((y, x))
                 gold -= 10
                 n -= 1
-        elif gold > 25:
+        elif gold > 25 and len(castles) >= 2:
             if api.build(api.KNIGHT, y, x, player, token):
                 gold -= 10
-        elif gold > 15:
+        elif gold > 12.5:
             api.build(api.PAWN, y, x, player, token)
