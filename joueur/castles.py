@@ -24,7 +24,7 @@ def check_build(pawns, castles, player, token, gold):
         d = distance_2_castle(good[0], good[1], pawns)
         if d != 0:
             for (y, x) in pawns:
-                if cl.distance(x, y, good[0], good[1]) == d:
+                if cl.distance(y, x, good[0], good[1]) == d:
                     if player == "A":
                         if x >= 2:
                             RES = api.move(api.PAWN, y, x, y +
@@ -36,9 +36,13 @@ def check_build(pawns, castles, player, token, gold):
                             print("MOVE Y ", RES)
                     else:
                         if x <= len_x - 3:
-                            api.move(api.PAWN, y, x, y-1, x, player, token)
+                            RES = api.move(api.PAWN, y, x, y -
+                                           1, x, player, token)
+                            print("MOVE B X", RES)
                         else:
-                            api.move(api.PAWN, y, x, y, x-1, player, token)
+                            RES = api.move(api.PAWN, y, x, y,
+                                           x-1, player, token)
+                            print("MOVE B Y", RES)
                     pawns.remove((y, x))
                     break
 
