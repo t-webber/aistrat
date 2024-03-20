@@ -53,18 +53,39 @@ def farm(pawns, golds, player, token):
         for p in vus:  # j'enlève ceux que je bouge
             pawns.remove(p)
 
-def path(pawns):
-    '''Essaye de chercher un chemin d'exploration optimal pour révéler
-    le maximum de la carte pour les péons'''
-    cases_visibles=api.generate_visible(pawns)
-    print(cases_visibles)
-    for boy in pawns:
+def path_one(units_to_move,other_units):
+    '''Cherche le meilleur chemin pour une unité de units_to_move pour voir plus de la map'''
+    # print(len(units_to_move))
+    maxscore=-float('inf')
+    bestpawn=(-1,-1)
+    bestmove=(-1,-1)
+    for boy in units_to_move:
         moves=api.get_moves(boy[0],boy[1])
         for move in moves:
-            new_pawns=[other_boy for other_boy in pawns if other_boy!=boy]
+            new_pawns=[other_boy for other_boy in units_to_move if other_boy!=boy]
             new_pawns.append(move)
-            new_map=api.generate_visible(new_pawns)
+            new_map=api.get_visible(new_pawns+other_units)
             score=cl.visibility_score(new_map,1/10)
+            if score>maxscore:
+                maxscore=score
+                bestpawn=boy
+                bestmove=move
+    return bestpawn,bestmove
+
+def path(units_to_move,other_units=[]):
+    '''Essaye de chercher un chemin d'exploration optimal pour les units_to_move pour révéler
+    le maximum de la carte pour les péons. Prend en compte other_units pour la visibilité'''
+    results=[]
+    # print("Entrées : ",units_to_move)
+    for _ in range(len(units_to_move)):
+        bestpawn,bestmove=path_one(units_to_move,other_units)
+        results.append((bestpawn,bestmove))
+        other_units.append(bestpawn)
+        units_to_move=[units_to_move[i] for i in range(len(units_to_move)) if units_to_move[i] is not bestpawn]
+    #     print('Units updated : ',units_to_move)
+    # print("Résultats de path : ",results)
+    return results
+
 
 def explore(pawns, player, token):
     """ 
@@ -174,7 +195,7 @@ def nexturn(player, token):
     # farm
     # explore
     # defense/attaque
-    print(path(pawns))
+    print(path(pawns,[]))
     build.create_pawns(castles, player, token)
     build.check_build(pawns, castles, player, token)
     farm(pawns, golds, player, token)  # je farm d'abord ce que je vois

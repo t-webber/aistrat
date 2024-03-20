@@ -68,10 +68,12 @@ def get_data(player, token):
 
 
 def get_map():
+    '''Renvoie la carte du jeu en brut sous forme de tableau de dictionnaires'''
     return turn_data["map"]
 
 
 def size_map():
+    '''Renvoie la taille de la carte de jeu'''
     global map_size
     if map_size is None:
         initial_map = get_map()
@@ -171,17 +173,10 @@ def get_moves(y, x):
             moves.append((y, x+i))
     return moves
 
-def generate_visible(units):
-    '''Crée une fausse carte de la taille de la carte de jeu et lance visible(carte,units) à partir
-    des unités. Cela renvoie à partir d'une fausse carte de la taille de la carte de jeu et des pions
-    une carte avec des nombres donnant le "nombre de fois" que la case est visible'''
-    carte=get_map()
-    falsemap=np.zeros((len(carte),len(carte[0])))
-    return visible(falsemap,units)
-
-def visible(carte,units):
+def get_visible(units):
     '''Renvoie à partir d'une fausse carte de la taille de la carte de jeu et des pions
     une carte avec des nombres donnant le "nombre de fois" que la case est visible'''
+    carte=np.zeros(map_size())
     for boy in units:
         for y in [boy[0]+k for k in [-2,-1,0,1,2]]:
             for x in [boy[1]+k for k in [-2,-1,0,1,2]]:

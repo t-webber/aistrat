@@ -13,7 +13,7 @@ def visibility_score(carte,punishment):
             if square==1:
                 score+=1
             if square>1:
-                score=score-(square-1)*punishment 
+                score=score+1-(square-1)*punishment
                 #Ligne arbitraire -> Combien retirer de point par case "sur-visible"
     return score
 
