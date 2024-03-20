@@ -67,7 +67,7 @@ def path_one(units_to_move, other_units):
                 other_boy for other_boy in units_to_move if other_boy != boy]
             new_pawns.append(move)
             new_map = api.get_visible(new_pawns+other_units)
-            score = cl.visibility_score(new_map,0)
+            score = cl.visibility_score(new_map, 0)
             if score > maxscore:
                 maxscore = score
                 bestpawn = boy
@@ -174,7 +174,7 @@ def defend(pawns, defense, eknights, player, token):
         None
     """
     needing_help = [[] for i in range(50)]
-    pawns=list(set(pawns.copy()))#elimination des doublons
+    pawns = list(set(pawns.copy()))  # elimination des doublons
     for i in range(len(pawns)):
         for j in range(len(eknights)):
             (x1, y1), (x2, y2) = pawns[i], eknights[j]
@@ -219,7 +219,8 @@ def nexturn(player, token):
     # explore
     # attaque
     defend(pawns, defense, eknights, player, token)
-    build.create_pawns(castles, player, token, eknights, knights, gold)
+    build.create_pawns(castles, player, token, eknights,
+                       knights, gold, attack, defense)
     build.check_build(pawns, castles, player, token, gold)
     farm(pawns, golds, player, token)  # je farm d'abord ce que je vois
     # j'explore ensuite dans la direction opposée au spawn
