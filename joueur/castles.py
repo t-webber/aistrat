@@ -24,6 +24,7 @@ def check_build(pawns, castles, player, token, gold):
             res = api.build(api.CASTLE, y, x, player, token)
             if res:
                 pawns.remove(pawn)
+                gold -= 15
             return
 
 
@@ -39,9 +40,11 @@ def create_pawns(castles, player, token, eknight, knight, gold, attackers, defen
         if n > 0:
             if api.build(api.KNIGHT, y, x, player, token):
                 defenders.append((y, x))
+                gold -= 10
                 n -= 1
         elif gold > 30:
             if api.build(api.KNIGHT, y, x, player, token):
                 attackers.append((y, x))
+                gold -= 10
         else:
             api.build(api.PAWN, y, x, player, token)
