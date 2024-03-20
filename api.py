@@ -83,18 +83,22 @@ def size_map():
 
 
 def current_player():
+    '''Renvoie le joueur dont c'est le tour'''
     return turn_data["player"]
 
 
 def get_gold():
+    '''Renvoie l'argent qu'on possède'''
     return turn_data["gold"]
 
 
 def get_score():
+    '''Renvoie le score de la partie'''
     return turn_data["score"]
 
 
 def get_winner():
+    '''Renvoie le gagnant de la partie'''
     return turn_data["winner"]
 
 
@@ -119,6 +123,7 @@ def auto_farm(player, token) -> bool:
 
 
 def get_info(y, x):
+    '''Récupère une info particulière sur le tour'''
     return turn_data[y][x]
 
 
@@ -127,6 +132,7 @@ class Coord:
 
 
 def other(player):
+    '''Renvoie l'autre joueur par rapport à player'''
     if player == 'A':
         return 'B'
     return 'A'
