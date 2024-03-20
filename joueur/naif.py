@@ -172,7 +172,7 @@ def defend(pawns, defense, eknights, player, token):
         None
     """
     needing_help = [[] for i in range(50)]
-
+    pawns=list(set(pawns.copy()))#elimination des doublons
     for i in range(len(pawns)):
         for j in range(len(eknights)):
             (x1, y1), (x2, y2) = pawns[i], eknights[j]
@@ -198,17 +198,20 @@ def nexturn(player, token):
     knights: list[api.Coord] = kinds[api.KNIGHT]
     eknights: list[api.Coord] = kinds[api.EKNIGHT]
     # liste des chevaliers attribués à la défense
-    defense: list[api.Coord] = kinds[api.KNIGHT]
+    defense: list[api.Coord] = cl.defense_knights
+    attack: list[api.Coord] = cl.attack_knights
     golds: list[api.Coord] = kinds[api.GOLD]
     castles: list[api.Coord] = kinds[api.CASTLE]
 
     # pour moi, on appelle dans l'ordre :
+    # defense
     # fuite qui dit au peons de fuire s'ils vont se faire tuer
     # (i.e un méchant est à côté et pas de gentil assez près pour l'aider)
     # construction forteresse
     # farm
     # explore
-    # defense/attaque
+    # attaque
+    defend(pawns, defense, eknights, player, token)
     build.create_pawns(castles, player, token, eknights, knights)
     build.check_build(pawns, castles, player, token)
     farm(pawns, golds, player, token)  # je farm d'abord ce que je vois
