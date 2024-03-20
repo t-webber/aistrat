@@ -30,7 +30,7 @@ def compte_soldats_cases_adjacentes(player,case):
     eknight = 0
     for c in voisins:
         knight += carte[Y + c[0]][X + c[1]][player][api.KNIGHT]
-        eknightknight += carte[Y + c[0]][X + c[1]][player][api.EKNIGHT]
+        eknight += carte[Y + c[0]][X + c[1]][player][api.EKNIGHT]
     return (knight, eknight)
 
     
