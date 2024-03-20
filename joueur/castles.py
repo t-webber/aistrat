@@ -8,8 +8,8 @@ def distance_2_castle(y_curr, x_curr, castles):
     """ Get the distance to the nearest castle """
     d = float('inf')
     for (y, x) in castles:
-        print(f"DISTANCE TO from({x_curr}, {y_curr}) ({x}, {y})")
-        print(f" = {d} and {cl.distance(y, y_curr, x, x_curr)}")
+        # print(f"DISTANCE TO from({x_curr}, {y_curr}) ({x}, {y})")
+        # print(f" = {d} and {cl.distance(y, y_curr, x, x_curr)}")
         d = min(cl.distance(y, x, y_curr, x_curr), d)
     return d
 
@@ -17,8 +17,28 @@ def distance_2_castle(y_curr, x_curr, castles):
 def check_build(pawns, castles, player, token, gold):
     """ Add castles if none built and a pawn is enough away """
 
-    print("CHECKING BUILD on ", castles, "PLA", player)
     len_y, len_x = api.size_map()
+    good = (2, 2) if player == "A" else (len_y - 3, len_x - 3)
+
+    if len(castles) == 0:
+        d = distance_2_castle(good[0], good[1], pawns)
+        if d != 0:
+            for (y, x) in pawns:
+                if cl.distance(x, y, good[0], good[1]) == d:
+                    if player == "A":
+                        if x >= 2:
+                            api.move(api.PAWN, y, x, y+1, x, player, token)
+                        else:
+                            api.move(api.PAWN, y, x, y, x+1, player, token)
+                    else:
+                        if x <= len_x - 3:
+                            api.move(api.PAWN, y, x, y-1, x, player, token)
+                        else:
+                            api.move(api.PAWN, y, x, y, x-1, player, token)
+                pawns.remove((y, x))
+                break
+
+    print("CHECKING BUILD on ", castles, "PLA", player)
     if len(castles) >= 3:
         return
     for pawn in pawns:
