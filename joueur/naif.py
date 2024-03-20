@@ -84,7 +84,7 @@ def explore(pawns, player, token):
             i, j = rd.choice(moves_p)
             api.move(api.PAWN, y, x, i, j, player, token)
 
-def move_defense(hongroise,defense,pawns,player,token):
+def move_defense(defense,pawns,player,token):
     """
     Moves the knights according to their attributed pawn to defend.
 
@@ -98,6 +98,7 @@ def move_defense(hongroise,defense,pawns,player,token):
     Returns
         defense knight that still need to move
     """
+    hongroise= cl.hongrois_distance(defense,pawns)
     for d,p in hongroise :
         xd,yd=defense[d]
         xp,yp=pawns[p]
@@ -125,7 +126,7 @@ def move_defense(hongroise,defense,pawns,player,token):
         restant.remove(defense[p])
         return restant 
 
-def defend(pawns, defense, eknights, token):
+def defend(pawns, defense, eknights,player, token):
     """
     Defends the pawns using the defense strategy against enemy knights.
 
@@ -147,9 +148,9 @@ def defend(pawns, defense, eknights, token):
             if (d < 3):
                 needing_help[d] = (x1, y1)
 
-    left_defense= cl.hongrois_distance(defense, needing_help[0]) # on priorise les pions selon la distance à un chevalier ennemi
-    left_defense= cl.hongrois_distance(defense, needing_help[1])
-    left_defense= cl.hongrois_distance(defense, needing_help[2])
+    left_defense= move_defense(defense, needing_help[0], player,token) # on priorise les pions selon la distance à un chevalier ennemi
+    left_defense= move_defense(left_defense, needing_help[1], player, token)
+    left_defense= move_defense(left_defense, needing_help[2], player, token)
     return left_defense
 
 
