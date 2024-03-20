@@ -2,7 +2,7 @@
 import numpy as np
 import requests
 IP = "http://localhost:8080"
-TIME_OUT = 0.05
+TIME_OUT = 0.005
 PAWN = "C"
 CASTLE = "B"
 KNIGHT = "M"
@@ -21,8 +21,7 @@ def end_turn(player, token):
     try:
         requests.get(
             f"{IP}/endturn/{player}/{token}", timeout=TIME_OUT)
-    except ValueError:
-        print("Erreur move", ValueError)
+    except:
         return False
     return True
 
