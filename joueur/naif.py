@@ -233,8 +233,8 @@ def defend(pawns, defense, eknights, player, token):
     compteur = 0
     left_defense = defense.copy()
     while (left_defense != []):
-        left_defense = move_defense(
-            left_defense, needing_help[0], player, token)
+        left_defense = move_defense(left_defense, needing_help[compteur], player, token, eknights)
+        compteur+=1
 
 
 def nexturn(player, token):
@@ -275,7 +275,7 @@ def nexturn(player, token):
     print(player, "CASTLES", castles)
 
     build.create_pawns(castles, player, token,
-                       eknights, knights, gold, defense)
+                       eknights, knights, gold, cl.defense_knights)
     build.check_build(pawns, castles, player, token, gold)
     farm(pawns, golds, player, token)  # je farm d'abord ce que je vois
     # j'explore ensuite dans la direction opposée au spawn
