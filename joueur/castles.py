@@ -30,7 +30,8 @@ def check_build(pawns, castles, player, token):
 def create_pawns(castles, player, token, eknight, knight):
     """ Create pawns on every castle """
     n = abs(2 * len(eknight) - len(knight))
-    gold = api.get_gold()
+    gold = api.get_gold()[player]
+    print("GOOOOOOOOOOOLD", gold)
     for (y, x) in castles:
         if n > 0 or gold > 40:
             api.build(api.KNIGHT, y, x, player, token)
