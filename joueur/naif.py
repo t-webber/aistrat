@@ -8,6 +8,36 @@ import joueur.backbone.client_logic as cl
 import joueur.castles as build
 
 
+def fuite(pawns, knights, eknights, defense, player, token):
+    for p in pawns:
+        dir_enemies, total_enemies = cl.neighbors(p, eknights)
+        dir_allies, allies_backup = cl.neighbors(p, knights)
+        allies = 0
+        for k in knights:
+            if k[0] == p[0] and k[1] == p[1]:
+                allies += 1
+        for k in defense:
+            if k[0] == p[0] and k[1] == p[1]:
+                allies += 1
+
+        if not cl.prediction_combat(total_enemies, allies+allies_backup):
+            for dir in dir_enemies:
+                if dir_enemies[dir] == 0:
+                    api.move(api.PAWN, p[0], p[1], p[0] +
+                             dir[0], p[1]+dir[1], player, token)
+                    pawns.remove((p[0], p[1]))
+                    break
+        else:
+            while not cl.prediction_combat(total_enemies, allies) and allies_backup > 0:
+                for dir in dir_allies:
+                    if dir_allies[dir] > 0:
+                        api.move(
+                            api.KNIGHT, p[0]+dir[0], p[1]+dir[1], p[0], p[1], player, token)
+                        knights.remove((p[0]+dir[0], p[1]+dir[1]))
+                        allies_backup -= 1
+                        break
+
+
 def farm(pawns, golds, player, token):
     """ 
     farm gold when possible, else go to nearest avaible gold
@@ -245,6 +275,8 @@ def nexturn(player, token):
             knights.remove(d)
 
     defend(pawns, defense, eknights, player, token)
+    fuite(pawns, knights, eknights, defense, player, token)
+    print(player, "CASTLES", castles)
 
     build.create_pawns(castles, player, token,
                        eknights, knights, gold, defense)
