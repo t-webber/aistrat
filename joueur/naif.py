@@ -67,7 +67,7 @@ def path_one(units_to_move, other_units):
                 other_boy for other_boy in units_to_move if other_boy != boy]
             new_pawns.append(move)
             new_map = api.get_visible(new_pawns+other_units)
-            score = cl.visibility_score(new_map, 1/10)
+            score = cl.visibility_score(new_map, 1/100)
             if score > maxscore:
                 maxscore = score
                 bestpawn = boy
