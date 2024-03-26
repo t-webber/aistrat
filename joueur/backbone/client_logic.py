@@ -2,6 +2,7 @@
 
 from scipy.optimize import linear_sum_assignment
 import numpy as np
+import api
 
 defense_knights=[]
 attack_knights=[]
@@ -127,3 +128,48 @@ def neighbors(case, knights):
         if (k[0]-case[0],k[1]-case[1] in dir_case):
             dir_case[(k[0]-case[0],k[1]-case[1])] +=1
     return dir_case
+
+def trous(grille):
+    '''Cherche tous les lieux avec un éclairage extrêmement faible'''
+    sortie=[]
+    vus=np.zeros((len(grille),len(grille[0])))
+    for i,x in enumerate(grille):
+        for j,y in enumerate(x):
+            print(vus)
+            if vus[i][j]==0 and grille[i][j]==0:
+                a_chercher=[(i,j)]
+                trou=[]
+                while len(a_chercher)>0:
+                    pixel=a_chercher.pop()
+                    cases_adjacentes=api.get_moves(i,j)
+                    for case in cases_adjacentes:
+                        if grille[case[0]][case[1]]==0 and vus[i][j]==0:
+                            vus[i][j]=1
+                            a_chercher.append(case)
+                    vus[pixel[0]][pixel[1]]=1
+                    trou.append(pixel)
+                sortie.append((trou))
+    return sortie
+
+def plus_gros_trou(grille):
+    '''Cherche la plus grande surface continue mal éclairée'''
+    holes=trous(grille)
+    #print(holes)
+    taille_max=0
+    trou_max=holes[0]
+    for one_hole in holes:
+        nbr_cases_trou=len(one_hole)
+        if nbr_cases_trou>taille_max:
+            taille_max=nbr_cases_trou
+            trou_max=one_hole
+    return trou_max
+
+def milieu_trou(Trou): #Trouve le milieu d'un trou (arrondi à l'entier inférieur)
+    i=0
+    j=0
+    for k in Trou:
+        i+=k[0]
+        j+=k[1]
+    Milieu=(i//len(Trou),j//len(Trou))
+    print(Milieu)
+    return Milieu
