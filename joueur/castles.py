@@ -27,31 +27,27 @@ def check_build(pawns, castles, player, token, gold):
                         if x >= 2:
                             res = api.move(api.PAWN, y, x, y +
                                            1, x, player, token)
-                            print("MOVE X ", res)
                         else:
                             res = api.move(api.PAWN, y, x, y,
                                            x+1, player, token)
-                            print("MOVE Y ", res)
                     else:
                         if x <= len_x - 3:
                             res = api.move(api.PAWN, y, x, y -
                                            1, x, player, token)
-                            print("MOVE B X", res)
                         else:
                             res = api.move(api.PAWN, y, x, y,
                                            x-1, player, token)
-                            print("MOVE B Y", res)
                     pawns.remove((y, x))
                     break
 
-    print("CHECKING BUILD on ", castles, "PLA", player)
+    #print("CHECKING BUILD on ", castles, "PLA", player)
     if len(castles) >= min(len_y, len_x) // 2:
         return
     for pawn in pawns:
         y, x = pawn
         d = distance_2_castle(y, x, castles)
         if 2 <= x <= len_x - 3 and 2 <= y <= len_y - 3 and d >= 3:
-            print("Building caste at", y, x)
+            #print("Building caste at", y, x)
             res = api.build(api.CASTLE, y, x, player, token)
             if res:
                 pawns.remove(pawn)

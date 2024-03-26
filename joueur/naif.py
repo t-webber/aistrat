@@ -38,7 +38,7 @@ def fuite(pawns, knights, eknights, defense, player, token):
                         break
 
 
-def farm(pawns, golds, player, token, good_gold, bad_gold):
+def farm(pawns, golds, player, token, good_gold, bad_gold, eknights):
     """ 
     farm gold when possible, else go to nearest avaible gold
     """
@@ -59,24 +59,24 @@ def farm(pawns, golds, player, token, good_gold, bad_gold):
             y, x = pawns[p]
             i, j, _ = good_gold[g]
             if rd.random() > 0.5:  # pour ne pas que le peon aille toujours d'abord en haut puis à gauche
-                if x > j:
+                if x > j and cl.neighbors((y, x - 1), eknights)[1] == 0:
                     api.move(api.PAWN, y, x, y, x - 1, player, token)
-                elif x < j:
+                elif x < j and cl.neighbors((y, x + 1), eknights)[1] == 0:
                     api.move(api.PAWN, y, x, y, x + 1, player, token)
-                elif y > i:
+                elif y > i and cl.neighbors((y - 1, x), eknights)[1] == 0:
                     api.move(api.PAWN, y, x, y - 1, x, player, token)
-                elif y < i:
+                elif y < i and cl.neighbors((y + 1, x), eknights)[1] == 0:
                     api.move(api.PAWN, y, x, y + 1, x, player, token)
                 else:
                     api.farm(y, x, player, token)
             else:
-                if y > i:
+                if y > i and cl.neighbors((y - 1, x), eknights)[1] == 0:
                     api.move(api.PAWN, y, x, y - 1, x, player, token)
-                elif y < i:
+                elif y < i and cl.neighbors((y + 1, x), eknights)[1] == 0:
                     api.move(api.PAWN, y, x, y + 1, x, player, token)
-                elif x > j:
+                elif x > j and cl.neighbors((y, x - 1), eknights)[1] == 0:
                     api.move(api.PAWN, y, x, y, x - 1, player, token)
-                elif x < j:
+                elif x < j and cl.neighbors((y, x + 1), eknights)[1] == 0:
                     api.move(api.PAWN, y, x, y, x + 1, player, token)
                 else:
                     api.farm(y, x, player, token)
@@ -286,7 +286,7 @@ def nexturn(player, token):
                        eknights, knights, gold, cl.defense_knights,
                        (len(good_gold) + len(bad_gold)) * 1.5 - len(pawns) )
     build.check_build(pawns, castles, player, token, gold)
-    farm(pawns, golds, player, token, good_gold, bad_gold)  # je farm d'abord ce que je vois
+    farm(pawns, golds, player, token, good_gold, bad_gold, eknights)  # je farm d'abord ce que je vois
     # j'explore ensuite dans la direction opposée au spawn
     explore(pawns, player, token)
 
