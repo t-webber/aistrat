@@ -12,33 +12,35 @@ import joueur.backbone.attaque as atk
 def fuite(pawns, knights, eknights, defense, player, token):
     for p in pawns:
         dir_enemies, total_enemies = cl.neighbors(p, eknights)
-        dir_allies, allies_backup = cl.neighbors(p, knights)
-        allies = 0
-        for k in knights:
-            if k[0] == p[0] and k[1] == p[1]:
-                allies += 1
-        for k in defense:
-            if k[0] == p[0] and k[1] == p[1]:
-                allies += 1
-
-        if not cl.prediction_combat(allies+allies_backup, total_enemies):
-            # si on peut perd le combat même avec les alliés on fuit
-            for dir in dir_enemies:
-                if dir_enemies[dir] == 0:
-                    api.move(api.PAWN, p[0], p[1], p[0] +
-                             dir[0], p[1]+dir[1], player, token)
-                    pawns.remove((p[0], p[1]))
-                    break
-        else:
-            # on peut réussir à gagner le combat avec les alliés et on le fait venir
-            while not cl.prediction_combat(allies, total_enemies) and allies_backup > 0:
-                for dir in dir_allies:
-                    if dir_allies[dir] > 0:
-                        api.move(
-                            api.KNIGHT, p[0]+dir[0], p[1]+dir[1], p[0], p[1], player, token)
-                        knights.remove((p[0]+dir[0], p[1]+dir[1]))
-                        allies_backup -= 1
+        if total_enemies > 0 :
+            print(knights, defense)
+            dir_allies, allies_backup = cl.neighbors(p, knights)
+            allies = 0
+            for k in knights:
+                if k[0] == p[0] and k[1] == p[1]:
+                    allies += 1
+            for k in defense:
+                if k[0] == p[0] and k[1] == p[1]:
+                    allies += 1
+            print('prediction_combat', cl.prediction_combat(total_enemies, allies+allies_backup)[0], allies + allies_backup, total_enemies)
+            if cl.prediction_combat(total_enemies, allies+allies_backup)[0]:
+                # si on peut perd le combat même avec les alliés on fuit
+                for dir in dir_enemies:
+                    if dir_enemies[dir] == 0:
+                        api.move(api.PAWN, p[0], p[1], p[0] +
+                                dir[0], p[1]+dir[1], player, token)
+                        pawns.remove((p[0], p[1]))
                         break
+            else:
+                # on peut réussir à gagner le combat avec les alliés et on le fait venir
+                while not cl.prediction_combat(total_enemies, allies)[0] and allies_backup > 0:
+                    for dir in dir_allies:
+                        if dir_allies[dir] > 0:
+                            api.move(
+                                api.KNIGHT, p[0]+dir[0], p[1]+dir[1], p[0], p[1], player, token)
+                            knights.remove((p[0]+dir[0], p[1]+dir[1]))
+                            allies_backup -= 1
+                            break
 
 
 def farm(pawns, golds, player, token, good_gold, bad_gold, eknights):
@@ -324,17 +326,17 @@ def nexturn(player, token):
     for d in defense:
         if d not in knights:
             defense.remove(d)
-    #    else:
-    #        knights.remove(d)
+        else:
+            knights.remove(d)
 
     good_gold, bad_gold = cl.clean_golds(golds, pawns)
 
-    defend(pawns, defense, eknights, player, token,castles)
-    fuite(pawns, knights, eknights, defense, player, token)
-
+    defend(pawns, defense, eknights, player, token)
+    
     build.create_pawns(castles, player, token,
                        eknights, knights, gold, cl.defense_knights[player],
                        (len(good_gold) + len(bad_gold)), len(pawns), len(fog))
+    fuite(pawns, knights, eknights, defense, player, token)
 
     build.check_build(pawns, castles, player, token, gold)
     farm(pawns, golds, player, token, good_gold, bad_gold,
