@@ -258,7 +258,7 @@ def move_defense(defense, pawns, player, token, eknight):
     return defense
 
 
-def defend(pawns, defense, eknights, player, token):
+def defend(pawns, defense, eknights, player, token, castle):
     """
     Defends the pawns using the defense strategy against enemy knights.
 
@@ -272,7 +272,7 @@ def defend(pawns, defense, eknights, player, token):
         None
     """
     needing_help = [[] for i in range(50)]
-    pawns = list(set(pawns.copy()))  # elimination des doublons
+    pawns = list(set(pawns.copy()+castle))  # elimination des doublons
     for i in range(len(pawns)):
         for j in range(len(eknights)):
             (y1, x1), (y2, x2) = pawns[i], eknights[j]
@@ -329,7 +329,7 @@ def nexturn(player, token):
 
     good_gold, bad_gold = cl.clean_golds(golds, pawns)
 
-    defend(pawns, defense, eknights, player, token)
+    defend(pawns, defense, eknights, player, token,castles)
     fuite(pawns, knights, eknights, defense, player, token)
 
     build.create_pawns(castles, player, token,
