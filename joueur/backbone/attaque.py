@@ -1,6 +1,6 @@
+import random as rd
 import api
 import joueur.backbone.client_logic as cl
-import random as rd
 
 
 def prediction_combat(a, d):
@@ -95,6 +95,45 @@ def hunt(knights, epawns, eknights, player, token):
             vus.append(knights[k])
             y, x = knights[k]
             i, j = epawns[ep]
+            if abs(y - i) + abs(x - j) == 1:
+                attaque(player, (i, j), knights, eknights, token)
+            else:
+                if rd.random() > 0.5:  # pour ne pas que le chevalier aille toujours d'abord en haut puis à gauche
+                    if x > j and cl.neighbors((y, x - 1), eknights)[1] == 0:
+                        api.move(api.KNIGHT, y, x, y, x - 1, player, token)
+                    elif x < j and cl.neighbors((y, x + 1), eknights)[1] == 0:
+                        api.move(api.KNIGHT, y, x, y, x + 1, player, token)
+                    elif y > i and cl.neighbors((y - 1, x), eknights)[1] == 0:
+                        api.move(api.KNIGHT, y, x, y - 1, x, player, token)
+                    elif y < i and cl.neighbors((y + 1, x), eknights)[1] == 0:
+                        api.move(api.KNIGHT, y, x, y + 1, x, player, token)
+                else:
+                    if y > i and cl.neighbors((y - 1, x), eknights)[1] == 0:
+                        api.move(api.KNIGHT, y, x, y - 1, x, player, token)
+                    elif y < i and cl.neighbors((y + 1, x), eknights)[1] == 0:
+                        api.move(api.KNIGHT, y, x, y + 1, x, player, token)
+                    elif x > j and cl.neighbors((y, x - 1), eknights)[1] == 0:
+                        api.move(api.KNIGHT, y, x, y, x - 1, player, token)
+                    elif x < j and cl.neighbors((y, x + 1), eknights)[1] == 0:
+                        api.move(api.KNIGHT, y, x, y, x + 1, player, token)
+        for k in vus:  # j'enlève ceux que je bouge
+            knights.remove(k)
+
+
+def destroy_castle(knights, castles, eknights, player, token):
+    """ 
+    chasse les péons adverses
+    """
+    # printknights, castles)
+    if knights and castles:
+        # affecation problem
+        # choisis les mines d'or vers lesquelles vont se diriger les peons
+        # pour en minimiser le nombre total de mouvements
+        vus = []
+        for k, ep in cl.hongrois_distance(knights, castles):
+            vus.append(knights[k])
+            y, x = knights[k]
+            i, j = castles[ep]
             if abs(y - i) + abs(x - j) == 1:
                 attaque(player, (i, j), knights, eknights, token)
             else:
