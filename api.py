@@ -9,6 +9,7 @@ KNIGHT = "M"
 GOLD = 'G'
 EKNIGHT = "M2"
 EPAWN = "C2"
+FOG = "fog"
 
 PRICES = {PAWN: 10, CASTLE: 15, KNIGHT: 10}
 
@@ -31,7 +32,7 @@ def end_turn(player, token):
 def create_player():
     """ Create the player """
     dataplayer = requests.get(IP+"/getToken", timeout=TIME_OUT).json()
-    print(dataplayer)
+    ("PLAYER = ", dataplayer)
     player = dataplayer['player']
     token = dataplayer['token']
     return player, token
@@ -50,8 +51,8 @@ def move(kind, oldy, oldx, newy, newx, player, token) -> bool:
 def build(kind, y, x, player, token) -> bool:
     """ Build a kind at at (y,x) """
     try:
-        print(requests.get(
-            f"{IP}/build/{player}/{y}/{x}/{kind}/{token}", timeout=TIME_OUT).json())
+        requests.get(
+            f"{IP}/build/{player}/{y}/{x}/{kind}/{token}", timeout=TIME_OUT).json()
         return True
     except:
         return False
@@ -105,7 +106,7 @@ def get_winner():
 def farm(y, x, player, token) -> bool:
     """ Farm a peon on (y, x) """
     try:
-        print(requests.get(
+        (requests.get(
             f"{IP}/farm/{player}/{y}/{x}/{token}", timeout=TIME_OUT).json())
         return True
     except:
@@ -115,7 +116,7 @@ def farm(y, x, player, token) -> bool:
 def auto_farm(player, token) -> bool:
     """ Farm all peons """
     try:
-        print(requests.get(
+        (requests.get(
             f"{IP}/autofarm/{player}/{token}", timeout=TIME_OUT).json())
         return True
     except:
@@ -196,7 +197,8 @@ def get_visible(units):
                     carte[y][x] += 1
     return carte
 
-def add_visible(carte,unit):
+
+def add_visible(carte, unit):
     '''Ajoute la vision d'une unité à la carte'''
     for y in [unit[0]+k for k in [-2, -1, 0, 1, 2]]:
         for x in [unit[1]+k for k in [-2, -1, 0, 1, 2]]:
@@ -204,13 +206,14 @@ def add_visible(carte,unit):
                 carte[y][x] += 1
     return carte
 
+
 if __name__ == "__main__":
     current_player, current_token = create_player()
     get_data(current_player, current_token)
     R = get_map()
-    print(R[0])
+    (R[0])
     move("C", 0, 0, 1, 0, current_player, current_token)
     move("C", 0, 1, 1, 1, current_player, current_token)
     get_data(current_player, current_token)
     R = get_map()
-    print(R)
+    (R)

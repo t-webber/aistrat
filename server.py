@@ -126,7 +126,7 @@ def giveView(player, token):
 @app.route('/move/<player>/<kind>/<int:y>/<int:x>/<int:ny>/<int:nx>/<token>')
 def move(player, kind, y, x, ny, nx, token):
     global nbMoves
-    print(tokenOf, token)
+    # printtokenOf, token)
     assert (tokenOf[player] == token)
     assert (abs(x-nx)+abs(y-ny) == 1)
     assert (0 <= nx < MAP_WIDTH and 0 <= ny < MAP_HEIGHT)

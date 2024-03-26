@@ -8,6 +8,7 @@ import joueur.backbone.client_logic as cl
 import joueur.castles as build
 import joueur.backbone.attaque as atk
 
+
 def fuite(pawns, knights, eknights, defense, player, token):
     for p in pawns:
         dir_enemies, total_enemies = cl.neighbors(p, eknights)
@@ -48,8 +49,8 @@ def farm(pawns, golds, player, token, good_gold, bad_gold, eknights):
         # affecation problem
         # choisis les mines d'or vers lesquelles vont se diriger les peons
         # pour en minimiser le nombre total de mouvements
-        # print(golds)
-        # print(good_gold)
+        # # printgolds)
+        # # printgood_gold)
         gold_location = {}
         gold_location = [(item[0], item[1]) for item in good_gold]
         vus = []
@@ -84,32 +85,32 @@ def farm(pawns, golds, player, token, good_gold, bad_gold, eknights):
             pawns.remove(p)
 
 
-def path_one(units_to_move, other_units,milieu_du_trou=(0,0)):
+def path_one(units_to_move, other_units, milieu_du_trou=(0, 0)):
     '''Cherche le meilleur chemin pour une unité de units_to_move pour voir plus de la map'''
-    # print(len(units_to_move))
+    # # printlen(units_to_move))
     maxscore = -float('inf')
     bestpawn = (-1, -1)
     bestmove = (-1, -1)
     for boy in units_to_move:
-        better=0
-        stuck=0
+        better = 0
+        stuck = 0
         moves = api.get_moves(boy[0], boy[1])
         static_units = [
             other_boy for other_boy in units_to_move if other_boy != boy]+other_units
-        static_view=api.get_visible(static_units)
+        static_view = api.get_visible(static_units)
         for move in moves:
-            new_map = api.add_visible(static_view,move)
-            #print(cl.plus_gros_trou(new_map))
+            new_map = api.add_visible(static_view, move)
+            # # printcl.plus_gros_trou(new_map))
             score = cl.visibility_score(new_map)
             if abs(score-maxscore) <= 1:
-                stuck+=1
+                stuck += 1
             if score > maxscore:
                 maxscore = score
                 bestpawn = boy
                 bestmove = move
-                trou_pris=False
-                better=1
-                # # print("On résoud un conflit")
+                trou_pris = False
+                better = 1
+                # # # print"On résoud un conflit")
                 # vector1 = (move[0]-boy[0], move[1]-boy[1])
                 # vector2 = (bestmove[0]-bestpawn[0], bestmove[1]-bestpawn[1])
                 # if api.current_player() == "A":
@@ -118,62 +119,63 @@ def path_one(units_to_move, other_units,milieu_du_trou=(0,0)):
                 #     temp = api.size_map()
                 #     ideal = (-temp[0], -temp[1])
                 # if vector1[0]*ideal[0]+vector1[1]*ideal[1] > vector2[0]*ideal[0]+vector2[1]*ideal[1]:
-                #     # print("On prend le nouveau")
+                #     # # print"On prend le nouveau")
                 #     bestpawn = boy
                 #     bestmove = move
 
-        if better==1 and stuck==4:
-            print("On règle par un trou",boy)
-            vecteur_trou=np.array((milieu_du_trou[0]-boy[0],milieu_du_trou[1]-boy[1]))
-            max_trou=-1
-            bestmove_trou=(0,0)
+        if better == 1 and stuck == 4:
+            # print"On règle par un trou", boy)
+            vecteur_trou = np.array(
+                (milieu_du_trou[0]-boy[0], milieu_du_trou[1]-boy[1]))
+            max_trou = -1
+            bestmove_trou = (0, 0)
             for move in moves:
                 vector_move = np.array((move[0]-boy[0], move[1]-boy[1]))
-                if np.dot(vecteur_trou,vector_move)>max_trou:
-                    bestmove_trou=move
-            score = cl.visibility_score(api.add_visible(static_view,bestmove_trou))
+                if np.dot(vecteur_trou, vector_move) > max_trou:
+                    bestmove_trou = move
+            score = cl.visibility_score(
+                api.add_visible(static_view, bestmove_trou))
             maxscore = score
             bestpawn = boy
             bestmove = bestmove_trou
-            trou_pris=True
+            trou_pris = True
 
-
-
-    return bestpawn, bestmove,trou_pris
+    return bestpawn, bestmove, trou_pris
 
 
 def path(units_to_move, other_units=[]):
     '''Essaye de chercher un chemin d'exploration optimal pour les units_to_move pour révéler
     le maximum de la carte pour les péons. Prend en compte other_units pour la visibilité'''
     results = []
-    # print("Entrées : ",units_to_move)
-    trous=cl.trous(api.get_visible(units_to_move+other_units))
+    # # print"Entrées : ",units_to_move)
+    trous = cl.trous(api.get_visible(units_to_move+other_units))
     trous_tri = sorted(trous, key=lambda x: len(x))
-    #print(trous_tri)
-    indice_trou=0
-    milieu_du_trou=cl.milieu_trou(trous_tri[indice_trou%(len(trous))])
+    # # printtrous_tri)
+    indice_trou = 0
+    milieu_du_trou = cl.milieu_trou(trous_tri[indice_trou % (len(trous))])
     for _ in range(len(units_to_move)):
-        bestpawn, bestmove, trou_pris = path_one(units_to_move, other_units,milieu_du_trou)
+        bestpawn, bestmove, trou_pris = path_one(
+            units_to_move, other_units, milieu_du_trou)
         results.append((bestpawn, bestmove))
         other_units.append(bestpawn)
         units_to_move = [units_to_move[i] for i in range(
             len(units_to_move)) if units_to_move[i] is not bestpawn]
         if trou_pris:
-            indice_trou+=1
-            milieu_du_trou=cl.milieu_trou(trous_tri[indice_trou%len(trous_tri)])
-    #     print('Units updated : ',units_to_move)
-    # print("Résultats de path : ",results)
+            indice_trou += 1
+            milieu_du_trou = cl.milieu_trou(
+                trous_tri[indice_trou % len(trous_tri)])
+    #     # print'Units updated : ',units_to_move)
+    # # print"Résultats de path : ",results)
     return results
-
 
 
 def explore(pawns, player, token):
     """ 
     Envoie en exploration les "pawns" inactifs pour le tour
     """
-    # print("J'explore")
+    # # print"J'explore")
     moves = path(pawns)
-    # print(moves)
+    # # printmoves)
     for one_move in moves:
         api.move(api.PAWN, one_move[0][0], one_move[0][1],
                  one_move[1][0], one_move[1][1], player, token)
@@ -286,6 +288,7 @@ def nexturn(player, token):
     knights: list[api.Coord] = kinds[api.KNIGHT]
     eknights: list[api.Coord] = kinds[api.EKNIGHT]
     epawns: list[api.Coord] = kinds[api.EPAWN]
+    fog = kinds[api.FOG]
     # liste des chevaliers attribués à la défense
     defense: list[api.Coord] = cl.defense_knights
     golds: list[api.Coord] = kinds[api.GOLD]
@@ -294,6 +297,8 @@ def nexturn(player, token):
         gold = api.get_gold()[player]
     except:
         gold = 0
+
+    # print("FOOOOG", fog)
 
     # pour moi, on appelle dans l'ordre :
     # defense
@@ -313,16 +318,17 @@ def nexturn(player, token):
 
     defend(pawns, defense, eknights, player, token)
     fuite(pawns, knights, eknights, defense, player, token)
-    #print(player, "CASTLES", castles)
+    # # printplayer, "CASTLES", castles)
 
     build.create_pawns(castles, player, token,
                        eknights, knights, gold, cl.defense_knights,
-                       (len(good_gold) + len(bad_gold)) * 1.5 - len(pawns) )
+                       (len(good_gold) + len(bad_gold)), len(pawns), len(fog))
     build.check_build(pawns, castles, player, token, gold)
-    farm(pawns, golds, player, token, good_gold, bad_gold, eknights)  # je farm d'abord ce que je vois
+    farm(pawns, golds, player, token, good_gold, bad_gold,
+         eknights)  # je farm d'abord ce que je vois
     # j'explore ensuite dans la direction opposée au spawn
     explore(pawns, player, token)
-    #atk.hunt(knights, epawns, eknights, player, token)
+    # atk.hunt(knights, epawns, eknights, player, token)
 
 
 # class gold:

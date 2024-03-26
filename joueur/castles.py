@@ -38,25 +38,25 @@ def check_build(pawns, castles, player, token, gold):
                     pawns.remove((y, x))
                     break
 
-    # print("CHECKING BUILD on ", castles, "PLA", player)
+    # # print"CHECKING BUILD on ", castles, "PLA", player)
     if len(castles) >= min(len_y, len_x) // 2 or gold < api.PRICES[api.CASTLE]:
         return
     for pawn in pawns:
         y, x = pawn
         d = distance_2_castle(y, x, castles)
         if 2 <= x <= len_x - 3 and 2 <= y <= len_y - 3 and d >= 3:
-            # print("Building caste at", y, x)
+            # # print"Building caste at", y, x)
             api.build(api.CASTLE, y, x, player, token)
             pawns.remove(pawn)
             gold -= api.PRICES[api.CASTLE]
             return
 
 
-def create_pawns(castles, player, token, eknight, knight, gold, defenders, diff_len):
+def create_pawns(castles, player, token, eknight, knight, gold, defenders, nb_gold, nb_pawn, nb_fog):
     """ Create pawns on every castle """
     n = 2 * len(eknight) - len(knight)
     for (y, x) in castles:
-        # print("GOOOOOOOOOOOLD", gold)
+        # # print"GOOOOOOOOOOOLD", gold)
         if n > 0:
             if api.build(api.KNIGHT, y, x, player, token):
                 defenders.append((y, x))
@@ -65,6 +65,7 @@ def create_pawns(castles, player, token, eknight, knight, gold, defenders, diff_
         elif gold > api.PRICES[api.KNIGHT] * 2 and len(castles) >= 2:
             if api.build(api.KNIGHT, y, x, player, token):
                 gold -= api.PRICES[api.KNIGHT]
-        elif gold > api.PRICES[api.PAWN] * 2 and diff_len > 0:
+        elif gold > api.PRICES[api.PAWN] and (nb_gold + nb_fog) * 2 > nb_pawn:
             api.build(api.PAWN, y, x, player, token)
             gold -= api.PRICES[api.PAWN]
+            nb_pawn += 1
