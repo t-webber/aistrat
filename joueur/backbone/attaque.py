@@ -1,4 +1,6 @@
 import api
+import joueur.backbone.client_logic as cl
+import random as rd
 
 def prediction_combat(a, d):
     """
@@ -76,16 +78,16 @@ def hunt(knights, epawns, player, token):
     """ 
     chasse les péons adverses
     """
-
+    print(knights, epawns)
     if knights and epawns:
         # affecation problem
         # choisis les mines d'or vers lesquelles vont se diriger les peons
         # pour en minimiser le nombre total de mouvements
         vus = []
         for k, ep in cl.hongrois_distance(knights, epawns):
-            vus.append(pawns[k])
+            vus.append(knights[k])
             y, x = knights[k]
-            i, j, _ = epawns[ep]
+            i, j = epawns[ep]
             # if abs(y - i) + abs(x - j) == 1:
             #     attaque(player, (i,j), knights, token)
             if rd.random() > 0.5:  # pour ne pas que le chevalier aille toujours d'abord en haut puis à gauche
