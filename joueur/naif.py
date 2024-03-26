@@ -290,7 +290,7 @@ def nexturn(player, token):
     farm(pawns, golds, player, token, good_gold, bad_gold, eknights)  # je farm d'abord ce que je vois
     # j'explore ensuite dans la direction opposée au spawn
     explore(pawns, player, token)
-    atk.hunt(knights, epawns, eknights, player, token)
+    #atk.hunt(knights, epawns, eknights, player, token)
 
 
 # class gold:
