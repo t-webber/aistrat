@@ -38,11 +38,11 @@ def fuite(pawns, knights, eknights, defense, player, token):
                         break
 
 
-def farm(pawns, golds, player, token):
+def farm(pawns, golds, player, token, good_gold, bad_gold):
     """ 
     farm gold when possible, else go to nearest avaible gold
     """
-    good_gold, bad_gold = cl.clean_golds(golds, pawns)
+    
     # simple_gold = golds
     if good_gold and pawns:
         # affecation problem
@@ -275,14 +275,17 @@ def nexturn(player, token):
         else:
             knights.remove(d)
 
+    good_gold, bad_gold = cl.clean_golds(golds, pawns)
+
     defend(pawns, defense, eknights, player, token)
     fuite(pawns, knights, eknights, defense, player, token)
     print(player, "CASTLES", castles)
 
     build.create_pawns(castles, player, token,
-                       eknights, knights, gold, cl.defense_knights)
+                       eknights, knights, gold, cl.defense_knights,
+                       (len(good_gold) + len(bad_gold)) * 1.5 - len(pawns) )
     build.check_build(pawns, castles, player, token, gold)
-    farm(pawns, golds, player, token)  # je farm d'abord ce que je vois
+    farm(pawns, golds, player, token, good_gold, bad_gold)  # je farm d'abord ce que je vois
     # j'explore ensuite dans la direction opposée au spawn
     explore(pawns, player, token)
 
