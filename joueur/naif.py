@@ -21,7 +21,8 @@ def fuite(pawns, knights, eknights, defense, player, token):
             if k[0] == p[0] and k[1] == p[1]:
                 allies += 1
 
-        if not cl.prediction_combat(total_enemies, allies+allies_backup):
+        if not cl.prediction_combat(allies+allies_backup, total_enemies):
+            # si on peut perd le combat même avec les alliés on fuit
             for dir in dir_enemies:
                 if dir_enemies[dir] == 0:
                     api.move(api.PAWN, p[0], p[1], p[0] +
@@ -29,7 +30,8 @@ def fuite(pawns, knights, eknights, defense, player, token):
                     pawns.remove((p[0], p[1]))
                     break
         else:
-            while not cl.prediction_combat(total_enemies, allies) and allies_backup > 0:
+            # on peut réussir à gagner le combat avec les alliés et on le fait venir
+            while not cl.prediction_combat(allies, total_enemies) and allies_backup > 0:
                 for dir in dir_allies:
                     if dir_allies[dir] > 0:
                         api.move(
