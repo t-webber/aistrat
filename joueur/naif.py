@@ -149,9 +149,9 @@ def path(units_to_move, other_units=[]):
     # print("Entrées : ",units_to_move)
     trous=cl.trous(api.get_visible(units_to_move+other_units))
     trous_tri = sorted(trous, key=lambda x: len(x))
-    print(trous_tri)
+    #print(trous_tri)
     indice_trou=0
-    milieu_du_trou=cl.milieu_trou(trous_tri[indice_trou])
+    milieu_du_trou=cl.milieu_trou(trous_tri[indice_trou%(len(trous))])
     for _ in range(len(units_to_move)):
         bestpawn, bestmove, trou_pris = path_one(units_to_move, other_units,milieu_du_trou)
         results.append((bestpawn, bestmove))
