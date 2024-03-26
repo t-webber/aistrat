@@ -214,42 +214,44 @@ def move_defense(defense, pawns, player, token, eknight):
         token (str): A token representing the player
 
     Returns
-        defense knight that still need to move
+        defense knights that still need to move
     """
+    if(pawns==[]):
+        return defense
     hongroise = cl.hongrois_distance(defense, pawns)
     for d, p in hongroise:
-        xd, yd = defense[d]
-        xp, yp = pawns[p]
+        yd, xd = defense[d]
+        yp, xp = pawns[p]
         restant = defense.copy()
 
         if rd.random() > 0.5:  # pour ne pas que le defenseur aille toujours d'abord en haut puis à gauche
             if xd > xp and (yd, xd-1) not in eknight:
                 api.move(api.KNIGHT, yd, xd, yd, xd - 1, player, token)
-                cl.move_defense(yd, xd, yd, xd - 1)
+                cl.move_defender(yd,     xd, yd, xd - 1, player)
             elif xd < xp and (yd, xd+1) not in eknight:
                 api.move(api.KNIGHT, yd, xd, yd, xd + 1, player, token)
-                cl.move_defense(yd, xd, yd, xd + 1)
+                cl.move_defender(yd,     xd, yd, xd + 1, player)
             elif yd > yp and (yd-1, xd) not in eknight:
-                api.move(api.KNIGHT, yd, xd, yd, xd, player, token)
-                cl.move_defense(yd, xd, yd-1, xd)
+                api.move(api.KNIGHT, yd, xd, yd-1, xd, player, token)
+                cl.move_defender(yd,xd, yd-1, xd, player)
             elif yd < yp and (yd + 1, xd) not in eknight:
                 api.move(api.KNIGHT, yd, xd, yd + 1, xd, player, token)
-                cl.move_defense(yd, xd, yd-1, xd)
+                cl.move_defender(yd, xd, yd+1, xd, player)
         else:
             if yd > yp and (yd - 1, xd) not in eknight:
-                api.move(api.PAWN, yd, xd, yd - 1, xd, player, token)
-                cl.move_defense(yd, xd, yd-1, xd)
+                api.move(api.KNIGHT, yd, xd, yd - 1, xd, player, token)
+                cl.move_defender(yd, xd, yd-1, xd, player)
             elif yd < yp and (yd + 1, xd) not in eknight:
-                api.move(api.PAWN, yd, xd, yd + 1, xd, player, token)
-                cl.move_defense(yd, xd, yd + 1, xd)
+                api.move(api.KNIGHT, yd, xd, yd + 1, xd, player, token)
+                cl.move_defender(yd, xd, yd + 1, xd, player)
             elif xd > xp and (yd, xd - 1) not in eknight:
-                api.move(api.PAWN, yd, xd, yd, xd - 1, player, token)
-                cl.move_defense(yd, xd, yd, xd - 1)
+                api.move(api.KNIGHT, yd, xd, yd, xd - 1, player, token)
+                cl.move_defender(yd, xd, yd, xd - 1, player)
             elif xd < xp and (yd, xd + 1) not in eknight:
-                api.move(api.PAWN, yd, xd, yd, xd + 1, player, token)
-                cl.move_defense(yd, xd, yd, xd + 1)
+                api.move(api.KNIGHT, yd, xd, yd, xd + 1, player, token)
+                cl.move_defender(yd, xd, yd, xd + 1, player)
 
-        restant.remove(defense[p])
+        restant.remove(defense[d])
         return restant
 
 
@@ -270,17 +272,16 @@ def defend(pawns, defense, eknights, player, token):
     pawns = list(set(pawns.copy()))  # elimination des doublons
     for i in range(len(pawns)):
         for j in range(len(eknights)):
-            (x1, y1), (x2, y2) = pawns[i], eknights[j]
+            (y1, x1), (y2, x2) = pawns[i], eknights[j]
             d = cl.distance(x1, y1, x2, y2)
             if (d < 50):
-                needing_help[d].append((x1, y1))
+                needing_help[d].append((y1, x1))
 
     # on priorise les pions selon la distance à un chevalier ennemi
     compteur = 0
     left_defense = defense.copy()
-    while (left_defense != []):
-        left_defense = move_defense(
-            left_defense, needing_help[compteur], player, token, eknights)
+    while (left_defense != [] and compteur<50):
+        left_defense = move_defense(left_defense, needing_help[compteur], player, token, eknights)
         compteur += 1
 
 
@@ -297,7 +298,7 @@ def nexturn(player, token):
     epawns: list[api.Coord] = kinds[api.EPAWN]
     fog = kinds[api.FOG]
     # liste des chevaliers attribués à la défense
-    defense: list[api.Coord] = cl.defense_knights
+    defense: list[api.Coord] = cl.defense_knights[player]
     golds: list[api.Coord] = kinds[api.GOLD]
     castles: list[api.Coord] = kinds[api.CASTLE]
     try:
@@ -317,6 +318,7 @@ def nexturn(player, token):
     # attaque
     for d in defense:
         if d not in knights:
+            print(d)
             defense.remove(d)
         else:
             knights.remove(d)
@@ -325,11 +327,11 @@ def nexturn(player, token):
 
     defend(pawns, defense, eknights, player, token)
     fuite(pawns, knights, eknights, defense, player, token)
-    # # printplayer, "CASTLES", castles)
 
     build.create_pawns(castles, player, token,
-                       eknights, knights, gold, cl.defense_knights,
+                       eknights, knights, gold, cl.defense_knights[player],
                        (len(good_gold) + len(bad_gold)), len(pawns), len(fog))
+
     build.check_build(pawns, castles, player, token, gold)
     farm(pawns, golds, player, token, good_gold, bad_gold,
          eknights)  # je farm d'abord ce que je vois
