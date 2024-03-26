@@ -1,4 +1,6 @@
 import api
+import joueur.backbone.client_logic as cl
+import random as rd
 
 def prediction_combat(a, d):
     """
@@ -83,7 +85,7 @@ def hunt(knights, epawns, player, token):
         # pour en minimiser le nombre total de mouvements
         vus = []
         for k, ep in cl.hongrois_distance(knights, epawns):
-            vus.append(pawns[k])
+            vus.append(epawns[k])
             y, x = knights[k]
             i, j, _ = epawns[ep]
             # if abs(y - i) + abs(x - j) == 1:

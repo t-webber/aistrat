@@ -6,7 +6,7 @@ import numpy as np
 import api
 import joueur.backbone.client_logic as cl
 import joueur.castles as build
-
+import joueur.backbone.attaque as atk
 
 def fuite(pawns, knights, eknights, defense, player, token):
     for p in pawns:
@@ -253,6 +253,7 @@ def nexturn(player, token):
     pawns: list[api.Coord] = kinds[api.PAWN]
     knights: list[api.Coord] = kinds[api.KNIGHT]
     eknights: list[api.Coord] = kinds[api.EKNIGHT]
+    epawns: list[api.Coord] = kinds[api.EPAWN]
     # liste des chevaliers attribués à la défense
     defense: list[api.Coord] = cl.defense_knights
     golds: list[api.Coord] = kinds[api.GOLD]
@@ -289,6 +290,7 @@ def nexturn(player, token):
     farm(pawns, golds, player, token, good_gold, bad_gold, eknights)  # je farm d'abord ce que je vois
     # j'explore ensuite dans la direction opposée au spawn
     explore(pawns, player, token)
+    atk.hunt(knights, epawns, player, token)
 
 
 # class gold:
