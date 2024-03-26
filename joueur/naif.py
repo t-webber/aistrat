@@ -88,7 +88,7 @@ def farm(pawns, golds, player, token, good_gold, bad_gold, eknights):
 def path_one(units_to_move, other_units, eknights):
     '''Cherche le meilleur chemin pour une unité de units_to_move pour voir plus de la map'''
     # # printlen(units_to_move))
-    maxscore = -float('inf')
+    maxscore = api.get_visible(units_to_move+other_units)
     bestpawn = (-1, -1)
     bestmove = (-1, -1)
     for boy in units_to_move:
