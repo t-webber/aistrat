@@ -216,21 +216,21 @@ def move_defense(defense, pawns, player, token, eknight):
     Returns
         defense knights that still need to move
     """
-    if(pawns==[]):
+    if(pawns==[] ):
         return defense
     hongroise = cl.hongrois_distance(defense, pawns)
+    utilise=[]
     for d, p in hongroise:
         yd, xd = defense[d]
         yp, xp = pawns[p]
-        restant = defense.copy()
-
+        utilise.append(defense[d])
         if rd.random() > 0.5:  # pour ne pas que le defenseur aille toujours d'abord en haut puis à gauche
             if xd > xp and (yd, xd-1) not in eknight:
                 api.move(api.KNIGHT, yd, xd, yd, xd - 1, player, token)
-                cl.move_defender(yd,     xd, yd, xd - 1, player)
+                cl.move_defender(yd, xd, yd, xd - 1, player)
             elif xd < xp and (yd, xd+1) not in eknight:
                 api.move(api.KNIGHT, yd, xd, yd, xd + 1, player, token)
-                cl.move_defender(yd,     xd, yd, xd + 1, player)
+                cl.move_defender(yd, xd, yd, xd + 1, player)
             elif yd > yp and (yd-1, xd) not in eknight:
                 api.move(api.KNIGHT, yd, xd, yd-1, xd, player, token)
                 cl.move_defender(yd,xd, yd-1, xd, player)
@@ -251,8 +251,9 @@ def move_defense(defense, pawns, player, token, eknight):
                 api.move(api.KNIGHT, yd, xd, yd, xd + 1, player, token)
                 cl.move_defender(yd, xd, yd, xd + 1, player)
 
-        restant.remove(defense[d])
-        return restant
+    for d in utilise:
+        defense.remove(d)
+    return defense
 
 
 def defend(pawns, defense, eknights, player, token):
@@ -280,7 +281,8 @@ def defend(pawns, defense, eknights, player, token):
     # on priorise les pions selon la distance à un chevalier ennemi
     compteur = 0
     left_defense = defense.copy()
-    while (left_defense != [] and compteur<50):
+    while (bool(left_defense) and compteur<50):
+        rd.shuffle(needing_help[compteur])
         left_defense = move_defense(left_defense, needing_help[compteur], player, token, eknights)
         compteur += 1
 
@@ -290,7 +292,7 @@ def nexturn(player, token):
     run next turn for the current player 
         - build a castle
         - farm coins
-    """
+    """   
     kinds = api.get_kinds(player)
     pawns: list[api.Coord] = kinds[api.PAWN]
     knights: list[api.Coord] = kinds[api.KNIGHT]
@@ -318,7 +320,6 @@ def nexturn(player, token):
     # attaque
     for d in defense:
         if d not in knights:
-            print(d)
             defense.remove(d)
         else:
             knights.remove(d)
