@@ -164,13 +164,25 @@ def plus_gros_trou(grille):
             trou_max=one_hole
     return trou_max
 
-def milieu_trou(Trou):
+def milieu_trou(trou):
     '''Trouve le milieu d'un trou (arrondi à l'entier inférieur)'''
     i=0
     j=0
-    for k in Trou:
+    for k in trou:
         i+=k[0]
         j+=k[1]
-    milieu=(i//len(Trou),j//len(Trou))
+    milieu=(i//len(trou),j//len(trou))
     print(milieu)
     return milieu
+
+def plus_proche_trou(list_trous,unit):
+    '''Trouve le trou le plus proche de l'unité'''
+    best=(0,0)
+    best_dist=float('inf')
+    for trou in list_trous:
+        milieu=milieu_trou(trou)
+        distance_trou=distance(milieu[0],milieu[1],unit[0],unit[1])
+        if distance_trou<best_dist:
+            best=milieu
+            best_dist=distance_trou
+    return best
