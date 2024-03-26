@@ -86,7 +86,9 @@ def hunt(knights, epawns, player, token):
             vus.append(pawns[k])
             y, x = knights[k]
             i, j, _ = epawns[ep]
-            if rd.random() > 0.5:  # pour ne pas que le peon aille toujours d'abord en haut puis à gauche
+            # if abs(y - i) + abs(x - j) == 1:
+            #     attaque(player, (i,j), knights, token)
+            if rd.random() > 0.5:  # pour ne pas que le chevalier aille toujours d'abord en haut puis à gauche
                 if x > j:
                     api.move(api.KNIGHT, y, x, y, x - 1, player, token)
                 elif x < j:
@@ -105,4 +107,4 @@ def hunt(knights, epawns, player, token):
                 elif x < j:
                     api.move(api.KNIGHT, y, x, y, x + 1, player, token)
         for k in vus:  # j'enlève ceux que je bouge
-            knights.remove(p)
+            knights.remove(k)
