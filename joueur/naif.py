@@ -92,7 +92,6 @@ def path_one(units_to_move, other_units, eknights):
     bestpawn = (-1, -1)
     bestmove = (-1, -1)
     for boy in units_to_move:
-        stuck = 0
         moves = api.get_moves(boy[0], boy[1])
         static_units = [
             other_boy for other_boy in units_to_move if other_boy != boy]+other_units
@@ -101,9 +100,6 @@ def path_one(units_to_move, other_units, eknights):
             new_map = api.add_visible(static_view, move)
             # # printcl.plus_gros_trou(new_map))
             score = cl.visibility_score(new_map)
-            if abs(score-maxscore) <= 1:
-                stuck += 1
-                continue
             if score > maxscore and cl.neighbors(move, eknights)[1] == 0:
                 maxscore = score
                 bestpawn = boy
@@ -136,7 +132,7 @@ def path_trou(units_to_move, other_units, eknights):
     visibility = api.get_visible(everybody)
     trous_list = cl.trous(visibility)
     for boy in units_to_move:
-        print("On règle par un trou", boy)
+        #print("On règle par un trou", boy)
         milieu_du_trou = cl.plus_proche_trou(trous_list, boy)
         moves = api.get_moves(boy[0], boy[1])
         vecteur_trou = np.array(
@@ -176,12 +172,12 @@ def path(units_to_move, other_units, eknights):
     return results
 
 
-def explore(pawns, player, token, eknights):
+def explore(pawns, other_units, player, token, eknights):
     """ 
     Envoie en exploration les "pawns" inactifs pour le tour
     """
     # print("J'explore")
-    moves = path(pawns, [], eknights)
+    moves = path(pawns, other_units, eknights)
     # print(moves)
     for one_move in moves:
         api.move(api.PAWN, one_move[0][0], one_move[0][1],
@@ -336,7 +332,7 @@ def nexturn(player, token):
     farm(pawns, golds, player, token, good_gold, bad_gold,
          eknights)  # je farm d'abord ce que je vois
     # j'explore ensuite dans la direction opposée au spawn
-    explore(pawns, player, token, eknights)
+    explore(pawns, knights+castles, player, token, eknights)
     atk.hunt(knights, epawns, eknights, player, token)
 
 
