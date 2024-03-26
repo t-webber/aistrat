@@ -77,8 +77,9 @@ def create_pawns(castles, player, token, eknight, knight, gold, defenders, nb_go
     for (y, x) in castles:
         # We are under the attack ! Create some defenders !
         if n > 0:
-            if gold > api.PRICES[api.KNIGHT]:
+            if gold > api.PRICES[api.KNIGHT]*2:
                 api.build(api.KNIGHT, y, x, player, token)
+                gold-=api.PRICES[api.KNIGHT]
                 defenders.append((y, x))
                 api.PRICES[api.KNIGHT] -= 1
                 n -= 1
