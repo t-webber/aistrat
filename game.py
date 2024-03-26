@@ -25,10 +25,6 @@ def main():
 
 
 if __name__ == "__main__":
-    t = time.time()
     while True:
         main()
-        if time.time() - t > 15:
-            print("! TIMEOUT !")
-            break
         # time.sleep(0.5)
