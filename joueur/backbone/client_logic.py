@@ -54,7 +54,7 @@ def hongrois_distance(acteurs, objets):
     return algo_hongrois(matrice_cost)
 
 
-def clean_golds(golds):
+def clean_golds(golds,pawns):
     """
     Gives the priority to the big piles near other small piles, and sends only one pawn.
 
@@ -70,7 +70,7 @@ def clean_golds(golds):
         pile = golds[num]
         if pile[2] <= threshold_bad and to_be_removed[num] == 0:
             for i in range(len(golds)):
-                if i != num and to_be_removed[i]==0 and distance(pile[0], pile[1], golds[i][0], golds[i][1]) <= distance_overlook:
+                if i != num and ((pile[0],pile[1]) not in pawns) and to_be_removed[i]==0 and distance(pile[0], pile[1], golds[i][0], golds[i][1]) <= distance_overlook:
                     to_be_removed[num] = 1
                     break
     gold_clean = []
@@ -124,6 +124,6 @@ def neighbors(case, knights):
     """
     dir_case = {(0,1):0,(1,0):0,(0,-1):0,(-1,0):0}
     for k in knights:
-        if (k[0]-case[0],k[1]-case[1] in dir_case):
+        if (k[0]-case[0],k[1]-case[1]) in dir_case:
             dir_case[(k[0]-case[0],k[1]-case[1])] +=1
-    return dir_case
+    return dir_case, sum(dir_case.values())

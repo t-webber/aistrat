@@ -13,3 +13,12 @@
 - (Tom + Nicolas) Création de l'API, et premiers tests randomisés
 - (Jules + Martin) Jouent aux jeux pour tester
 - (Pierre) Recherches
+
+
+## 13/03
+
+- Tom: Réunion pour discuter du planning + Amélioration du planning + Début construction random des chateaux
+
+## 20/03
+
+- Tom: Construction d'un premier chateau en case (2, 2) dès le début (prise de contrôle d'un péon) + Espacement entre chateaux + Créations de chevaliers
