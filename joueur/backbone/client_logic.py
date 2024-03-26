@@ -19,7 +19,7 @@ def move_defender (y,x,ny,nx,player):
             defense_knights[player][i]=(ny,nx)
             return
             
-def visibility_score(carte,punishment):
+def visibility_score(carte,punishment=0):
     '''Permet de donner un score à une carte de visibilité
     Punishment représente le nombre de points retirés par sur-visibilité qu'on préfèrera sûrement garder à 0
     (on le veut pas trop grand pour favoriser l'exploration)'''
