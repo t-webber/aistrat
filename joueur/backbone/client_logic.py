@@ -164,12 +164,13 @@ def plus_gros_trou(grille):
             trou_max=one_hole
     return trou_max
 
-def milieu_trou(Trou): #Trouve le milieu d'un trou (arrondi à l'entier inférieur)
+def milieu_trou(Trou):
+    '''Trouve le milieu d'un trou (arrondi à l'entier inférieur)'''
     i=0
     j=0
     for k in Trou:
         i+=k[0]
         j+=k[1]
-    Milieu=(i//len(Trou),j//len(Trou))
-    print(Milieu)
-    return Milieu
+    milieu=(i//len(Trou),j//len(Trou))
+    print(milieu)
+    return milieu
