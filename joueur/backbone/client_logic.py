@@ -4,7 +4,7 @@ from scipy.optimize import linear_sum_assignment
 import numpy as np
 import api
 
-defense_knights=[]
+defense_knights={"A":[],"B":[]}
 attack_knights=[]
 
 def move_attack(x,y,nx,ny):
@@ -12,10 +12,11 @@ def move_attack(x,y,nx,ny):
         if knight==(x,y):
             knight=(nx,ny)
 
-def move_defense (x,y,nx,ny):
-    for knight in defense_knights:
-        if knight==(x,y):
-            knight=(nx,ny)
+def move_defender (y,x,ny,nx,player):
+    for i in range(len(defense_knights[player])):
+        if defense_knights[player][i]==(y,x):
+            defense_knights[player][i]=(ny,nx)
+            return
             
 def visibility_score(carte,punishment):
     '''Permet de donner un score à une carte de visibilité

@@ -61,7 +61,8 @@ def create_pawns(castles, player, token, eknight, knight, gold, defenders, diff_
     for (y, x) in castles:
         # print("GOOOOOOOOOOOLD", gold)
         if n > 0:
-            if api.build(api.KNIGHT, y, x, player, token):
+            if gold > api.PRICES[api.KNIGHT]:
+                api.build(api.KNIGHT, y, x, player, token)
                 defenders.append((y, x))
                 api.PRICES[api.KNIGHT] -= 1
                 n -= 1
