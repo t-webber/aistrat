@@ -52,18 +52,19 @@ def move_everyone(player, token, case, allies_voisins, knights):
     """
     Y,X=case
     for i in allies_voisins:
-        for j in range (0, allies_voisins[i]):
-            api.move(api.KNIGHT, Y + allies_voisins[i][0], X + allies_voisins[i][1], Y, X, player, token)
-            knights.remove((Y + allies_voisins[i][0], X + allies_voisins[i][1]))
+        y,x=i
+        for j in range (allies_voisins[i]):
+            api.move(api.KNIGHT, Y + y, X + x, Y, X, player, token)
+            knights.remove((Y + y, X + x))
     
 
 def attaque(player, case_attaquee, knights, eknights, token):
-    carte=api.get_map
+    carte=api.get_map()
     Y,X=case_attaquee
     attaquants = cl.neighbors(case_attaquee, knights)[1]
-    # attaquants = sum(allies_voisins[i] for i in allies_voisins)
-    defenseurs_voisins = neighbors(case_attaquee, eknights):
-    defenseurs = carte[Y][X][player][api.EKNIGHT]
+    allies_voisins = cl.neighbors(case_attaquee, knights)[0]
+    defenseurs_voisins = cl.neighbors(case_attaquee, eknights)[1]
+    defenseurs = carte[Y][X][api.other(player)][api.KNIGHT]
     b1,b2,pertes_attaque,pertes_defense = prediction_combat(attaquants,defenseurs)
     if b1 and b2:
         attaquants -= pertes_attaque
@@ -78,7 +79,7 @@ def hunt(knights, epawns, eknights, player, token):
     """ 
     chasse les péons adverses
     """
-    print(knights, epawns)
+    #print(knights, epawns)
     if knights and epawns:
         # affecation problem
         # choisis les mines d'or vers lesquelles vont se diriger les peons
