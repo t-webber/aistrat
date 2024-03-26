@@ -64,7 +64,6 @@ def attaque(player, case_attaquee, knights, eknights, token):
     attaquants = cl.neighbors(case_attaquee, knights)[1]
     allies_voisins = cl.neighbors(case_attaquee, knights)[0]
     defenseurs_voisins = cl.neighbors(case_attaquee, eknights)[1]
-    print(carte[Y][X])
     defenseurs = carte[Y][X][api.other(player)][api.KNIGHT]
     b1,b2,pertes_attaque,pertes_defense = prediction_combat(attaquants,defenseurs)
     if b1 and b2:

@@ -17,9 +17,9 @@ def move_defense (x,y,nx,ny):
         if knight==(x,y):
             knight=(nx,ny)
             
-def visibility_score(carte,punishment):
+def visibility_score(carte,punishment=0):
     '''Permet de donner un score à une carte de visibilité
-    Punishment représente le nombre de points retirés par sur-visibilité
+    Punishment représente le nombre de points retirés par sur-visibilité qu'on préfèrera sûrement garder à 0
     (on le veut pas trop grand pour favoriser l'exploration)'''
     score=0
     for row in carte:
@@ -135,7 +135,7 @@ def trous(grille):
     vus=np.zeros((len(grille),len(grille[0])))
     for i,x in enumerate(grille):
         for j,y in enumerate(x):
-            print(vus)
+            #print(vus)
             if vus[i][j]==0 and grille[i][j]==0:
                 a_chercher=[(i,j)]
                 trou=[]
