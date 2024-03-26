@@ -196,6 +196,13 @@ def get_visible(units):
                     carte[y][x] += 1
     return carte
 
+def add_visible(carte,unit):
+    '''Ajoute la vision d'une unité à la carte'''
+    for y in [unit[0]+k for k in [-2, -1, 0, 1, 2]]:
+        for x in [unit[1]+k for k in [-2, -1, 0, 1, 2]]:
+            if (0 <= (y) < len(carte)) and (0 <= (x) < len(carte[0])):
+                carte[y][x] += 1
+    return carte
 
 if __name__ == "__main__":
     current_player, current_token = create_player()
