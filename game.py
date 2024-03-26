@@ -1,7 +1,6 @@
 """ main client program to launch """
 
 import api
-# from joueur import rand
 from joueur import naif as p
 import time
 
@@ -14,7 +13,11 @@ def main():
     function to get the player who need to play, plays its turn and ends it
     """
 
-    api.get_data(player1, token1)
+    t = time.time()
+    while not api.get_data(player1, token1):
+        if time.time() - t > 10:
+            print("!!! TIMEOUT !!!")
+            exit(1)
     if api.current_player() == player1:
         p.nexturn(player1, token1)
         api.end_turn(player1, token1)
