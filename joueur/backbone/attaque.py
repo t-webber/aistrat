@@ -99,22 +99,22 @@ def hunt(knights, epawns, eknights, player, token):
                 attaque(player, (i, j), knights, eknights, token)
             else:
                 if rd.random() > 0.5:  # pour ne pas que le chevalier aille toujours d'abord en haut puis à gauche
-                    if x > j:
+                    if x > j and cl.neighbors((y, x - 1), eknights)[1] == 0:
                         api.move(api.KNIGHT, y, x, y, x - 1, player, token)
-                    elif x < j:
+                    elif x < j and cl.neighbors((y, x + 1), eknights)[1] == 0:
                         api.move(api.KNIGHT, y, x, y, x + 1, player, token)
-                    elif y > i:
+                    elif y > i and cl.neighbors((y - 1, x), eknights)[1] == 0:
                         api.move(api.KNIGHT, y, x, y - 1, x, player, token)
-                    elif y < i:
+                    elif y < i and cl.neighbors((y + 1, x), eknights)[1] == 0:
                         api.move(api.KNIGHT, y, x, y + 1, x, player, token)
                 else:
-                    if y > i:
+                    if y > i and cl.neighbors((y - 1, x), eknights)[1] == 0:
                         api.move(api.KNIGHT, y, x, y - 1, x, player, token)
-                    elif y < i:
+                    elif y < i and cl.neighbors((y + 1, x), eknights)[1] == 0:
                         api.move(api.KNIGHT, y, x, y + 1, x, player, token)
-                    elif x > j:
+                    elif x > j and cl.neighbors((y, x - 1), eknights)[1] == 0:
                         api.move(api.KNIGHT, y, x, y, x - 1, player, token)
-                    elif x < j:
+                    elif x < j and cl.neighbors((y, x + 1), eknights)[1] == 0:
                         api.move(api.KNIGHT, y, x, y, x + 1, player, token)
         for k in vus:  # j'enlève ceux que je bouge
             knights.remove(k)
