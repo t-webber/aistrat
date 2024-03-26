@@ -21,7 +21,8 @@ def fuite(pawns, knights, eknights, defense, player, token):
             if k[0] == p[0] and k[1] == p[1]:
                 allies += 1
 
-        if not cl.prediction_combat(total_enemies, allies+allies_backup):
+        if not cl.prediction_combat(allies+allies_backup, total_enemies):
+            # si on peut perd le combat même avec les alliés on fuit
             for dir in dir_enemies:
                 if dir_enemies[dir] == 0:
                     api.move(api.PAWN, p[0], p[1], p[0] +
@@ -29,7 +30,8 @@ def fuite(pawns, knights, eknights, defense, player, token):
                     pawns.remove((p[0], p[1]))
                     break
         else:
-            while not cl.prediction_combat(total_enemies, allies) and allies_backup > 0:
+            # on peut réussir à gagner le combat avec les alliés et on le fait venir
+            while not cl.prediction_combat(allies, total_enemies) and allies_backup > 0:
                 for dir in dir_allies:
                     if dir_allies[dir] > 0:
                         api.move(
@@ -303,6 +305,7 @@ def nexturn(player, token):
     defense: list[api.Coord] = cl.defense_knights[player]
     golds: list[api.Coord] = kinds[api.GOLD]
     castles: list[api.Coord] = kinds[api.CASTLE]
+    ecastles: list[api.Coord] = kinds[api.ECASTLE]
     try:
         gold = api.get_gold()[player]
     except:
@@ -321,8 +324,8 @@ def nexturn(player, token):
     for d in defense:
         if d not in knights:
             defense.remove(d)
-        else:
-            knights.remove(d)
+    #    else:
+    #        knights.remove(d)
 
     good_gold, bad_gold = cl.clean_golds(golds, pawns)
 
@@ -339,7 +342,7 @@ def nexturn(player, token):
     # j'explore ensuite dans la direction opposée au spawn
     explore(pawns, player, token, eknights)
     atk.hunt(knights, epawns, eknights, player, token)
-
+    atk.destroy_castle(knights, ecastles, eknights, player, token)
 
 # class gold:
 

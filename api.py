@@ -10,6 +10,7 @@ GOLD = 'G'
 EKNIGHT = "M2"
 EPAWN = "C2"
 FOG = "fog"
+ECASTLE = "B2"
 
 PRICES = {PAWN: 10, CASTLE: 15, KNIGHT: 10}
 
@@ -142,7 +143,7 @@ def other(player):
 def get_kinds(player) -> dict[str, list[Coord]]:
     """ returns the list of the coordinates of all the present units on the map """
     result = {PAWN: [], CASTLE: [], KNIGHT: [],
-              GOLD: [], 'fog': [], EKNIGHT: [], EPAWN: []}
+              GOLD: [], 'fog': [], EKNIGHT: [], EPAWN: [], ECASTLE: []}
     carte = get_map()
     for (y, line) in enumerate(carte):
         for (x, col) in enumerate(line):
@@ -169,6 +170,9 @@ def get_kinds(player) -> dict[str, list[Coord]]:
                     for _ in range(d2[PAWN]):
                         result[EPAWN].append((y, x))
 
+                if d2[CASTLE]:
+                    for _ in range(d2[CASTLE]):
+                        result[ECASTLE].append((y, x))
                 g = carte[y][x][GOLD]
                 if g:
                     result[GOLD].append((y, x, g))

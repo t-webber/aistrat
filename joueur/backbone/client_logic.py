@@ -179,13 +179,16 @@ def milieu_trou(trou):
         i += k[0]
         j += k[1]
     milieu = (i//len(trou), j//len(trou))
-    print(milieu)
+    #print(milieu)
     return milieu
 
 
 def plus_proche_trou(list_trous, unit):
     '''Trouve le trou le plus proche de l'unité'''
-    best = (0, 0)
+    joueur=api.current_player()
+    if joueur=='A':
+        best=api.map_size
+    else: best=(0,0)
     best_dist = float('inf')
     for trou in list_trous:
         milieu = milieu_trou(trou)
