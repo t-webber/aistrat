@@ -2,7 +2,7 @@ import api
 
 def prediction_combat(a, d):
     """
-    Predicts the winner of a combat
+    Predicts the winner of a fight
 
     Parameters:
         a (int): Force of attacker.
@@ -33,6 +33,9 @@ def neighbors(case, knights):
     return dir_case
 
 def compte_soldats_ennemis_cases_adjacentes(player,case):
+    """
+    compte les soldats ennemis à une distance de 1 d'une case
+    """
     Y,X=case
     carte=api.get_map()
     voisins = api.get_moves(Y,X)
@@ -42,6 +45,9 @@ def compte_soldats_ennemis_cases_adjacentes(player,case):
     return eknight
 
 def move_everyone(player, token, case, allies_voisins, knights):
+    """
+    Bouge tous les attaquants sur la case ciblée
+    """
     Y,X=case
     for i in allies_voisins:
         for j in range (0, allies_voisins[i]):
