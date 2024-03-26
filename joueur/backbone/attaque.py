@@ -88,25 +88,26 @@ def hunt(knights, epawns, player, token):
             vus.append(knights[k])
             y, x = knights[k]
             i, j = epawns[ep]
-            # if abs(y - i) + abs(x - j) == 1:
-            #     attaque(player, (i,j), knights, token)
-            if rd.random() > 0.5:  # pour ne pas que le chevalier aille toujours d'abord en haut puis à gauche
-                if x > j:
-                    api.move(api.KNIGHT, y, x, y, x - 1, player, token)
-                elif x < j:
-                    api.move(api.KNIGHT, y, x, y, x + 1, player, token)
-                elif y > i:
-                    api.move(api.KNIGHT, y, x, y - 1, x, player, token)
-                elif y < i:
-                    api.move(api.KNIGHT, y, x, y + 1, x, player, token)
-            else:
-                if y > i:
-                    api.move(api.KNIGHT, y, x, y - 1, x, player, token)
-                elif y < i:
-                    api.move(api.KNIGHT, y, x, y + 1, x, player, token)
-                elif x > j:
-                    api.move(api.KNIGHT, y, x, y, x - 1, player, token)
-                elif x < j:
-                    api.move(api.KNIGHT, y, x, y, x + 1, player, token)
+            if abs(y - i) + abs(x - j) == 1:
+                attaque(player, (i,j), knights, token)
+            else :
+                if rd.random() > 0.5:  # pour ne pas que le chevalier aille toujours d'abord en haut puis à gauche
+                    if x > j:
+                        api.move(api.KNIGHT, y, x, y, x - 1, player, token)
+                    elif x < j:
+                        api.move(api.KNIGHT, y, x, y, x + 1, player, token)
+                    elif y > i:
+                        api.move(api.KNIGHT, y, x, y - 1, x, player, token)
+                    elif y < i:
+                        api.move(api.KNIGHT, y, x, y + 1, x, player, token)
+                else:
+                    if y > i:
+                        api.move(api.KNIGHT, y, x, y - 1, x, player, token)
+                    elif y < i:
+                        api.move(api.KNIGHT, y, x, y + 1, x, player, token)
+                    elif x > j:
+                        api.move(api.KNIGHT, y, x, y, x - 1, player, token)
+                    elif x < j:
+                        api.move(api.KNIGHT, y, x, y, x + 1, player, token)
         for k in vus:  # j'enlève ceux que je bouge
             knights.remove(k)
