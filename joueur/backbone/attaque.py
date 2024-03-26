@@ -69,3 +69,40 @@ def attaque(player, case_attaquee, knights, token):
         b1,b2,pertes_attaque2,pertes_defense2 = prediction_combat(attaquants,defenseurs)
         if (pertes_attaque + pertes_attaque2) > (pertes_defense + pertes_defense2):
             move_everyone(player, token, case_attaquee, allies_voisins, knights)
+
+
+
+def hunt(knights, epawns, player, token):
+    """ 
+    chasse les péons adverses
+    """
+
+    if knights and epawns:
+        # affecation problem
+        # choisis les mines d'or vers lesquelles vont se diriger les peons
+        # pour en minimiser le nombre total de mouvements
+        vus = []
+        for k, ep in cl.hongrois_distance(knights, epawns):
+            vus.append(pawns[k])
+            y, x = knights[k]
+            i, j, _ = epawns[ep]
+            if rd.random() > 0.5:  # pour ne pas que le peon aille toujours d'abord en haut puis à gauche
+                if x > j:
+                    api.move(api.KNIGHT, y, x, y, x - 1, player, token)
+                elif x < j:
+                    api.move(api.KNIGHT, y, x, y, x + 1, player, token)
+                elif y > i:
+                    api.move(api.KNIGHT, y, x, y - 1, x, player, token)
+                elif y < i:
+                    api.move(api.KNIGHT, y, x, y + 1, x, player, token)
+            else:
+                if y > i:
+                    api.move(api.KNIGHT, y, x, y - 1, x, player, token)
+                elif y < i:
+                    api.move(api.KNIGHT, y, x, y + 1, x, player, token)
+                elif x > j:
+                    api.move(api.KNIGHT, y, x, y, x - 1, player, token)
+                elif x < j:
+                    api.move(api.KNIGHT, y, x, y, x + 1, player, token)
+        for k in vus:  # j'enlève ceux que je bouge
+            knights.remove(p)
