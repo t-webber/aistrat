@@ -13,7 +13,7 @@ def fuite(pawns, knights, eknights, defense, player, token):
     for p in pawns:
         dir_enemies, total_enemies = cl.neighbors(p, eknights)
         if total_enemies > 0 :
-            print(knights, defense)
+            #print(knights, defense)
             dir_allies, allies_backup = cl.neighbors(p, knights)
             allies = 0
             for k in knights:
@@ -22,7 +22,7 @@ def fuite(pawns, knights, eknights, defense, player, token):
             for k in defense:
                 if k[0] == p[0] and k[1] == p[1]:
                     allies += 1
-            print('prediction_combat', cl.prediction_combat(total_enemies, allies+allies_backup)[0], allies + allies_backup, total_enemies)
+            #print('prediction_combat', cl.prediction_combat(total_enemies, allies+allies_backup)[0], allies + allies_backup, total_enemies)
             if cl.prediction_combat(total_enemies, allies+allies_backup)[0]:
                 # si on peut perd le combat même avec les alliés on fuit
                 for dir in dir_enemies:
