@@ -1,6 +1,6 @@
+import random as rd
 import api
 import joueur.backbone.client_logic as cl
-import random as rd
 
 
 def prediction_combat(a, d):
