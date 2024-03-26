@@ -8,8 +8,6 @@ def distance_2_castle(y_curr, x_curr, castles):
     """ Get the distance to the nearest castle """
     d = float('inf')
     for (y, x) in castles:
-        # print(f"DISTANCE TO from({x_curr}, {y_curr}) ({x}, {y})")
-        # print(f" = {d} and {cl.distance(y, y_curr, x, x_curr)}")
         d = min(cl.distance(y, x, y_curr, x_curr), d)
     return d
 
@@ -25,33 +23,32 @@ def check_build(pawns, castles, player, token, gold):
                 if cl.distance(y, x, good[0], good[1]) == d:
                     if player == "A":
                         if x >= 2:
-                            res = api.move(api.PAWN, y, x, y +
-                                           1, x, player, token)
+                            api.move(api.PAWN, y, x, y +
+                                     1, x, player, token)
                         else:
-                            res = api.move(api.PAWN, y, x, y,
-                                           x+1, player, token)
+                            api.move(api.PAWN, y, x, y,
+                                     x+1, player, token)
                     else:
                         if x <= len_x - 3:
-                            res = api.move(api.PAWN, y, x, y -
-                                           1, x, player, token)
+                            api.move(api.PAWN, y, x, y -
+                                     1, x, player, token)
                         else:
-                            res = api.move(api.PAWN, y, x, y,
-                                           x-1, player, token)
+                            api.move(api.PAWN, y, x, y,
+                                     x-1, player, token)
                     pawns.remove((y, x))
                     break
 
-    #print("CHECKING BUILD on ", castles, "PLA", player)
-    if len(castles) >= min(len_y, len_x) // 2:
+    # print("CHECKING BUILD on ", castles, "PLA", player)
+    if len(castles) >= min(len_y, len_x) // 2 or gold < api.PRICES[api.CASTLE]:
         return
     for pawn in pawns:
         y, x = pawn
         d = distance_2_castle(y, x, castles)
         if 2 <= x <= len_x - 3 and 2 <= y <= len_y - 3 and d >= 3:
-            #print("Building caste at", y, x)
-            res = api.build(api.CASTLE, y, x, player, token)
-            if res:
-                pawns.remove(pawn)
-                gold -= api.PRICES[api.CASTLE]
+            # print("Building caste at", y, x)
+            api.build(api.CASTLE, y, x, player, token)
+            pawns.remove(pawn)
+            gold -= api.PRICES[api.CASTLE]
             return
 
 
