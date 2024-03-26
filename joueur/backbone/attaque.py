@@ -55,7 +55,7 @@ def move_everyone(player, token, case, allies_voisins, knights):
         y,x=i
         for j in range (allies_voisins[i]):
             api.move(api.KNIGHT, Y + y, X + x, Y, X, player, token)
-            knights.remove((Y + y, X + x))
+            # knights.remove((Y + y, X + x)) already removed in hunt
     
 
 def attaque(player, case_attaquee, knights, eknights, token):
