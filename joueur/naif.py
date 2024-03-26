@@ -103,7 +103,7 @@ def path_one(units_to_move, other_units,eknights):
             if abs(score-maxscore) <= 1:
                 stuck+=1
                 continue
-            if score > maxscore and cl.neighbors(move,eknights)[2]==0:
+            if score > maxscore and cl.neighbors(move,eknights)[1]==0:
                 maxscore = score
                 bestpawn = boy
                 bestmove = move
@@ -134,6 +134,7 @@ def path_trou(units_to_move,other_units,eknights):
     visibility=api.get_visible(everybody)
     trous_list=cl.trous(visibility)
     for boy in units_to_move:
+        print("On règle par un trou",boy)
         milieu_du_trou=cl.plus_proche_trou(trous_list,boy)
         moves = api.get_moves(boy[0], boy[1])
         vecteur_trou=np.array((milieu_du_trou[0]-boy[0],milieu_du_trou[1]-boy[1]))
@@ -141,7 +142,7 @@ def path_trou(units_to_move,other_units,eknights):
         bestmove_trou=(0,0)
         for move in moves:
             vector_move = np.array((move[0]-boy[0], move[1]-boy[1]))
-            if np.dot(vecteur_trou,vector_move)>max_trou and cl.neighbors(move,eknights)[2]==0:
+            if np.dot(vecteur_trou,vector_move)>max_trou and cl.neighbors(move,eknights)[1]==0:
                 bestmove_trou=move
         resultat.append((boy,bestmove_trou))
     return resultat
