@@ -60,7 +60,7 @@ def move_everyone(player, token, case, allies_voisins, knights):
 def attaque(player, case_attaquee, knights, token):
     carte=api.get_map
     Y,X=case_attaquee
-    allies_voisins = neighbors(case_attaquee, knights)
+    allies_voisins = cl.neighbors(case_attaquee, knights)[1]
     attaquants = sum(allies_voisins[i] for i in allies_voisins)
     defenseurs_voisins = compte_soldats_ennemis_cases_adjacentes(player,case_attaquee)
     defenseurs = carte[Y][X][player][api.EKNIGHT]
