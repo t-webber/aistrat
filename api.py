@@ -10,7 +10,7 @@ GOLD = 'G'
 EKNIGHT = "M2"
 EPAWN = "C2"
 
-PRICES = {PAWN: 10, CASTLE: 50, KNIGHT: 20}
+PRICES = {PAWN: 10, CASTLE: 15, KNIGHT: 10}
 
 map_size = None
 
