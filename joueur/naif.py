@@ -260,7 +260,7 @@ def move_defense(defense, pawns, player, token, eknight):
     return defense
 
 
-def defend(pawns, defense, eknights, player, token, castle):
+def defend(pawns, defense, eknights, castle, player, token):
     """
     Defends the pawns using the defense strategy against enemy knights.
 
@@ -331,7 +331,7 @@ def nexturn(player, token):
 
     good_gold, bad_gold = cl.clean_golds(golds, pawns)
 
-    defend(pawns, defense, eknights, player, token)
+    defend(pawns, defense, eknights, castles, player, token)
     
     build.create_pawns(castles, player, token,
                        eknights, knights, gold, cl.defense_knights[player],

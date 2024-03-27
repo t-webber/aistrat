@@ -2,7 +2,7 @@
 import numpy as np
 import requests
 IP = "http://localhost:8080"
-TIME_OUT = 0.005
+TIME_OUT = 0.001
 PAWN = "C"
 CASTLE = "B"
 KNIGHT = "M"
