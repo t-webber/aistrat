@@ -149,7 +149,8 @@ def path_trou(units_to_move, other_units, eknights):
         bestmove_trou = (0, 0)
         for move in moves:
             vector_move = np.array((move[0]-boy[0], move[1]-boy[1]))
-            if np.dot(vecteur_trou, vector_move) > max_trou and cl.neighbors(move, eknights)[1] == 0:
+            if np.dot(vecteur_trou, vector_move) > max_trou \
+                    and cl.neighbors(move, eknights)[1] == 0:
                 bestmove_trou = move
         resultat.append((boy, bestmove_trou))
     return resultat
@@ -220,7 +221,7 @@ def move_defense(defense, pawns, player, token, eknight):
     Returns
         defense knights that still need to move
     """
-    if(pawns==[] ):
+    if pawns==[]:
         return defense
     hongroise = cl.hongrois_distance(defense, pawns)
     utilise=[]
@@ -228,7 +229,8 @@ def move_defense(defense, pawns, player, token, eknight):
         yd, xd = defense[d]
         yp, xp = pawns[p]
         utilise.append(defense[d])
-        if rd.random() > 0.5:  # pour ne pas que le defenseur aille toujours d'abord en haut puis à gauche
+        # Pour ne pas que le defenseur aille toujours d'abord en haut puis à gauche
+        if rd.random() > 0.5:
             if xd > xp and (yd, xd-1) not in eknight:
                 api.move(api.KNIGHT, yd, xd, yd, xd - 1, player, token)
                 cl.move_defender(yd, xd, yd, xd - 1, player)
