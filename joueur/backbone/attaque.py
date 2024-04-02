@@ -26,17 +26,6 @@ def prediction_combat(a, d):
     return (d <= 0, pertes_a <= pertes_d, pertes_a, pertes_d)
 
 
-def neighbors(case, knights):
-    """
-    return the number of knights in the 4 directions of a case
-    """
-    dir_case = {(0, 1): 0, (1, 0): 0, (0, -1): 0, (-1, 0): 0}
-    for k in knights:
-        if (k[0]-case[0], k[1]-case[1] in dir_case):
-            dir_case[(k[0]-case[0], k[1]-case[1])] += 1
-    return dir_case
-
-
 def compte_soldats_ennemis_cases_adjacentes(player, case):
     """
     compte les soldats ennemis à une distance de 1 d'une case
@@ -85,6 +74,15 @@ def hunt(knights, epawns, eknights, player, token):
     """ 
     chasse les péons adverses
     """
+    for k in knights:
+        voisins, somme = cl.neighbors(k, epawns)
+        voisins_ennemis, _ = cl.neighbors(k, eknights)
+        if somme:
+            for i in voisins:
+                if voisins[i]:
+                    if not voisins_ennemis[i]:
+                        api.move(api.KNIGHT, y, x, y + voisins_ennemis[i][0], x + voisins_ennemis[i][1], player, token)
+                        knights.remove(k)
     # printknights, epawns)
     if knights and epawns:
         # affecation problem
@@ -124,10 +122,10 @@ def destroy_castle(knights, castles, eknights, player, token):
     """ 
     chasse les péons adverses
     """
-    # printknights, castles)
+    # printknights, castles
     if knights and castles:
         # affecation problem
-        # choisis les mines d'or vers lesquelles vont se diriger les peons
+        # choisis les chateaux vers lesquelles vont se diriger les chevaliers
         # pour en minimiser le nombre total de mouvements
         vus = []
         for k, ep in cl.hongrois_distance(knights, castles):
