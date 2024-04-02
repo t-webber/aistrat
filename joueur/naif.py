@@ -38,7 +38,8 @@ def fuite(pawns, knights, eknights, defense, player, token):
                         if dir_allies[dir] > 0:
                             api.move(
                                 api.KNIGHT, p[0]+dir[0], p[1]+dir[1], p[0], p[1], player, token)
-                            knights.remove((p[0]+dir[0], p[1]+dir[1]))
+                            if (p[0]+dir[0], p[1]+dir[1]) in knights :
+                                knights.remove((p[0]+dir[0], p[1]+dir[1]))
                             allies_backup -= 1
                             break
 
