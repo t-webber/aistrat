@@ -22,5 +22,8 @@ random des chateaux
 ## 20/03
 
 - Tom: Construction d'un premier chateau en case (2, 2) dès le début (prise de contrôle d'un péon) + Espacement entre chateaux + Créations de chevaliers + fix timeout
-Jules : On regarde où on va pour éviter de faire se suicider nos troupes
+
+## 27/03
+
+- Jules : On regarde où on va pour éviter de faire se suicider nos troupes
 Martin et Jules : implémentation de l'attaque des nos chevaliers pour traquer les peons adverses et leurs chateaux
