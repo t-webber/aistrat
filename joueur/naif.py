@@ -247,7 +247,7 @@ def move_defense(defense, pawns, player, token, eknight):
         defense knights that still need to move
     """
     if(pawns==[] ):
-        return defense
+        return defense,[]
     hongroise = cl.hongrois_distance(defense, pawns)
     utilise=[]
     arrived=[]
@@ -288,7 +288,7 @@ def move_defense(defense, pawns, player, token, eknight):
 
     for d in utilise:
         defense.remove(d)
-    return defense,arrived
+    return (defense,arrived)
 
 
 def defend(pawns, defense, eknights, castle, player, token):
@@ -365,6 +365,7 @@ def nexturn(player, token):
     good_gold, bad_gold = cl.clean_golds(golds, pawns)
 
     left_defense=defend(pawns, defense, eknights, castles, player, token)
+    agressiv_defense(left_defense,epawns,player,token,eknights)
     
     build.create_pawns(castles, player, token,
                        eknights, knights, gold, cl.defense_knights[player],
