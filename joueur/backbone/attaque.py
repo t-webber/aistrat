@@ -83,7 +83,8 @@ def hunt(knights, epawns, eknights, player, token):
                     if not voisins_ennemis[i]:
                         y,x = k
                         api.move(api.KNIGHT, y, x, y + i[0], x + i[1], player, token)
-                        knights.remove(k)
+                        if k in knights:
+                            knights.remove(k)
     # printknights, epawns)
     if knights and epawns:
         # affecation problem
