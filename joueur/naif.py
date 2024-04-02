@@ -2,7 +2,6 @@
 
 import random as rd
 import numpy as np
-# from scipy.optimize import linear_sum_assignment as hongrois
 import api
 import joueur.backbone.client_logic as cl
 import joueur.castles as build
@@ -54,8 +53,6 @@ def farm(pawns, player, token, good_gold, eknights):
         # affecation problem
         # choisis les mines d'or vers lesquelles vont se diriger les peons
         # pour en minimiser le nombre total de mouvements
-        # # printgolds)
-        # # printgood_gold)
         gold_location = []
         gold_location = [ (item[0], item[1]) for item in good_gold]
         vus = []
@@ -115,29 +112,12 @@ def path_one(units_to_move, other_units, eknights):
                 bestpawn = boy
                 bestmove = move
 
-        # if better==1 and stuck==4:
-        #     print("On règle par un trou",boy)
-        #     vecteur_trou=np.array((milieu_du_trou[0]-boy[0],milieu_du_trou[1]-boy[1]))
-        #     max_trou=-1
-        #     bestmove_trou=(0,0)
-        #     for move in moves:
-        #         vector_move = np.array((move[0]-boy[0], move[1]-boy[1]))
-        #         if np.dot(vecteur_trou,vector_move)>max_trou:
-        #             bestmove_trou=move
-        #     score = cl.visibility_score(api.add_visible(static_view,bestmove_trou))
-        #     maxscore = score
-        #     bestpawn = boy
-        #     bestmove = bestmove_trou
-        #     trou_pris=True
-
     return bestpawn, bestmove
 
 
 def path_trou(units_to_move, other_units, eknights):
     '''Dirige les péons vers des trous'''
     resultat = []
-    # trous=cl.trous(api.get_visible(units_to_move+other_units))
-    # trous_tri = sorted(trous, key=lambda x: len(x))
     everybody = units_to_move+other_units
     visibility = api.get_visible(everybody)
     trous_list = cl.trous(visibility)
@@ -193,27 +173,13 @@ def explore(pawns, player, token, eknights,otherunits=[],reste_gold=()):
         api.move(api.PAWN, one_move[0][0], one_move[0][1],
                  one_move[1][0], one_move[1][1], player, token)
     if len(reste_gold)>0:
-        print("Reste gold:",reste_gold)
+        #print("Reste gold:",reste_gold)
         farm(remaining_pawns,player,token,reste_gold,eknights)
     if len(remaining_pawns)>0:
         moves_trou=path_trou(remaining_pawns,otherunits,eknights)
         for one_move in moves_trou:
             api.move(api.PAWN, one_move[0][0], one_move[0][1],
                     one_move[1][0], one_move[1][1], player, token)
-
-    # dico = {'A': [(0, 1), (1, 0)], 'B': [(0, -1), (-1, 0)]}
-        # for y, x in pawns:
-        # moves = []
-        # moves_p = api.get_moves(y, x)
-        # for i, j in moves_p:
-        #     if (i-y, j-x) in dico[player]:
-        #         moves.append((i, j))
-        # if moves:
-        #     i, j = rd.choice(moves)
-        #     api.move(api.PAWN, y, x, i, j, player, token)
-        # else:
-        #     i, j = rd.choice(moves_p)
-        #     api.move(api.PAWN, y, x, i, j, player, token)
 
 
 def agressiv_defense(defense, epawns, player, token, eknigths):
@@ -389,28 +355,3 @@ def nexturn(player, token):
     explore(pawns, player, token, eknights,knights+castles,bad_gold)
     atk.hunt(knights, epawns, eknights, player, token)
     atk.destroy_castle(knights, ecastles, eknights, player, token)
-
-# class gold:
-
-#     def __init__(self) -> none:
-#         self.cases = {}
-
-#     def actualiser(self, golds):
-#         for i, j, g in golds:
-#             self.cases[(i, j)] = g
-
-
-# class seen:
-
-#     def __init__(self) -> none:
-#         self.cases = {}
-#         y, x = api.size_map()
-#         for y in range(y):
-#             for x in range(x):
-#                 self.cases[(y, x)] = np.inf
-
-#     def actualiser(self, seen):
-#         for pos in self.cases:
-#             self.cases[pos] += 1
-#         for (y, x) in seen:
-#             self.cases[(y, x)] = 0
