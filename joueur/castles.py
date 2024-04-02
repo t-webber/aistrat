@@ -72,7 +72,7 @@ def check_build(pawns, castles, player, token, gold):
 
 def create_pawns(castles, player, token, eknight, knight, gold, defenders, nb_gold, nb_pawn, nb_fog):
     """ The castles will spawn units here """
-    n = 2 * len(eknight) - len(knight)
+    n =  len(eknight) - len(knight)
 
     for (y, x) in castles:
         # We are under the attack ! Create some defenders !

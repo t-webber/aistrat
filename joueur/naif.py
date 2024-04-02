@@ -206,6 +206,32 @@ def explore(pawns, player, token, eknights):
         #     api.move(api.PAWN, y, x, i, j, player, token)
 
 
+def agressiv_defense(defense, epawns, player, token, eknigths):
+    for d in defense:
+        dir,near_eknights=cl.neighbors(d,eknigths)
+        if ((dir[(0,1)]>0 + dir[(0,-1)]>0 + dir[(1,0)]>0 + dir[(-1,0)]>0)<=1):
+            dir_pawns,_=cl.neighbors(d,epawns)
+            if near_eknights==0:
+                dir=dir_pawns 
+            if dir[(0,1)]>0 :
+                dir=(0,1)
+            elif dir[(0,-1)]>0:
+                dir=(0,-1)
+            elif dir[(1,0)]>0:
+                dir = (1,0)
+            else:
+                dir = (-1,0)
+            agressiv_defenders=0
+            for d2 in defense:
+                agressiv_defenders+= (d2==d)
+            if cl.prediction_combat(near_eknights,agressiv_defenders)[0]:
+                (y,x),(y2,x2)=d,d+dir
+                for _ in range(agressiv_defenders):
+                    defense.remove(d)
+                    api.move(api.KNIGHT,y,x,y2,x2,player,token)
+                    cl.move_defender(y,x,y2,x2,player)
+
+
 def move_defense(defense, pawns, player, token, eknight):
     """
     Moves the knights according to their attributed pawn to defend.
