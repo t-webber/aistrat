@@ -1,0 +1,1 @@
+python "$PSScriptRoot/1player.py" $args[1]
