@@ -44,7 +44,7 @@ def fuite(pawns, knights, eknights, defense, player, token):
                             break
 
 
-def farm(pawns, golds, player, token, good_gold, bad_gold, eknights):
+def farm(pawns, player, token, good_gold, eknights):
     """ 
     farm gold when possible, else go to nearest avaible gold
     """
@@ -64,6 +64,7 @@ def farm(pawns, golds, player, token, good_gold, bad_gold, eknights):
             vus.append(pawns[p])
             y, x = pawns[p]
             i, j, _ = good_gold[g]
+            gold_location.remove((i,j))
             if rd.random() > 0.5:  # pour ne pas que le peon aille toujours d'abord en haut puis à gauche
                 if x > j and cl.neighbors((y, x - 1), eknights)[1] == 0:
                     api.move(api.PAWN, y, x, y, x - 1, player, token)
@@ -141,7 +142,7 @@ def path_trou(units_to_move, other_units, eknights):
     visibility = api.get_visible(everybody)
     trous_list = cl.trous(visibility)
     for boy in units_to_move:
-        print("On règle par un trou", boy)
+        #print("On règle par un trou", boy)
         milieu_du_trou = cl.plus_proche_trou(trous_list, boy)
         moves = api.get_moves(boy[0], boy[1])
         vecteur_trou = np.array(
@@ -174,22 +175,28 @@ def path(units_to_move, other_units, eknights):
             other_units.append(bestpawn)
             units_to_move = [units_to_move[i] for i in range(
                 len(units_to_move)) if units_to_move[i] is not bestpawn]
-        if strategie == 1:
+        else:
+            return results,units_to_move
             results = results+path_trou(units_to_move, other_units, eknights)
             break
     #     print('Units updated : ',units_to_move)
     # print("Résultats de path : ",results)
-    return results
 
 
-def explore(pawns, player, token, eknights,otherunits=[]):
+def explore(pawns, player, token, eknights,otherunits=[],reste_gold=()):
     """ 
     Envoie en exploration les "pawns" inactifs pour le tour
     """
     # print("J'explore")
-    moves = path(pawns, otherunits, eknights)
+    moves,remaining_pawns = path(pawns, otherunits, eknights)
     # print(moves)
     for one_move in moves:
+        api.move(api.PAWN, one_move[0][0], one_move[0][1],
+                 one_move[1][0], one_move[1][1], player, token)
+    if len(reste_gold)>0:
+        farm(remaining_pawns,reste_gold,player,token,eknights)
+    moves_trou=path_trou(remaining_pawns,otherunits,eknights)
+    for one_move in moves_trou:
         api.move(api.PAWN, one_move[0][0], one_move[0][1],
                  one_move[1][0], one_move[1][1], player, token)
 
@@ -372,14 +379,13 @@ def nexturn(player, token):
     
     build.create_pawns(castles, player, token,
                        eknights, knights, gold, cl.defense_knights[player],
-                       (len(good_gold) + len(bad_gold)), len(pawns), len(fog))
+                       len(golds), len(pawns), len(fog))
     fuite(pawns, knights, eknights, defense, player, token)
 
     build.check_build(pawns, castles, player, token, gold)
-    farm(pawns, golds, player, token, good_gold, bad_gold,
-         eknights)  # je farm d'abord ce que je vois
+    farm(pawns, player, token, good_gold,eknights)  # je farm d'abord ce que je vois
     # j'explore ensuite dans la direction opposée au spawn
-    explore(pawns, player, token, eknights,knights+castles)
+    explore(pawns, player, token, eknights,knights+castles,bad_gold)
     atk.hunt(knights, epawns, eknights, player, token)
     atk.destroy_castle(knights, ecastles, eknights, player, token)
 

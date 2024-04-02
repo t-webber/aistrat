@@ -1,6 +1,7 @@
 """ API to communicate between client and serve """
 import numpy as np
 import requests
+
 IP = "http://localhost:8080"
 TIME_OUT = 0.001
 PAWN = "C"
@@ -18,6 +19,12 @@ map_size = None
 
 taille = [0, 0]
 turn_data = []
+
+
+def init(ip: str):
+    """ Initialize the API """
+    global IP
+    IP = ip
 
 
 def end_turn(player, token):

@@ -155,7 +155,7 @@ def trous(grille):
                             a_chercher.append(case)
                     trou.append(pixel)
                 sortie.append((trou))
-    print(sortie)
+    #print(sortie)
     return sortie
 
 
