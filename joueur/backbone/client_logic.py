@@ -137,23 +137,25 @@ def neighbors(case, knights):
 def trous(grille):
     '''Cherche tous les lieux avec un éclairage extrêmement faible'''
     sortie = []
+    #print(grille)
     vus = np.zeros((len(grille), len(grille[0])))
     for i, x in enumerate(grille):
         for j, y in enumerate(x):
             # printvus)
             if vus[i][j] == 0 and grille[i][j] == 0:
                 a_chercher = [(i, j)]
+                vus[i][j] = 1
                 trou = []
                 while len(a_chercher) > 0:
                     pixel = a_chercher.pop()
-                    cases_adjacentes = api.get_moves(i, j)
+                    cases_adjacentes = api.get_moves(pixel[0], pixel[1])
                     for case in cases_adjacentes:
-                        if grille[case[0]][case[1]] == 0 and vus[i][j] == 0:
-                            vus[i][j] = 1
+                        if grille[case[0]][case[1]] == 0 and vus[case[0]][case[1]] == 0:
+                            vus[case[0]][case[1]] = 1
                             a_chercher.append(case)
-                    vus[pixel[0]][pixel[1]] = 1
                     trou.append(pixel)
                 sortie.append((trou))
+    print(sortie)
     return sortie
 
 

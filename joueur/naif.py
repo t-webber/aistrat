@@ -93,7 +93,7 @@ def farm(pawns, golds, player, token, good_gold, bad_gold, eknights):
 def path_one(units_to_move, other_units, eknights):
     '''Cherche le meilleur chemin pour une unité de units_to_move pour voir plus de la map'''
     # # printlen(units_to_move))
-    maxscore = -float('inf')
+    maxscore = cl.visibility_score(api.get_visible(units_to_move+other_units))
     bestpawn = (-1, -1)
     bestmove = (-1, -1)
     for boy in units_to_move:
@@ -182,12 +182,12 @@ def path(units_to_move, other_units, eknights):
     return results
 
 
-def explore(pawns, player, token, eknights):
+def explore(pawns, player, token, eknights,otherunits=[]):
     """ 
     Envoie en exploration les "pawns" inactifs pour le tour
     """
     # print("J'explore")
-    moves = path(pawns, [], eknights)
+    moves = path(pawns, otherunits, eknights)
     # print(moves)
     for one_move in moves:
         api.move(api.PAWN, one_move[0][0], one_move[0][1],
@@ -335,7 +335,6 @@ def nexturn(player, token):
     good_gold, bad_gold = cl.clean_golds(golds, pawns)
 
     defend(pawns, defense, eknights, castles, player, token)
-    
     build.create_pawns(castles, player, token,
                        eknights, knights, gold, cl.defense_knights[player],
                        (len(good_gold) + len(bad_gold)), len(pawns), len(fog))
@@ -345,7 +344,7 @@ def nexturn(player, token):
     farm(pawns, golds, player, token, good_gold, bad_gold,
          eknights)  # je farm d'abord ce que je vois
     # j'explore ensuite dans la direction opposée au spawn
-    explore(pawns, player, token, eknights)
+    explore(pawns, player, token, eknights,knights+castles)
     atk.hunt(knights, epawns, eknights, player, token)
     atk.destroy_castle(knights, ecastles, eknights, player, token)
 
