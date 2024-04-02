@@ -250,6 +250,7 @@ def move_defense(defense, pawns, player, token, eknight):
         return defense
     hongroise = cl.hongrois_distance(defense, pawns)
     utilise=[]
+    arrived=[]
     for d, p in hongroise:
         yd, xd = defense[d]
         yp, xp = pawns[p]
@@ -267,6 +268,8 @@ def move_defense(defense, pawns, player, token, eknight):
             elif yd < yp and (yd + 1, xd) not in eknight:
                 api.move(api.KNIGHT, yd, xd, yd + 1, xd, player, token)
                 cl.move_defender(yd, xd, yd+1, xd, player)
+            else:
+                arrived.append(defense[d])
         else:
             if yd > yp and (yd - 1, xd) not in eknight:
                 api.move(api.KNIGHT, yd, xd, yd - 1, xd, player, token)
@@ -280,10 +283,12 @@ def move_defense(defense, pawns, player, token, eknight):
             elif xd < xp and (yd, xd + 1) not in eknight:
                 api.move(api.KNIGHT, yd, xd, yd, xd + 1, player, token)
                 cl.move_defender(yd, xd, yd, xd + 1, player)
+            else:
+                arrived.append(defense[d])
 
     for d in utilise:
         defense.remove(d)
-    return defense
+    return defense,arrived
 
 
 def defend(pawns, defense, eknights, castle, player, token):
@@ -311,11 +316,13 @@ def defend(pawns, defense, eknights, castle, player, token):
     # on priorise les pions selon la distance à un chevalier ennemi
     compteur = 0
     left_defense = defense.copy()
+    arrived=[]
     while (bool(left_defense) and compteur<50):
         rd.shuffle(needing_help[compteur])
-        left_defense = move_defense(left_defense, needing_help[compteur], player, token, eknights)
+        left_defense,arrived2 = move_defense(left_defense, needing_help[compteur], player, token, eknights)
+        arrived+=arrived2
         compteur += 1
-
+    return arrived
 
 def nexturn(player, token):
     """ 
@@ -357,7 +364,7 @@ def nexturn(player, token):
 
     good_gold, bad_gold = cl.clean_golds(golds, pawns)
 
-    defend(pawns, defense, eknights, castles, player, token)
+    left_defense=defend(pawns, defense, eknights, castles, player, token)
     
     build.create_pawns(castles, player, token,
                        eknights, knights, gold, cl.defense_knights[player],
