@@ -18,7 +18,7 @@ def move_defender (y,x,ny,nx,player):
         if defense_knights[player][i]==(y,x):
             defense_knights[player][i]=(ny,nx)
             return
-            
+  
 def visibility_score(carte,punishment=0):
     '''Permet de donner un score à une carte de visibilité
     Punishment représente le nombre de points retirés par sur-visibilité qu'on préfèrera sûrement garder à 0
@@ -70,17 +70,17 @@ def clean_golds(golds, pawns):
     threshold_bad = 16
     distance_overlook = 1
     to_be_removed = [0 for _ in range(len(golds))]
-    for num in range(len(golds)):
-        pile = golds[num]
+    for num,pile in enumerate(golds):
         if pile[2] <= threshold_bad and to_be_removed[num] == 0:
-            for i in range(len(golds)):
-                if i != num and ((pile[0], pile[1]) not in pawns) and to_be_removed[i] == 0 and distance(pile[0], pile[1], golds[i][0], golds[i][1]) <= distance_overlook:
+            for i,gold in enumerate(golds):
+                if i != num and ((pile[0], pile[1]) not in pawns) and to_be_removed[i] == 0 \
+                        and distance(pile[0], pile[1], gold[0], gold[1]) <= distance_overlook:
                     to_be_removed[num] = 1
                     break
     gold_clean = []
     gold_bad = []
-    for i in range(len(to_be_removed)):
-        if to_be_removed[i] == 0:
+    for i,pile_remove in enumerate(to_be_removed):
+        if pile_remove == 0:
             gold_clean.append(golds[i])
         else:
             gold_bad.append(golds[i])
@@ -137,23 +137,25 @@ def neighbors(case, knights):
 def trous(grille):
     '''Cherche tous les lieux avec un éclairage extrêmement faible'''
     sortie = []
+    #print(grille)
     vus = np.zeros((len(grille), len(grille[0])))
     for i, x in enumerate(grille):
         for j, y in enumerate(x):
             # printvus)
             if vus[i][j] == 0 and grille[i][j] == 0:
                 a_chercher = [(i, j)]
+                vus[i][j] = 1
                 trou = []
                 while len(a_chercher) > 0:
                     pixel = a_chercher.pop()
-                    cases_adjacentes = api.get_moves(i, j)
+                    cases_adjacentes = api.get_moves(pixel[0], pixel[1])
                     for case in cases_adjacentes:
-                        if grille[case[0]][case[1]] == 0 and vus[i][j] == 0:
-                            vus[i][j] = 1
+                        if grille[case[0]][case[1]] == 0 and vus[case[0]][case[1]] == 0:
+                            vus[case[0]][case[1]] = 1
                             a_chercher.append(case)
-                    vus[pixel[0]][pixel[1]] = 1
                     trou.append(pixel)
                 sortie.append((trou))
+    print(sortie)
     return sortie
 
 

@@ -4,8 +4,11 @@ import api
 from joueur import naif as p
 import time
 
+against_human = False
+
 player1, token1 = api.create_player()
-player2, token2 = api.create_player()
+if not against_human:
+    player2, token2 = api.create_player()
 
 
 def main():
@@ -21,7 +24,7 @@ def main():
     if api.current_player() == player1:
         p.nexturn(player1, token1)
         api.end_turn(player1, token1)
-    else:
+    elif not against_human:
         api.get_data(player2, token2)
         p.nexturn(player2, token2)
         api.end_turn(player2, token2)

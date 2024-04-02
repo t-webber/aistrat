@@ -38,7 +38,8 @@ def fuite(pawns, knights, eknights, defense, player, token):
                         if dir_allies[dir] > 0:
                             api.move(
                                 api.KNIGHT, p[0]+dir[0], p[1]+dir[1], p[0], p[1], player, token)
-                            knights.remove((p[0]+dir[0], p[1]+dir[1]))
+                            if (p[0]+dir[0], p[1]+dir[1]) in knights :
+                                knights.remove((p[0]+dir[0], p[1]+dir[1]))
                             allies_backup -= 1
                             break
 
@@ -92,7 +93,7 @@ def farm(pawns, golds, player, token, good_gold, bad_gold, eknights):
 def path_one(units_to_move, other_units, eknights):
     '''Cherche le meilleur chemin pour une unité de units_to_move pour voir plus de la map'''
     # # printlen(units_to_move))
-    maxscore = -float('inf')
+    maxscore = cl.visibility_score(api.get_visible(units_to_move+other_units))
     bestpawn = (-1, -1)
     bestmove = (-1, -1)
     for boy in units_to_move:
@@ -149,7 +150,8 @@ def path_trou(units_to_move, other_units, eknights):
         bestmove_trou = (0, 0)
         for move in moves:
             vector_move = np.array((move[0]-boy[0], move[1]-boy[1]))
-            if np.dot(vecteur_trou, vector_move) > max_trou and cl.neighbors(move, eknights)[1] == 0:
+            if np.dot(vecteur_trou, vector_move) > max_trou \
+                    and cl.neighbors(move, eknights)[1] == 0:
                 bestmove_trou = move
         resultat.append((boy, bestmove_trou))
     return resultat
@@ -180,12 +182,12 @@ def path(units_to_move, other_units, eknights):
     return results
 
 
-def explore(pawns, player, token, eknights):
+def explore(pawns, player, token, eknights,otherunits=[]):
     """ 
     Envoie en exploration les "pawns" inactifs pour le tour
     """
     # print("J'explore")
-    moves = path(pawns, [], eknights)
+    moves = path(pawns, otherunits, eknights)
     # print(moves)
     for one_move in moves:
         api.move(api.PAWN, one_move[0][0], one_move[0][1],
@@ -246,7 +248,7 @@ def move_defense(defense, pawns, player, token, eknight):
     Returns
         defense knights that still need to move
     """
-    if(pawns==[] ):
+    if pawns==[]:
         return defense,[]
     hongroise = cl.hongrois_distance(defense, pawns)
     utilise=[]
@@ -255,7 +257,8 @@ def move_defense(defense, pawns, player, token, eknight):
         yd, xd = defense[d]
         yp, xp = pawns[p]
         utilise.append(defense[d])
-        if rd.random() > 0.5:  # pour ne pas que le defenseur aille toujours d'abord en haut puis à gauche
+        # Pour ne pas que le defenseur aille toujours d'abord en haut puis à gauche
+        if rd.random() > 0.5:
             if xd > xp and (yd, xd-1) not in eknight:
                 api.move(api.KNIGHT, yd, xd, yd, xd - 1, player, token)
                 cl.move_defender(yd, xd, yd, xd - 1, player)
@@ -376,7 +379,7 @@ def nexturn(player, token):
     farm(pawns, golds, player, token, good_gold, bad_gold,
          eknights)  # je farm d'abord ce que je vois
     # j'explore ensuite dans la direction opposée au spawn
-    explore(pawns, player, token, eknights)
+    explore(pawns, player, token, eknights,knights+castles)
     atk.hunt(knights, epawns, eknights, player, token)
     atk.destroy_castle(knights, ecastles, eknights, player, token)
 
