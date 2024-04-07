@@ -183,29 +183,42 @@ def explore(pawns, player, token, eknights,otherunits=[],reste_gold=()):
 
 
 def agressiv_defense(defense, epawns, player, token, eknigths):
+    '''
+    Looks at already on traget defense knights and attacks nearby enemys prioritizing enemy pawns while unsurring that the pawn they defend will still be defended for this turn
+    Args:
+        defense (list): A list of tuples representing the position of defense unit that havent moved already
+        epawns (list): A list of tuples representing the positions of the enemy pawns.
+        player (string): describes the playing player
+        token (str): A token representing the player
+        eknight (list): A list of tuples representing the positions of the enemy knights.
+    Returns
+        None
+    '''
     for d in defense:
-        dir,near_eknights=cl.neighbors(d,eknigths)
-        if ((dir[(0,1)]>0 + dir[(0,-1)]>0 + dir[(1,0)]>0 + dir[(-1,0)]>0)<=1):
-            dir_pawns,_=cl.neighbors(d,epawns)
-            if near_eknights==0:
-                dir=dir_pawns 
-            if dir[(0,1)]>0 :
-                dir=(0,1)
-            elif dir[(0,-1)]>0:
-                dir=(0,-1)
-            elif dir[(1,0)]>0:
-                dir = (1,0)
-            else:
-                dir = (-1,0)
-            agressiv_defenders=0
-            for d2 in defense:
-                agressiv_defenders+= (d2==d)
-            if cl.prediction_combat(near_eknights,agressiv_defenders)[0]:
-                (y,x),(y2,x2)=d,d+dir
-                for _ in range(agressiv_defenders):
-                    defense.remove(d)
-                    api.move(api.KNIGHT,y,x,y2,x2,player,token)
-                    cl.move_defender(y,x,y2,x2,player)
+        dir_knights,near_eknights=cl.neighbors(d,eknigths)
+        dir_pawns,near_epawns=cl.neighbors(d,epawns)
+
+        if near_epawns==0 and near_eknights==0:
+            return
+
+        agressiv_defenders=0
+        for d2 in defense:
+            agressiv_defenders+=(d2==d)
+
+        options=[(dir_pawns[d],d) for d in dir_knights]
+        options.sort()
+        for op in options:
+            _,direction=op
+            
+            for i in range(1,agressiv_defenders):
+                if cl.prediction_combat(i,dir_knights[direction])[0] and not(cl.prediction_combat(near_eknights-dir_knights[direction],agressiv_defenders-i)[0]):
+                    (y,x),(y2,x2)=d,(d[0]+direction[0],d[1]+direction[1])
+                    for _ in range(i):
+                        defense.remove(d)
+                        api.move(api.KNIGHT,y,x,y2,x2,player,token)
+                        cl.move_defender(y,x,y2,x2,player)
+                    agressiv_defenders-=i
+                    near_eknights-=dir_knights[direction]
 
 
 def move_defense(defense, pawns, player, token, eknight):
