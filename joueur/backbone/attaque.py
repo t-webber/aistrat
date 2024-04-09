@@ -51,7 +51,7 @@ def move_everyone(player, token, case, allies_voisins, knights):
             # knights.remove((Y + y, X + x)) already removed in hunt
 
 
-def attaque(player, case_attaquee, knights, eknights, token):
+def prediction_attaque(player, case_attaquee, knights, eknights):
     """
     Regarde les résultats d'un combat en prenant en compte une contre attaque sur la case au tour suivant
     """
@@ -68,9 +68,13 @@ def attaque(player, case_attaquee, knights, eknights, token):
         defenseurs = defenseurs_voisins
         b1, b2, pertes_attaque2, pertes_defense2 = prediction_combat(
             attaquants, defenseurs)
-        if (pertes_attaque + pertes_attaque2) >= (pertes_defense + pertes_defense2):
-            move_everyone(player, token, case_attaquee,
-                          allies_voisins, knights)
+        return ((pertes_attaque + pertes_attaque2) >= (pertes_defense + pertes_defense2))
+    
+
+def attaque(player, case_attaquee, knights, eknights, token):
+    allies_voisins = cl.neighbors(case_attaquee, knights)[0]
+    if prediction_attaque(player, case_attaquee, knights, eknights):
+            move_everyone(player, token, case_attaquee, allies_voisins, knights)
 
 
 def hunt(knights, epawns, eknights, player, token):
