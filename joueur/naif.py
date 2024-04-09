@@ -366,5 +366,9 @@ def nexturn(player, token):
     farm(pawns, player, token, good_gold,eknights)  # je farm d'abord ce que je vois
     # j'explore ensuite dans la direction opposée au spawn
     explore(pawns, player, token, eknights,knights+castles,bad_gold)
-    atk.hunt(knights, epawns, eknights, player, token)
-    atk.destroy_castle(knights, ecastles, eknights, player, token)
+    while knights :
+        a = len(knights)
+        atk.hunt(knights, epawns, eknights, player, token)
+        atk.destroy_castle(knights, ecastles, eknights, player, token)
+        if len(knights)==a:
+            break
