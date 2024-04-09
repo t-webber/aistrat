@@ -66,7 +66,7 @@ def farm(pawns, player, token, good_gold, eknights, ecastles):
                     api.move(api.PAWN, y, x, y, x - 1, player, token)
                 elif x < j and (y, x + 1) not in eknights and (y, x + 1) not in ecastles and cl.neighbors((y, x + 1), eknights)[1] == 0:
                     api.move(api.PAWN, y, x, y, x + 1, player, token)
-                elif y > i and (y - 1, x) not in eknights and (y - 1, x) not in ecastles and cl.neighbors((y - 1, x), eknights)[1] == 0:   
+                elif y > i and (y - 1, x) not in eknights and (y - 1, x) not in ecastles and cl.neighbors((y - 1, x), eknights)[1] == 0:
                     api.move(api.PAWN, y, x, y - 1, x, player, token)
                 elif y < i and (y + 1, x) not in eknights and (y + 1, x) not in ecastles and cl.neighbors((y + 1, x), eknights)[1] == 0:
                     api.move(api.PAWN, y, x, y + 1, x, player, token)
@@ -104,9 +104,9 @@ def path_one(units_to_move, other_units, eknights):
             if abs(score-maxscore) <= 1:
                 stuck += 1
                 continue
-            ennemies=cl.neighbors(move, eknights)[1]
-            if score > maxscore and (ennemies == 0 \
-                    or ennemies<=len(api.get_defenders(boy[0],boy[1]))):
+            ennemies = cl.neighbors(move, eknights)[1]
+            if score > maxscore and (ennemies == 0
+                                     or ennemies <= len(api.get_defenders(boy[0], boy[1]))):
                 maxscore = score
                 bestpawn = boy
                 bestmove = move
@@ -129,9 +129,9 @@ def path_trou(units_to_move, other_units, eknights):
         bestmove_trou = (0, 0)
         for move in moves:
             vector_move = np.array((move[0]-boy[0], move[1]-boy[1]))
-            ennemies=cl.neighbors(move, eknights)[1]
+            ennemies = cl.neighbors(move, eknights)[1]
             if np.dot(vecteur_trou, vector_move) > max_trou \
-                    and (ennemies == 0 or ennemies<=len(api.get_defenders(boy[0],boy[1]))):
+                    and (ennemies == 0 or ennemies <= len(api.get_defenders(boy[0], boy[1]))):
                 bestmove_trou = move
         resultat.append((boy, bestmove_trou))
     return resultat
@@ -221,7 +221,11 @@ def nexturn(player, token):
     # je farm d'abord ce que je vois
     farm(pawns, player, token, good_gold, eknights, ecastles)
     # j'explore ensuite dans la direction opposée au spawn
-    explore(pawns, player, token, eknights, ecastles, knights+castles, bad_gold)
+    explore(pawns, player, token, eknights,
+            ecastles, knights+castles, bad_gold)
+
+    atk.free_pawn(knights, player, token, eknights, epawns)
+
     left_defense = dfd.defend(pawns, defense, eknights, castles, player, token)
     dfd.agressiv_defense(left_defense, epawns, player, token, eknights)
     while knights:

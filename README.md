@@ -1,11 +1,13 @@
-# Lancer une partie 
+# Lancer une partie
 
 Si le serveur est déjà lancé et qu'on veut simplement connecter notre IA au serveur, il suffit d'exécuter la commande qui va lancer le script `1player.py`
+
 ```bash
 ./start_match <url-du-server>
 ```
 
 Sinon on peut lancer le serveur avec `serveur.py` et lancer une partie entre 2 IA avec `2player.py`
+
 # Idee strategie naif
 
 On découpe un tour de l'IA en plusieurs fonctions indépendantes (c'est surtout le fait qu'elles soient indépendantes qui pourra être amelioré). Le fait de faire ceci permet de travailler efficacement en groupe mais le manque de communication entre les différentes parties nuit forcément à l'IA. On a donc pas mal de fonctions ayant chacun un rôle mais travaillant parfois ensemble
@@ -14,7 +16,6 @@ On découpe un tour de l'IA en plusieurs fonctions indépendantes (c'est surtout
 
 Ces fonctions permettent d'envoyer nos peons prendre du gold. clean_golds fait un premier traitement des cases de golds qu'on voit et évite d'envoyer 2 peons sur des cases adjacentes si elles ne sont pas très intéressantes (ce qui encourage l'exploration).
 farm utilise l'algorithme hongrois pour assigner nos peons à l'or.
-
 
 ## fuite
 
@@ -36,4 +37,3 @@ fonction qui utilise les chevaliers assignes à la défense pour défendre les p
 ## hunt, destroy_castle
 
 On utilise les chevaliers restants pour attaquer les peons adverses :un chevalier chasse un peon adverse avec l'algorithme hongrois légèrement modifié (comme les peons adverses peuvent bouger, on peut privilégier le court terme plutôt que le coût total comme pour l'algothme hongrois) puis avec l'algorithme hongrois classique, on envoie un chevalier par chateau.
-

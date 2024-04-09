@@ -159,3 +159,14 @@ def destroy_castle(knights, castles, eknights, player, token):
                         api.move(api.KNIGHT, y, x, y, x + 1, player, token)
         for k in vus:  # j'enlève ceux que je bouge
             knights.remove(k)
+
+
+def free_pawn(knights, player, token, eknights, epawns):
+    """
+        libère les péons bloqués par les chevaliers adverses
+        """
+    for knight in knights:
+        for epawn in epawns:
+            if cl.distance(knight[1], knight[0], epawn[1], epawn[0]) == 1 and epawn not in eknights:
+                api.move(api.KNIGHT, knight[0], knight[1],
+                         epawn[0], epawn[1], player, token)
