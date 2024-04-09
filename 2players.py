@@ -1,14 +1,24 @@
 """ main client program to launch for auto playing """
 
+import sys
 import time
 import api
 from joueur import naif as p
 
-api.init("http://localhost:8080")
 
+if len(sys.argv) > 1:
+    api.init(sys.argv[1])
+else:
+    api.init("http://localhost:8080")
+
+print("IP = ", api.IP)
 
 player1, token1 = api.create_player()
-player2, token2 = api.create_player()
+if len(sys.argv) > 2:
+    player2, token2 = api.create_player()
+    TWO_PLAYERS = True
+else:
+    TWO_PLAYERS = False
 
 
 def main():
@@ -20,11 +30,11 @@ def main():
     while not api.get_data(player1, token1):
         if time.time() - t > 10:
             print("!!! TIMEOUT !!!")
-            exit(1)
+            sys.exit(1)
     if api.current_player() == player1:
         p.nexturn(player1, token1)
         api.end_turn(player1, token1)
-    else:
+    elif TWO_PLAYERS:
         api.get_data(player2, token2)
         p.nexturn(player2, token2)
         api.end_turn(player2, token2)
