@@ -219,7 +219,7 @@ def nexturn(player, token):
 
     build.check_build(pawns, castles, player, token, gold)
     # je farm d'abord ce que je vois
-    farm(pawns, player, token, good_gold, eknights)
+    farm(pawns, player, token, good_gold, eknights, ecastles)
     # j'explore ensuite dans la direction opposée au spawn
     explore(pawns, player, token, eknights, knights+castles, bad_gold)
     left_defense = dfd.defend(pawns, defense, eknights, castles, player, token)
