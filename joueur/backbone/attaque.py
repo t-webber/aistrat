@@ -52,6 +52,9 @@ def move_everyone(player, token, case, allies_voisins, knights):
 
 
 def attaque(player, case_attaquee, knights, eknights, token):
+    """
+    Regarde les résultats d'un combat en prenant en compte une contre attaque sur la case au tour suivant
+    """
     carte = api.get_map()
     Y, X = case_attaquee
     attaquants = cl.neighbors(case_attaquee, knights)[1]
@@ -72,7 +75,7 @@ def attaque(player, case_attaquee, knights, eknights, token):
 
 def hunt(knights, epawns, eknights, player, token):
     """ 
-    chasse les péons adverses
+    chasse les péons adverses, en assignant un chevalier à un péon adverse qui va le traquer
     """
     for k in knights:
         voisins, somme = cl.neighbors(k, epawns)
@@ -122,7 +125,7 @@ def hunt(knights, epawns, eknights, player, token):
 
 def destroy_castle(knights, castles, eknights, player, token):
     """ 
-    chasse les péons adverses
+    chasse les chateaux adverses, si possibilité de le détruire, le détruit
     """
     # printknights, castles
     if knights and castles:
