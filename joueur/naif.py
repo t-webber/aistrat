@@ -26,7 +26,7 @@ def fuite(pawns, knights, eknights, defense, player, token):
             if cl.prediction_combat(total_enemies, allies+allies_backup)[0]:
                 # si on peut perd le combat même avec les alliés on fuit
                 for direc in direc_enemies:
-                    if direc_enemies[direc] == 0:
+                    if direc_enemies[direc] == 0 and (p[0] + direc[0], p[1]+direc[1]) in api.get_moves(p[0], p[1]):
                         api.move(api.PAWN, p[0], p[1], p[0] +
                                 direc[0], p[1]+direc[1], player, token)
                         pawns.remove((p[0], p[1]))
@@ -222,7 +222,6 @@ def nexturn(player, token):
             defense.remove(d)
         else:
             knights.remove(d)
-
     good_gold, bad_gold = cl.clean_golds(golds, pawns)
     
     build.create_pawns(castles, player, token,
@@ -236,5 +235,9 @@ def nexturn(player, token):
     explore(pawns, player, token, eknights,knights+castles,bad_gold)
     left_defense=dfd.defend(pawns, defense, eknights, castles, player, token)
     dfd.agressiv_defense(left_defense,epawns,player,token,eknights)
-    atk.hunt(knights, epawns, eknights, player, token)
-    atk.destroy_castle(knights, ecastles, eknights, player, token)
+    while knights :
+        a = len(knights)
+        atk.hunt(knights, epawns, eknights, player, token)
+        atk.destroy_castle(knights, ecastles, eknights, player, token)
+        if len(knights)==a:
+            break

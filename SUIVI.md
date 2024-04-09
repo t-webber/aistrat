@@ -25,8 +25,8 @@
 ## 20/03
 
 - Tom: Construction d'un premier chateau en case (2, 2) dès le début (prise de contrôle d'un péon) + Espacement entre chateaux + Créations de chevaliers + fix timeout
-- Jules : On regarde où on va pour éviter de faire se suicider nos troupes
-- Martin et Jules : implémentation de l'attaque des nos chevaliers pour traquer les peons adverses et leurs chateaux
+- Jules : Implémentation fuite
+- Martin et Jules : début de l'implémentation de premières fonctions pour aider à implémtner l'attaque ( neighbors, prediction combat)
 - Nicolas: Implémentation d'un système de décision pour le chemin des pions ne récupérant pas d'or en cherchant des maximum locaux de visibilité et amélioration de clean_golds
 
 ## 26/03
@@ -38,3 +38,5 @@
 ## 02/04
 
 - Nicolas: Correction de la fonction de détection de trous et de pathing des unités. Ajout d'une logique intermédiaire pour l'ordre des actions: farm des bons or -> déplacment optimal -> farm des mauvais or -> déplacement vers trous lointains
+- Jules : compréhension globale du programme et donc écriture du README
+- Martin: amélioration de la traque, saisi d'opportunités lorqu'on peut tuer un adversaire voisin
