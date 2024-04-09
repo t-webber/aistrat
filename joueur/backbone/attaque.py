@@ -68,7 +68,7 @@ def attaque(player, case_attaquee, knights, eknights, token):
         defenseurs = defenseurs_voisins
         b1, b2, pertes_attaque2, pertes_defense2 = prediction_combat(
             attaquants, defenseurs)
-        if (pertes_attaque + pertes_attaque2) > (pertes_defense + pertes_defense2):
+        if (pertes_attaque + pertes_attaque2) >= (pertes_defense + pertes_defense2):
             move_everyone(player, token, case_attaquee,
                           allies_voisins, knights)
 
@@ -102,22 +102,22 @@ def hunt(knights, epawns, eknights, player, token):
                 attaque(player, (i, j), knights, eknights, token)
             else:
                 if rd.random() > 0.5:  # pour ne pas que le chevalier aille toujours d'abord en haut puis à gauche
-                    if x > j and cl.neighbors((y, x - 1), eknights)[1] == 0:
+                    if x > j and cl.neighbors((y, x), eknights)[0][(0, -1)] == 0:
                         api.move(api.KNIGHT, y, x, y, x - 1, player, token)
-                    elif x < j and cl.neighbors((y, x + 1), eknights)[1] == 0:
+                    elif x < j and cl.neighbors((y, x), eknights)[0][(0, 1)] == 0:
                         api.move(api.KNIGHT, y, x, y, x + 1, player, token)
-                    elif y > i and cl.neighbors((y - 1, x), eknights)[1] == 0:
+                    elif y > i and cl.neighbors((y, x), eknights)[0][(-1, 0)] == 0:
                         api.move(api.KNIGHT, y, x, y - 1, x, player, token)
-                    elif y < i and cl.neighbors((y + 1, x), eknights)[1] == 0:
+                    elif y < i and cl.neighbors((y, x), eknights)[0][(1, 0)] == 0:
                         api.move(api.KNIGHT, y, x, y + 1, x, player, token)
                 else:
-                    if y > i and cl.neighbors((y - 1, x), eknights)[1] == 0:
+                    if y > i and cl.neighbors((y, x), eknights)[0][(-1, 0)] == 0:
                         api.move(api.KNIGHT, y, x, y - 1, x, player, token)
-                    elif y < i and cl.neighbors((y + 1, x), eknights)[1] == 0:
+                    elif y < i and cl.neighbors((y, x), eknights)[0][(1, 0)] == 0:
                         api.move(api.KNIGHT, y, x, y + 1, x, player, token)
-                    elif x > j and cl.neighbors((y, x - 1), eknights)[1] == 0:
+                    elif x > j and cl.neighbors((y, x), eknights)[0][(0, -1)] == 0:
                         api.move(api.KNIGHT, y, x, y, x - 1, player, token)
-                    elif x < j and cl.neighbors((y, x + 1), eknights)[1] == 0:
+                    elif x < j and cl.neighbors((y, x), eknights)[0][(0, 1)] == 0:
                         api.move(api.KNIGHT, y, x, y, x + 1, player, token)
         for k in vus:  # j'enlève ceux que je bouge
             knights.remove(k)
@@ -140,22 +140,22 @@ def destroy_castle(knights, castles, eknights, player, token):
                 attaque(player, (i, j), knights, eknights, token)
             else:
                 if rd.random() > 0.5:  # pour ne pas que le chevalier aille toujours d'abord en haut puis à gauche
-                    if x > j and cl.neighbors((y, x - 1), eknights)[1] == 0:
+                    if x > j and cl.neighbors((y, x), eknights)[0][(0, -1)] == 0:
                         api.move(api.KNIGHT, y, x, y, x - 1, player, token)
-                    elif x < j and cl.neighbors((y, x + 1), eknights)[1] == 0:
+                    elif x < j and cl.neighbors((y, x), eknights)[0][(0, 1)] == 0:
                         api.move(api.KNIGHT, y, x, y, x + 1, player, token)
-                    elif y > i and cl.neighbors((y - 1, x), eknights)[1] == 0:
+                    elif y > i and cl.neighbors((y, x), eknights)[0][(-1, 0)] == 0:
                         api.move(api.KNIGHT, y, x, y - 1, x, player, token)
-                    elif y < i and cl.neighbors((y + 1, x), eknights)[1] == 0:
+                    elif y < i and cl.neighbors((y, x), eknights)[0][(1, 0)] == 0:
                         api.move(api.KNIGHT, y, x, y + 1, x, player, token)
                 else:
-                    if y > i and cl.neighbors((y - 1, x), eknights)[1] == 0:
+                    if y > i and cl.neighbors((y, x), eknights)[0][(-1, 0)] == 0:
                         api.move(api.KNIGHT, y, x, y - 1, x, player, token)
-                    elif y < i and cl.neighbors((y + 1, x), eknights)[1] == 0:
+                    elif y < i and cl.neighbors((y, x), eknights)[0][(1, 0)] == 0:
                         api.move(api.KNIGHT, y, x, y + 1, x, player, token)
-                    elif x > j and cl.neighbors((y, x - 1), eknights)[1] == 0:
+                    elif x > j and cl.neighbors((y, x), eknights)[0][(0, -1)] == 0:
                         api.move(api.KNIGHT, y, x, y, x - 1, player, token)
-                    elif x < j and cl.neighbors((y, x + 1), eknights)[1] == 0:
+                    elif x < j and cl.neighbors((y, x), eknights)[0][(0, 1)] == 0:
                         api.move(api.KNIGHT, y, x, y, x + 1, player, token)
         for k in vus:  # j'enlève ceux que je bouge
             knights.remove(k)
