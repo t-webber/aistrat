@@ -158,7 +158,7 @@ def path(units_to_move, other_units, eknights):
     return (results, units_to_move)
 
 
-def explore(pawns, player, token, eknights, otherunits=[], reste_gold=()):
+def explore(pawns, player, token, eknights, ecastles, otherunits=[], reste_gold=()):
     """ 
     Envoie en exploration les "pawns" inactifs pour le tour
     """
@@ -167,7 +167,7 @@ def explore(pawns, player, token, eknights, otherunits=[], reste_gold=()):
         api.move(api.PAWN, one_move[0][0], one_move[0][1],
                  one_move[1][0], one_move[1][1], player, token)
     if len(reste_gold) > 0:
-        farm(remaining_pawns, player, token, reste_gold, eknights)
+        farm(remaining_pawns, player, token, reste_gold, eknights, ecastles)
     if len(remaining_pawns) > 0:
         moves_trou = path_trou(remaining_pawns, otherunits, eknights)
         for one_move in moves_trou:
@@ -221,7 +221,7 @@ def nexturn(player, token):
     # je farm d'abord ce que je vois
     farm(pawns, player, token, good_gold, eknights, ecastles)
     # j'explore ensuite dans la direction opposée au spawn
-    explore(pawns, player, token, eknights, knights+castles, bad_gold)
+    explore(pawns, player, token, eknights, ecastles, knights+castles, bad_gold)
     left_defense = dfd.defend(pawns, defense, eknights, castles, player, token)
     dfd.agressiv_defense(left_defense, epawns, player, token, eknights)
     while knights:
