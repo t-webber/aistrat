@@ -107,7 +107,9 @@ def path_one(units_to_move, other_units, eknights):
             if abs(score-maxscore) <= 1:
                 stuck += 1
                 continue
-            if score > maxscore and cl.neighbors(move, eknights)[1] == 0:
+            ennemies=cl.neighbors(move, eknights)[1]
+            if score > maxscore and (ennemies == 0 \
+                    or ennemies<=len(api.get_defenders(boy[0],boy[1]))):
                 maxscore = score
                 bestpawn = boy
                 bestmove = move
@@ -131,8 +133,9 @@ def path_trou(units_to_move, other_units, eknights):
         bestmove_trou = (0, 0)
         for move in moves:
             vector_move = np.array((move[0]-boy[0], move[1]-boy[1]))
+            ennemies=cl.neighbors(move, eknights)[1]
             if np.dot(vecteur_trou, vector_move) > max_trou \
-                    and cl.neighbors(move, eknights)[1] == 0:
+                    and (ennemies == 0 or ennemies<=len(api.get_defenders(boy[0],boy[1]))):
                 bestmove_trou = move
         resultat.append((boy, bestmove_trou))
     return resultat
