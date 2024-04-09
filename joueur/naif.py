@@ -44,7 +44,7 @@ def fuite(pawns, knights, eknights, defense, player, token):
                             break
 
 
-def farm(pawns, player, token, good_gold, eknights):
+def farm(pawns, player, token, good_gold, eknights, ecastles):
     """ 
     farm gold when possible, else go to nearest avaible gold
     """
@@ -64,24 +64,24 @@ def farm(pawns, player, token, good_gold, eknights):
             i, j, _ = good_gold[g]
             gold_location.remove((i,j))
             if rd.random() > 0.5:  # pour ne pas que le peon aille toujours d'abord en haut puis à gauche
-                if x > j and cl.neighbors((y, x - 1), eknights)[1] == 0:
+                if x > j and (y, x - 1) not in eknights and (y, x - 1) not in ecastles:
                     api.move(api.PAWN, y, x, y, x - 1, player, token)
-                elif x < j and cl.neighbors((y, x + 1), eknights)[1] == 0:
+                elif x < j and (y, x + 1) not in eknights and (y, x + 1) not in ecastles:
                     api.move(api.PAWN, y, x, y, x + 1, player, token)
-                elif y > i and cl.neighbors((y - 1, x), eknights)[1] == 0:
+                elif y > i and (y - 1, x) not in eknights and (y - 1, x) not in ecastles:   
                     api.move(api.PAWN, y, x, y - 1, x, player, token)
-                elif y < i and cl.neighbors((y + 1, x), eknights)[1] == 0:
+                elif y < i and (y + 1, x) not in eknights and (y + 1, x) not in ecastles:
                     api.move(api.PAWN, y, x, y + 1, x, player, token)
                 else:
                     api.farm(y, x, player, token)
             else:
-                if y > i and cl.neighbors((y - 1, x), eknights)[1] == 0:
+                if y > i and (y - 1, x) not in eknights and (y - 1, x) not in ecastles:
                     api.move(api.PAWN, y, x, y - 1, x, player, token)
-                elif y < i and cl.neighbors((y + 1, x), eknights)[1] == 0:
+                elif y < i and (y + 1, x) not in eknights and (y + 1, x) not in ecastles:
                     api.move(api.PAWN, y, x, y + 1, x, player, token)
-                elif x > j and cl.neighbors((y, x - 1), eknights)[1] == 0:
+                elif x > j and (y, x - 1) not in eknights and (y, x - 1) not in ecastles:
                     api.move(api.PAWN, y, x, y, x - 1, player, token)
-                elif x < j and cl.neighbors((y, x + 1), eknights)[1] == 0:
+                elif x < j and (y, x + 1) not in eknights and (y, x + 1) not in ecastles:
                     api.move(api.PAWN, y, x, y, x + 1, player, token)
                 else:
                     api.farm(y, x, player, token)
