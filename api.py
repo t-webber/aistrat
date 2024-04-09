@@ -217,6 +217,15 @@ def add_visible(carte, unit):
                 carte[y][x] += 1
     return carte
 
+def get_defenders(y,x):
+    d = get_map()[y][x][current_player()]
+    result=[]
+    if d[KNIGHT]:
+        for _ in range(d[KNIGHT]):
+            result.append((y, x))
+    #print(f"Nombre de defenseurs de {y,x} pour {current_player()}: {result}")
+    return result
+
 
 if __name__ == "__main__":
     current_player, current_token = create_player()
