@@ -84,11 +84,11 @@ def hunt(knights, epawns, eknights, player, token):
             for i in voisins:
                 if voisins[i]:
                     if not voisins_ennemis[i]:
-                        y,x = k
-                        api.move(api.KNIGHT, y, x, y + i[0], x + i[1], player, token)
-                        if k in knights: #erreur si y pas ça, mais comprend pas pk
+                        y, x = k
+                        api.move(api.KNIGHT, y, x, y +
+                                 i[0], x + i[1], player, token)
+                        if k in knights:  # erreur si y pas ça, mais comprend pas pk
                             knights.remove(k)
-    # printknights, epawns)
     if knights and epawns:
         # affecation problem
         # choisis les mines d'or vers lesquelles vont se diriger les peons
@@ -127,7 +127,6 @@ def destroy_castle(knights, castles, eknights, player, token):
     """ 
     chasse les chateaux adverses, si possibilité de le détruire, le détruit
     """
-    # printknights, castles
     if knights and castles:
         # affecation problem
         # choisis les chateaux vers lesquelles vont se diriger les chevaliers

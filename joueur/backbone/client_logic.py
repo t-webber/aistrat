@@ -4,8 +4,9 @@ from scipy.optimize import linear_sum_assignment
 import numpy as np
 import api
 
-defense_knights={"A":[],"B":[]}
-attack_knights=[]
+defense_knights = {"A": [], "B": []}
+attack_knights = []
+
 
 def move_attack(x, y, nx, ny):
     for knight in attack_knights:
@@ -13,13 +14,14 @@ def move_attack(x, y, nx, ny):
             knight = (nx, ny)
 
 
-def move_defender (y,x,ny,nx,player):
+def move_defender(y, x, ny, nx, player):
     for i in range(len(defense_knights[player])):
-        if defense_knights[player][i]==(y,x):
-            defense_knights[player][i]=(ny,nx)
+        if defense_knights[player][i] == (y, x):
+            defense_knights[player][i] = (ny, nx)
             return
-  
-def visibility_score(carte,punishment=0):
+
+
+def visibility_score(carte, punishment=0):
     '''Permet de donner un score à une carte de visibilité
     Punishment représente le nombre de points retirés par sur-visibilité qu'on préfèrera sûrement garder à 0
     (on le veut pas trop grand pour favoriser l'exploration)'''
@@ -58,7 +60,7 @@ def hongrois_distance(acteurs, objets):
     return algo_hongrois(matrice_cost)
 
 
-def clean_golds(golds, pawns):
+def clean_golds(golds, pawns, ecastles):
     """
     Gives the priority to the big piles near other small piles, and sends only one pawn.
 
@@ -70,16 +72,18 @@ def clean_golds(golds, pawns):
     threshold_bad = 16
     distance_overlook = 1
     to_be_removed = [0 for _ in range(len(golds))]
-    for num,pile in enumerate(golds):
+    for num, pile in enumerate(golds):
         if pile[2] <= threshold_bad and to_be_removed[num] == 0:
-            for i,gold in enumerate(golds):
+            for i, gold in enumerate(golds):
                 if i != num and ((pile[0], pile[1]) not in pawns) and to_be_removed[i] == 0 \
                         and distance(pile[0], pile[1], gold[0], gold[1]) <= distance_overlook:
                     to_be_removed[num] = 1
                     break
     gold_clean = []
     gold_bad = []
-    for i,pile_remove in enumerate(to_be_removed):
+    for i, pile_remove in enumerate(to_be_removed):
+        if golds[i][0:2] in ecastles:
+            continue
         if pile_remove == 0:
             gold_clean.append(golds[i])
         else:
@@ -137,11 +141,9 @@ def neighbors(case, knights):
 def trous(grille):
     '''Cherche tous les lieux avec un éclairage extrêmement faible'''
     sortie = []
-    #print(grille)
     vus = np.zeros((len(grille), len(grille[0])))
     for i, x in enumerate(grille):
         for j, y in enumerate(x):
-            # printvus)
             if vus[i][j] == 0 and grille[i][j] == 0:
                 a_chercher = [(i, j)]
                 vus[i][j] = 1
@@ -155,14 +157,12 @@ def trous(grille):
                             a_chercher.append(case)
                     trou.append(pixel)
                 sortie.append((trou))
-    #print(sortie)
     return sortie
 
 
 def plus_gros_trou(grille):
     '''Cherche la plus grande surface continue mal éclairée'''
     holes = trous(grille)
-    # printholes)
     taille_max = 0
     trou_max = holes[0]
     for one_hole in holes:
@@ -181,16 +181,16 @@ def milieu_trou(trou):
         i += k[0]
         j += k[1]
     milieu = (i//len(trou), j//len(trou))
-    #print(milieu)
     return milieu
 
 
 def plus_proche_trou(list_trous, unit):
     '''Trouve le trou le plus proche de l'unité'''
-    joueur=api.current_player()
-    if joueur=='A':
-        best=api.map_size
-    else: best=(0,0)
+    joueur = api.current_player()
+    if joueur == 'A':
+        best = api.map_size
+    else:
+        best = (0, 0)
     best_dist = float('inf')
     for trou in list_trous:
         milieu = milieu_trou(trou)
