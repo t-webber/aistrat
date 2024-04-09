@@ -24,7 +24,7 @@
 
 ## 20/03
 
-- Tom: Construction d'un premier chateau en case (2, 2) dès le début (prise de contrôle d'un péon) + Espacement entre chateaux + Créations de chevaliers + fix timeout
+- Tom: Construction d'un premier chateau en case (2, 2) dès le début (prise de contrôle d'un péon) + Espacement entre chateaux + Créations de chevaliers
 - Jules : Implémentation fuite
 - Martin et Jules : début de l'implémentation de premières fonctions pour aider à implémtner l'attaque ( neighbors, prediction combat)
 - Nicolas: Implémentation d'un système de décision pour le chemin des pions ne récupérant pas d'or en cherchant des maximum locaux de visibilité et amélioration de clean_golds
@@ -32,6 +32,7 @@
 ## 26/03
 
 - Nicolas: Retrait de la logique de points négatifs pour un éclairement trop superposé qui amenait les pions à aller dans le coin le plus proche. Ajout d'une logique supplémentaire pour path: on considère les trous dans la visibilité du plateau pour essayer d'orienter les pions ne trouvant pas de maximum local vers leur centre.
+- Tom : add cli `./start_match` and fix timeout
 - Jules : On regarde où on va pour éviter de faire se suicider nos troupes
 - Martin et Jules : implémentation de l'attaque des nos chevaliers pour traquer les peons adverses et leurs chateaux
 
