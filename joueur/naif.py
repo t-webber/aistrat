@@ -12,8 +12,7 @@ import joueur.backbone.defense as dfd
 def fuite(pawns, knights, eknights, defense, player, token):
     for p in pawns:
         direc_enemies, total_enemies = cl.neighbors(p, eknights)
-        if total_enemies > 0 :
-            #print(knights, defense)
+        if total_enemies > 0:
             direc_allies, allies_backup = cl.neighbors(p, knights)
             allies = 0
             for k in knights:
@@ -22,13 +21,12 @@ def fuite(pawns, knights, eknights, defense, player, token):
             for k in defense:
                 if k[0] == p[0] and k[1] == p[1]:
                     allies += 1
-            #print('prediction_combat', cl.prediction_combat(total_enemies, allies+allies_backup)[0], allies + allies_backup, total_enemies)
             if cl.prediction_combat(total_enemies, allies+allies_backup)[0]:
                 # si on peut perd le combat même avec les alliés on fuit
                 for direc in direc_enemies:
                     if direc_enemies[direc] == 0 and (p[0] + direc[0], p[1]+direc[1]) in api.get_moves(p[0], p[1]):
                         api.move(api.PAWN, p[0], p[1], p[0] +
-                                direc[0], p[1]+direc[1], player, token)
+                                 direc[0], p[1]+direc[1], player, token)
                         pawns.remove((p[0], p[1]))
                         break
             else:
@@ -38,7 +36,7 @@ def fuite(pawns, knights, eknights, defense, player, token):
                         if direc_allies[direc] > 0:
                             api.move(
                                 api.KNIGHT, p[0]+direc[0], p[1]+direc[1], p[0], p[1], player, token)
-                            if (p[0]+direc[0], p[1]+direc[1]) in knights :
+                            if (p[0]+direc[0], p[1]+direc[1]) in knights:
                                 knights.remove((p[0]+direc[0], p[1]+direc[1]))
                             allies_backup -= 1
                             break
@@ -55,14 +53,14 @@ def farm(pawns, player, token, good_gold, eknights):
         # choisis les mines d'or vers lesquelles vont se diriger les peons
         # pour en minimiser le nombre total de mouvements
         gold_location = []
-        gold_location = [ (item[0], item[1]) for item in good_gold]
+        gold_location = [(item[0], item[1]) for item in good_gold]
         vus = []
         # je fais bouger les peons vers leur mine d'or
         for p, g in cl.hongrois_distance(pawns, gold_location):
             vus.append(pawns[p])
             y, x = pawns[p]
             i, j, _ = good_gold[g]
-            gold_location.remove((i,j))
+            gold_location.remove((i, j))
             if rd.random() > 0.5:  # pour ne pas que le peon aille toujours d'abord en haut puis à gauche
                 if x > j and cl.neighbors((y, x - 1), eknights)[1] == 0:
                     api.move(api.PAWN, y, x, y, x - 1, player, token)
@@ -91,7 +89,6 @@ def farm(pawns, player, token, good_gold, eknights):
 
 def path_one(units_to_move, other_units, eknights):
     '''Cherche le meilleur chemin pour une unité de units_to_move pour voir plus de la map'''
-    # # printlen(units_to_move))
     maxscore = cl.visibility_score(api.get_visible(units_to_move+other_units))
     bestpawn = (-1, -1)
     bestmove = (-1, -1)
@@ -103,7 +100,6 @@ def path_one(units_to_move, other_units, eknights):
         static_view = api.get_visible(static_units)
         for move in moves:
             new_map = api.add_visible(static_view, move)
-            # # printcl.plus_gros_trou(new_map))
             score = cl.visibility_score(new_map)
             if abs(score-maxscore) <= 1:
                 stuck += 1
@@ -123,7 +119,6 @@ def path_trou(units_to_move, other_units, eknights):
     visibility = api.get_visible(everybody)
     trous_list = cl.trous(visibility)
     for boy in units_to_move:
-        #print("On règle par un trou", boy)
         milieu_du_trou = cl.plus_proche_trou(trous_list, boy)
         moves = api.get_moves(boy[0], boy[1])
         vecteur_trou = np.array(
@@ -143,7 +138,6 @@ def path(units_to_move, other_units, eknights):
     '''Essaye de chercher un chemin d'exploration optimal pour les units_to_move pour révéler
     le maximum de la carte pour les péons. Prend en compte other_units pour la visibilité'''
     results = []
-    # print("Entrées : ",units_to_move)
     strategie = 0
     for i in range(len(units_to_move)):
         if strategie == 0:
@@ -157,32 +151,25 @@ def path(units_to_move, other_units, eknights):
             units_to_move = [units_to_move[i] for i in range(
                 len(units_to_move)) if units_to_move[i] is not bestpawn]
         else:
-            return (results,units_to_move)
-    return (results,units_to_move)
-    #     print('Units updated : ',units_to_move)
-    # print("Résultats de path : ",results)
+            return (results, units_to_move)
+    return (results, units_to_move)
 
 
-def explore(pawns, player, token, eknights,otherunits=[],reste_gold=()):
+def explore(pawns, player, token, eknights, otherunits=[], reste_gold=()):
     """ 
     Envoie en exploration les "pawns" inactifs pour le tour
     """
-    # print("J'explore")
-    moves,remaining_pawns = path(pawns, otherunits, eknights)
-    # print(moves)
+    moves, remaining_pawns = path(pawns, otherunits, eknights)
     for one_move in moves:
         api.move(api.PAWN, one_move[0][0], one_move[0][1],
                  one_move[1][0], one_move[1][1], player, token)
-    if len(reste_gold)>0:
-        #print("Reste gold:",reste_gold)
-        farm(remaining_pawns,player,token,reste_gold,eknights)
-    if len(remaining_pawns)>0:
-        moves_trou=path_trou(remaining_pawns,otherunits,eknights)
+    if len(reste_gold) > 0:
+        farm(remaining_pawns, player, token, reste_gold, eknights)
+    if len(remaining_pawns) > 0:
+        moves_trou = path_trou(remaining_pawns, otherunits, eknights)
         for one_move in moves_trou:
             api.move(api.PAWN, one_move[0][0], one_move[0][1],
-                    one_move[1][0], one_move[1][1], player, token)
-
-
+                     one_move[1][0], one_move[1][1], player, token)
 
 
 def nexturn(player, token):
@@ -190,7 +177,7 @@ def nexturn(player, token):
     run next turn for the current player 
         - build a castle
         - farm coins
-    """   
+    """
     kinds = api.get_kinds(player)
     pawns: list[api.Coord] = kinds[api.PAWN]
     knights: list[api.Coord] = kinds[api.KNIGHT]
@@ -206,8 +193,6 @@ def nexturn(player, token):
         gold = api.get_gold()[player]
     except:
         gold = 0
-    print(defense)
-    # print("FOOOOG", fog)
 
     # pour moi, on appelle dans l'ordre :
     # defense
@@ -222,22 +207,23 @@ def nexturn(player, token):
             defense.remove(d)
         else:
             knights.remove(d)
-    good_gold, bad_gold = cl.clean_golds(golds, pawns)
-    
+    good_gold, bad_gold = cl.clean_golds(golds, pawns, ecastles)
+
     build.create_pawns(castles, player, token,
                        eknights, knights, gold, cl.defense_knights[player],
                        len(golds), len(pawns), len(fog))
     fuite(pawns, knights, eknights, defense, player, token)
 
     build.check_build(pawns, castles, player, token, gold)
-    farm(pawns, player, token, good_gold,eknights)  # je farm d'abord ce que je vois
+    # je farm d'abord ce que je vois
+    farm(pawns, player, token, good_gold, eknights)
     # j'explore ensuite dans la direction opposée au spawn
-    explore(pawns, player, token, eknights,knights+castles,bad_gold)
-    left_defense=dfd.defend(pawns, defense, eknights, castles, player, token)
-    dfd.agressiv_defense(left_defense,epawns,player,token,eknights)
-    while knights :
+    explore(pawns, player, token, eknights, knights+castles, bad_gold)
+    left_defense = dfd.defend(pawns, defense, eknights, castles, player, token)
+    dfd.agressiv_defense(left_defense, epawns, player, token, eknights)
+    while knights:
         a = len(knights)
         atk.hunt(knights, epawns, eknights, player, token)
         atk.destroy_castle(knights, ecastles, eknights, player, token)
-        if len(knights)==a:
+        if len(knights) == a:
             break
