@@ -62,13 +62,13 @@ def farm(pawns, player, token, good_gold, eknights, ecastles):
             i, j, _ = good_gold[g]
             gold_location.remove((i, j))
             if rd.random() > 0.5:  # pour ne pas que le peon aille toujours d'abord en haut puis à gauche
-                if x > j and (y, x - 1) not in eknights and (y, x - 1) not in ecastles and cl.neighbors((y, x - 1), eknights)[1] == 0:
+                if x > j and (y, x - 1) not in eknights and (y, x - 1) not in ecastles and (cl.neighbors((y, x - 1), eknights)[1] == 0 or cl.neighbors((y, x - 1), eknights)[1] <= len(api.get_defenders(y, x))):
                     api.move(api.PAWN, y, x, y, x - 1, player, token)
-                elif x < j and (y, x + 1) not in eknights and (y, x + 1) not in ecastles and cl.neighbors((y, x + 1), eknights)[1] == 0:
+                elif x < j and (y, x + 1) not in eknights and (y, x + 1) not in ecastles and (cl.neighbors((y, x + 1), eknights)[1] == 0 or cl.neighbors((y, x + 1), eknights)[1] <= len(api.get_defenders(y, x))):
                     api.move(api.PAWN, y, x, y, x + 1, player, token)
-                elif y > i and (y - 1, x) not in eknights and (y - 1, x) not in ecastles and cl.neighbors((y - 1, x), eknights)[1] == 0:
+                elif y > i and (y - 1, x) not in eknights and (y - 1, x) not in ecastles and (cl.neighbors((y - 1, x), eknights)[1] == 0 or cl.neighbors((y-1, x), eknights)[1] <= len(api.get_defenders(y, x))):
                     api.move(api.PAWN, y, x, y - 1, x, player, token)
-                elif y < i and (y + 1, x) not in eknights and (y + 1, x) not in ecastles and cl.neighbors((y + 1, x), eknights)[1] == 0:
+                elif y < i and (y + 1, x) not in eknights and (y + 1, x) not in ecastles and (cl.neighbors((y + 1, x), eknights)[1] == 0 or cl.neighbors((y+1, x), eknights)[1] <= len(api.get_defenders(y, x))):
                     api.move(api.PAWN, y, x, y + 1, x, player, token)
                 else:
                     api.farm(y, x, player, token)
@@ -105,6 +105,7 @@ def path_one(units_to_move, other_units, eknights):
                 stuck += 1
                 continue
             ennemies = cl.neighbors(move, eknights)[1]
+            print(ennemies)
             if score > maxscore and (ennemies == 0
                                      or ennemies <= len(api.get_defenders(boy[0], boy[1]))):
                 maxscore = score
