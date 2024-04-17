@@ -4,8 +4,9 @@ param(
     [switch]$twoplayers
 )
 
+clear-host
 if ($twoplayers) {
-    python "$PSScriptRoot/2players.py" $url
+    python "$PSScriptRoot/src/main.py" 2 $url
 } else {
-    python "$PSScriptRoot/1player.py" $url
+    python "$PSScriptRoot/src/main.py" 1 $url
 }

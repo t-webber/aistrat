@@ -2,7 +2,7 @@
 
 from scipy.optimize import linear_sum_assignment
 import numpy as np
-import api
+import api as api
 
 defense_knights = {"A": [], "B": []}
 attack_knights = []

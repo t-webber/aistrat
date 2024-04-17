@@ -1,6 +1,6 @@
 import random as rd
-import api
-import joueur.backbone.client_logic as cl
+import src.api as api
+import joueur.logic.client_logic as cl
 
 
 def prediction_combat(a, d):
@@ -69,12 +69,12 @@ def prediction_attaque(player, case_attaquee, knights, eknights):
         b1, b2, pertes_attaque2, pertes_defense2 = prediction_combat(
             attaquants, defenseurs)
         return ((pertes_attaque + pertes_attaque2) >= (pertes_defense + pertes_defense2))
-    
+
 
 def attaque(player, case_attaquee, knights, eknights, token):
     allies_voisins = cl.neighbors(case_attaquee, knights)[0]
     if prediction_attaque(player, case_attaquee, knights, eknights):
-            move_everyone(player, token, case_attaquee, allies_voisins, knights)
+        move_everyone(player, token, case_attaquee, allies_voisins, knights)
 
 
 def hunt(knights, epawns, eknights, player, token):

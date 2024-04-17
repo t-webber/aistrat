@@ -1,12 +1,22 @@
 # Lancer une partie
 
-Si le serveur est déjà lancé et qu'on veut simplement connecter notre IA au serveur, il suffit d'exécuter la commande qui va lancer le script `1player.py`
+Si le serveur est déjà lancé et qu'on veut simplement connecter notre algorithme au serveur, il suffit d'exécuter la commande suivante
 
 ```bash
 ./start_match <url-du-server>
 ```
 
-Sinon on peut lancer le serveur avec `serveur.py` et lancer une partie entre 2 IA avec `2player.py`
+Si on ommet l'url du serveur, l'algorithme se connectera au serveur par défaut sur`http://localhost:8080`. Pour lancer ce serveur, il faut executer la commande
+
+```bash
+./start_server
+```
+
+Pour lancer l'algorithme contre lui-même, on peut utiliser rajouter l'options `-two`
+
+```bash
+./start_match  <url-du-server> -two
+```
 
 # Idee strategie naif
 

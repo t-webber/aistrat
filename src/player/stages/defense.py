@@ -1,6 +1,8 @@
-import joueur.backbone.client_logic as cl
-import api 
+import player.logic.client_logic as cl
+import api as api
 import random as rd
+
+
 def agressiv_defense(defense, epawns, player, token, eknigths):
     '''
     Looks at already on traget defense knights and attacks nearby enemys prioritizing enemy pawns while unsurring that the pawn they defend will still be defended for this turn
@@ -14,30 +16,31 @@ def agressiv_defense(defense, epawns, player, token, eknigths):
         None
     '''
     for d in defense:
-        dir_knights,near_eknights=cl.neighbors(d,eknigths)
-        dir_pawns,near_epawns=cl.neighbors(d,epawns)
+        dir_knights, near_eknights = cl.neighbors(d, eknigths)
+        dir_pawns, near_epawns = cl.neighbors(d, epawns)
 
-        if near_epawns==0 and near_eknights==0:
+        if near_epawns == 0 and near_eknights == 0:
             return
 
-        agressiv_defenders=0
+        agressiv_defenders = 0
         for d2 in defense:
-            agressiv_defenders+=(d2==d)
+            agressiv_defenders += (d2 == d)
 
-        options=[(dir_pawns[d],d) for d in dir_knights]
+        options = [(dir_pawns[d], d) for d in dir_knights]
         options.sort()
         for op in options:
-            _,direction=op
-            
-            for i in range(1,agressiv_defenders):
-                if cl.prediction_combat(i,dir_knights[direction])[0] and not(cl.prediction_combat(near_eknights-dir_knights[direction],agressiv_defenders-i)[0]):
-                    (y,x),(y2,x2)=d,(d[0]+direction[0],d[1]+direction[1])
+            _, direction = op
+
+            for i in range(1, agressiv_defenders):
+                if cl.prediction_combat(i, dir_knights[direction])[0] and not (cl.prediction_combat(near_eknights-dir_knights[direction], agressiv_defenders-i)[0]):
+                    (y, x), (y2, x2) = d, (d[0] +
+                                           direction[0], d[1]+direction[1])
                     for _ in range(i):
                         defense.remove(d)
-                        api.move(api.KNIGHT,y,x,y2,x2,player,token)
-                        cl.move_defender(y,x,y2,x2,player)
-                    agressiv_defenders-=i
-                    near_eknights-=dir_knights[direction]
+                        api.move(api.KNIGHT, y, x, y2, x2, player, token)
+                        cl.move_defender(y, x, y2, x2, player)
+                    agressiv_defenders -= i
+                    near_eknights -= dir_knights[direction]
 
 
 def move_defense(defense, pawns, player, token, eknight):
@@ -54,11 +57,11 @@ def move_defense(defense, pawns, player, token, eknight):
     Returns
         defense knights that still need to move
     """
-    if pawns==[]:
-        return defense,[]
+    if pawns == []:
+        return defense, []
     hongroise = cl.hongrois_distance(defense, pawns)
-    utilise=[]
-    arrived=[]
+    utilise = []
+    arrived = []
     for d, p in hongroise:
         yd, xd = defense[d]
         yp, xp = pawns[p]
@@ -73,7 +76,7 @@ def move_defense(defense, pawns, player, token, eknight):
                 cl.move_defender(yd, xd, yd, xd + 1, player)
             elif yd > yp and (yd-1, xd) not in eknight:
                 api.move(api.KNIGHT, yd, xd, yd-1, xd, player, token)
-                cl.move_defender(yd,xd, yd-1, xd, player)
+                cl.move_defender(yd, xd, yd-1, xd, player)
             elif yd < yp and (yd + 1, xd) not in eknight:
                 api.move(api.KNIGHT, yd, xd, yd + 1, xd, player, token)
                 cl.move_defender(yd, xd, yd+1, xd, player)
@@ -97,7 +100,7 @@ def move_defense(defense, pawns, player, token, eknight):
 
     for d in utilise:
         defense.remove(d)
-    return (defense,arrived)
+    return (defense, arrived)
 
 
 def defend(pawns, defense, eknights, castle, player, token):
@@ -125,10 +128,11 @@ def defend(pawns, defense, eknights, castle, player, token):
     # on priorise les pions selon la distance à un chevalier ennemi
     compteur = 0
     left_defense = defense.copy()
-    arrived=[]
-    while (bool(left_defense) and compteur<50):
+    arrived = []
+    while (bool(left_defense) and compteur < 50):
         rd.shuffle(needing_help[compteur])
-        left_defense,arrived2 = move_defense(left_defense, needing_help[compteur], player, token, eknights)
-        arrived+=arrived2
+        left_defense, arrived2 = move_defense(
+            left_defense, needing_help[compteur], player, token, eknights)
+        arrived += arrived2
         compteur += 1
     return arrived

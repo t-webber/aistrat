@@ -3,22 +3,28 @@
 import sys
 import time
 import api
-from joueur import naif as p
+from player import next_turn as p
 
 
-if len(sys.argv) > 1:
-    api.init(sys.argv[1])
+if len(sys.argv) > 2:
+    api.init(sys.argv[2])
 else:
     api.init("http://localhost:8080")
 
 print("IP = ", api.IP)
 
-player1, token1 = api.create_player()
-if len(sys.argv) > 2:
-    player2, token2 = api.create_player()
-    TWO_PLAYERS = True
+if len(sys.argv) > 1:
+    TWO_PLAYERS = sys.argv[1] == '2'
 else:
-    TWO_PLAYERS = False
+    TWO_PLAYERS = True
+
+print(sys.argv)
+print(TWO_PLAYERS)
+
+
+player1, token1 = api.create_player()
+if TWO_PLAYERS:
+    player2, token2 = api.create_player()
 
 
 def main():
@@ -26,6 +32,7 @@ def main():
     function to get the player who need to play, plays its turn and ends it
     """
 
+    time.sleep(0.1)  # avoid spamming the server
     t = time.time()
     while not api.get_data(player1, token1):
         if time.time() - t > 10:

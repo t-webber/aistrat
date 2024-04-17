@@ -1,12 +1,7 @@
-""" naïve algorithm """
-
 import random as rd
 import numpy as np
 import api
-import joueur.backbone.client_logic as cl
-import joueur.castles as build
-import joueur.backbone.attaque as atk
-import joueur.backbone.defense as dfd
+import player.logic.client_logic as cl
 
 
 def fuite(pawns, knights, eknights, defense, player, token):
@@ -23,8 +18,8 @@ def fuite(pawns, knights, eknights, defense, player, token):
                     allies += 1
             if cl.prediction_combat(total_enemies, allies+allies_backup)[0]:
                 # si on peut perd le combat même avec les alliés on fuit
-                for direc in direc_enemies:
-                    if direc_enemies[direc] == 0 and (p[0] + direc[0], p[1]+direc[1]) in api.get_moves(p[0], p[1]):
+                for (direc, nb) in direc_enemies.items():
+                    if nb == 0 and (p[0] + direc[0], p[1]+direc[1]) in api.get_moves(p[0], p[1]):
                         api.move(api.PAWN, p[0], p[1], p[0] +
                                  direc[0], p[1]+direc[1], player, token)
                         pawns.remove((p[0], p[1]))
@@ -32,8 +27,8 @@ def fuite(pawns, knights, eknights, defense, player, token):
             else:
                 # on peut réussir à gagner le combat avec les alliés et on le fait venir
                 while not cl.prediction_combat(total_enemies, allies)[0] and allies_backup > 0:
-                    for direc in direc_allies:
-                        if direc_allies[direc] > 0:
+                    for direc, nb in direc_allies.items():
+                        if nb > 0:
                             api.move(
                                 api.KNIGHT, p[0]+direc[0], p[1]+direc[1], p[0], p[1], player, token)
                             if (p[0]+direc[0], p[1]+direc[1]) in knights:
@@ -174,64 +169,3 @@ def explore(pawns, player, token, eknights, ecastles, otherunits=[], reste_gold=
         for one_move in moves_trou:
             api.move(api.PAWN, one_move[0][0], one_move[0][1],
                      one_move[1][0], one_move[1][1], player, token)
-
-
-def nexturn(player, token):
-    """ 
-    run next turn for the current player 
-        - build a castle
-        - farm coins
-    """
-    kinds = api.get_kinds(player)
-    pawns: list[api.Coord] = kinds[api.PAWN]
-    knights: list[api.Coord] = kinds[api.KNIGHT]
-    eknights: list[api.Coord] = kinds[api.EKNIGHT]
-    epawns: list[api.Coord] = kinds[api.EPAWN]
-    fog = kinds[api.FOG]
-    # liste des chevaliers attribués à la défense
-    defense: list[api.Coord] = cl.defense_knights[player]
-    golds: list[api.Coord] = kinds[api.GOLD]
-    castles: list[api.Coord] = kinds[api.CASTLE]
-    ecastles: list[api.Coord] = kinds[api.ECASTLE]
-    try:
-        gold = api.get_gold()[player]
-    except:
-        gold = 0
-
-    # pour moi, on appelle dans l'ordre :
-    # defense
-    # fuite qui dit au peons de fuire s'ils vont se faire tuer
-    # (i.e un méchant est à côté et pas de gentil assez près pour l'aider)
-    # construction forteresse
-    # farm
-    # explore
-    # attaque
-    for d in defense:
-        if d not in knights:
-            defense.remove(d)
-        else:
-            knights.remove(d)
-    good_gold, bad_gold = cl.clean_golds(golds, pawns, ecastles)
-
-    build.create_pawns(castles, player, token,
-                       eknights, knights, gold, cl.defense_knights[player],
-                       len(golds), len(pawns), len(fog))
-    fuite(pawns, knights, eknights, defense, player, token)
-
-    build.check_build(pawns, castles, player, token, gold)
-    # je farm d'abord ce que je vois
-    farm(pawns, player, token, good_gold, eknights, ecastles)
-    # j'explore ensuite dans la direction opposée au spawn
-    explore(pawns, player, token, eknights,
-            ecastles, knights+castles, bad_gold)
-
-    atk.free_pawn(knights, player, token, eknights, epawns)
-
-    left_defense = dfd.defend(pawns, defense, eknights, castles, player, token)
-    dfd.agressiv_defense(left_defense, epawns, player, token, eknights)
-    while knights:
-        a = len(knights)
-        atk.hunt(knights, epawns, eknights, player, token)
-        atk.destroy_castle(knights, ecastles, eknights, player, token)
-        if len(knights) == a:
-            break
