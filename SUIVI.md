@@ -38,6 +38,7 @@
 
 ## 02/04
 
+- Tom: Si un péon est accessible directement, le prendre + refactor le code suite à la réunion
 - Nicolas: Correction de la fonction de détection de trous et de pathing des unités. Ajout d'une logique intermédiaire pour l'ordre des actions: farm des bons or -> déplacment optimal -> farm des mauvais or -> déplacement vers trous lointains
 - Jules : compréhension globale du programme et donc écriture du README
 - Martin: amélioration de la traque, saisi d'opportunités lorqu'on peut tuer un adversaire voisin
