@@ -1,5 +1,5 @@
 import player.logic.client_logic as cl
-import api as api
+import api
 import random as rd
 
 
