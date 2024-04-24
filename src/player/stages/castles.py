@@ -59,7 +59,7 @@ def check_build(pawns, castles, player, token, gold, eknights):
     for pawn in pawns:
         y, x = pawn
         # distance au château le plus proche
-        d = distance_2_castle(y, x, castles)
+        d = cl.distance_to_list((y, x), castles)
 
         # si le pions est suffisamment loin de la bordure
         if border <= x <= border_x and border <= y <= border_y and d >= 3:
