@@ -40,13 +40,22 @@ def distance(x1, y1, x2, y2):
     return abs(x1 - x2) + abs(y1 - y2)
 
 
-def distance_to_list(current_position: api.Coord, list_positions: list[api.Coord]):
+def distance_to_list(current_position: api.Coord, list_positions: list[api.Coord]) -> bool:
     """ Get the distance to the nearest castle """
     d = float('inf')
     y_curr, x_curr = current_position
     for (y, x) in list_positions:
         d = min(distance(y, x, y_curr, x_curr), d)
     return d
+
+
+def exists_close(current_position: api.Coord, list_targets: list[api.Coord], sep: int) -> bool:
+    """ Check if there is a target close to the current position """
+    y_curr, x_curr = current_position
+    for (y, x) in list_targets:
+        if distance(y, x, y_curr, x_curr) <= sep:
+            return True
+    return False
 
 
 def hongrois_distance(acteurs, objets):

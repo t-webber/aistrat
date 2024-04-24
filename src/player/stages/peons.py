@@ -100,7 +100,7 @@ def path_one(units_to_move, other_units, eknights):
                 stuck += 1
                 continue
             ennemies = cl.neighbors(move, eknights)[1]
-            print(ennemies)
+            # print(ennemies)
             if score > maxscore and (ennemies == 0
                                      or ennemies <= len(api.get_defenders(boy[0], boy[1]))):
                 maxscore = score
