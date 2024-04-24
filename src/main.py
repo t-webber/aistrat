@@ -16,7 +16,7 @@ print("IP = ", api.IP)
 if len(sys.argv) > 1:
     TWO_PLAYERS = sys.argv[1] == '2'
 else:
-    TWO_PLAYERS = True
+    TWO_PLAYERS = False
 
 print(sys.argv)
 print(TWO_PLAYERS)

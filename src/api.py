@@ -3,7 +3,7 @@ import numpy as np
 import requests
 
 IP = "http://localhost:8080"
-TIME_OUT = 0.001
+TIME_OUT = 0.01
 PAWN = "C"
 CASTLE = "B"
 KNIGHT = "M"
@@ -39,8 +39,9 @@ def end_turn(player, token):
 
 def create_player():
     """ Create the player """
+    print("MAKING REQUEST")
     dataplayer = requests.get(IP+"/getToken", timeout=TIME_OUT).json()
-    ("PLAYER = ", dataplayer)
+    print("PLAYER = ", dataplayer)
     player = dataplayer['player']
     token = dataplayer['token']
     return player, token
