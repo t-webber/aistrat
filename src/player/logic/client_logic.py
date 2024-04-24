@@ -5,14 +5,6 @@ import numpy as np
 import api as api
 
 defense_knights = {"A": [], "B": []}
-attack_knights = []
-
-
-def move_attack(x, y, nx, ny):
-    for knight in attack_knights:
-        if knight == (x, y):
-            knight = (nx, ny)
-
 
 def move_defender(y, x, ny, nx, player):
     for i in range(len(defense_knights[player])):
