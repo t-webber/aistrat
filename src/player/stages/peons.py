@@ -7,17 +7,21 @@ import player.logic.client_logic as cl
 def fuite(pawns, knights, eknights, defense, player, token):
     for p in pawns:
         direc_enemies, total_enemies = cl.neighbors(p, eknights)
+        print("p",p,"total enemies", total_enemies)
         if total_enemies > 0:
             direc_allies, allies_backup = cl.neighbors(p, knights)
             allies = 0
+            allies_defense = 0
+            for k in defense:
+                if k[0] == p[0] and k[1] == p[1]:
+                    allies_defense += 1
+                    allies += 1
             for k in knights:
                 if k[0] == p[0] and k[1] == p[1]:
                     allies += 1
-            for k in defense:
-                if k[0] == p[0] and k[1] == p[1]:
-                    allies += 1
+            
             if cl.prediction_combat(total_enemies, allies+allies_backup)[0]:
-                # si on peut perd le combat même avec les alliés on fuit
+                # si on perd le combat même avec les alliés on fuit
                 for (direc, nb) in direc_enemies.items():
                     if nb == 0 and (p[0] + direc[0], p[1]+direc[1]) in api.get_moves(p[0], p[1]):
                         api.move(api.PAWN, p[0], p[1], p[0] +
@@ -25,15 +29,21 @@ def fuite(pawns, knights, eknights, defense, player, token):
                         pawns.remove((p[0], p[1]))
                         break
             else:
+                while cl.prediction_combat(total_enemies, allies_defense)[0] and allies - allies_defense > 0:
+                    knights.remove((p[0], p[1]))
+                    allies_defense+=1
                 # on peut réussir à gagner le combat avec les alliés et on le fait venir
-                while not cl.prediction_combat(total_enemies, allies)[0] and allies_backup > 0:
+                while cl.prediction_combat(total_enemies, allies)[0] and allies_backup > 0:
                     for direc, nb in direc_allies.items():
+                        print("direc",direc,"nb",nb)
                         if nb > 0:
                             api.move(
                                 api.KNIGHT, p[0]+direc[0], p[1]+direc[1], p[0], p[1], player, token)
+                            
                             if (p[0]+direc[0], p[1]+direc[1]) in knights:
                                 knights.remove((p[0]+direc[0], p[1]+direc[1]))
                             allies_backup -= 1
+                            direc_allies[direc] -= 1
                             break
 
 
@@ -68,13 +78,13 @@ def farm(pawns, player, token, good_gold, eknights, ecastles):
                 else:
                     api.farm(y, x, player, token)
             else:
-                if y > i and (y - 1, x) not in eknights and (y - 1, x) not in ecastles:
+                if y > i and (y - 1, x) not in eknights and (y - 1, x) not in ecastles and (cl.neighbors((y - 1, x), eknights)[1] == 0 or cl.neighbors((y-1, x), eknights)[1] <= len(api.get_defenders(y, x))):
                     api.move(api.PAWN, y, x, y - 1, x, player, token)
-                elif y < i and (y + 1, x) not in eknights and (y + 1, x) not in ecastles:
+                elif y < i and (y + 1, x) not in eknights and (y + 1, x) not in ecastles and (cl.neighbors((y + 1, x), eknights)[1] == 0 or cl.neighbors((y+1, x), eknights)[1] <= len(api.get_defenders(y, x))):
                     api.move(api.PAWN, y, x, y + 1, x, player, token)
-                elif x > j and (y, x - 1) not in eknights and (y, x - 1) not in ecastles:
+                elif x > j and (y, x - 1) not in eknights and (y, x - 1) not in ecastles and (cl.neighbors((y, x - 1), eknights)[1] == 0 or cl.neighbors((y, x - 1), eknights)[1] <= len(api.get_defenders(y, x))):
                     api.move(api.PAWN, y, x, y, x - 1, player, token)
-                elif x < j and (y, x + 1) not in eknights and (y, x + 1) not in ecastles:
+                elif x < j and (y, x + 1) not in eknights and (y, x + 1) not in ecastles and (cl.neighbors((y, x + 1), eknights)[1] == 0 or cl.neighbors((y, x + 1), eknights)[1] <= len(api.get_defenders(y, x))):
                     api.move(api.PAWN, y, x, y, x + 1, player, token)
                 else:
                     api.farm(y, x, player, token)
