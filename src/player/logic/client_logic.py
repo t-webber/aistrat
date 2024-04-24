@@ -6,6 +6,7 @@ import api as api
 
 defense_knights = {"A": [], "B": []}
 
+
 def move_defender(y, x, ny, nx, player):
     for i in range(len(defense_knights[player])):
         if defense_knights[player][i] == (y, x):
@@ -37,6 +38,15 @@ def distance(x1, y1, x2, y2):
         x2, y2 : The coordinates of the second point.
     """
     return abs(x1 - x2) + abs(y1 - y2)
+
+
+def distance_to_list(current_position: api.Coord, list_positions: list[api.Coord]):
+    """ Get the distance to the nearest castle """
+    d = float('inf')
+    y_curr, x_curr = current_position
+    for (y, x) in list_positions:
+        d = min(distance(y, x, y_curr, x_curr), d)
+    return d
 
 
 def hongrois_distance(acteurs, objets):
