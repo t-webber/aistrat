@@ -9,7 +9,7 @@ Un systeme de classeur est un ensemble de règles(qui sont en fait des actions p
 La création du système de classeur se fait à partir d'un algorythme génétique sur les règles (condition+action+poid) mais on pourrait ne l'appliquer qu'au poid en déterminant nous même les règles par exemple.
 Les conditions pourraient porter sur des variables globales représentatnt l'état de la partie et la grille localement autour de l'élément dont on veut déterminer l'action.
 
-## Arbre de décision
+# Arbre de décision
 
 Un arbre de décision est un arbre ou chaque noeud représente une question sur l'état du jeu et chaque branche une réponse possible, en fonction de la situation on suit les branche pour arriver jusqu'à une feuille sur laquelle on pourra encoder l'action à effectuer le cas échéant. Cela revient à hardcoder une stratégie dépendant de la situation.
 
@@ -17,7 +17,7 @@ Les arbres de décision sont souvent utilisés pour classer des données et peuv
 
 L'algorithme peut être rendu non deterministe en pondérant les branches en fonction de la réponse à la question ou en utilisant un grand nombre d'arbre différents (forêt) et en séléctionnant la réponse la plus présente ou aléatoirement avec pondération selon la quantité de présence.
 
-## Minimax
+# Minimax
 
 On simule toutes les parties possibles sur une profondeur n ce qui permet de creer un arbre. On évalue ensuite toutes les situations obtenues dans la partie et on leur attribue une valeur. Un étage sur deux en partant des feuilles, selon le joueur qui joue à cette étage, on conserve le fils menant à la situation la mieux notée ou la moins bien noté, ce qui donne à la racine le meilleur coup à jouer en supposant que l'évaluatio finale soit bonne et que l'adversaire joue lui aussi les meilleurs coups.
 
@@ -32,15 +32,15 @@ Dans un jeu non déterministe on ajoute un ou plusieurs étages de chance dans l
 
 Trop de possibilité pour l'appliquer directement mais peut être juste sur la gestion des combats ça pourrrait peut être se faire
 
-## Recherche arborescente Monte carlo.
+# Recherche arborescente Monte carlo.
 
 On joue aléatoirement un grand nombre de partie et on note les actions ayant mené à la victoire. On construit ainsi un arbre ou chaque noeud est étiqueté par le nombre de simulations passant par ce noeud et le nombre de simulations gagantes passant par ce noeud. On choisi ensuite à partir de ces informations l'action à effectuer. C'est bien pour les jeux à haut niveau de liberté mais il risque d'y avoir trop de liberté dans ce jeu ci ou alors de nouveau sur des situations bien précise.
 
 [voir ici](https://moodle.uphf.fr/pluginfile.php/98463/mod_resource/content/4/jeu.pdf)
 
-## Architecture RHISC pour les systems de classeur (retourner voir au crdn)
+# Architecture RHISC pour les systems de classeur (retourner voir au crdn)
 
-## Système expert
+# Système expert
 
 On utilise un ensemble de faits et de règle (on peut fair une analogie avec la logique les fait étant des valuation d'un ensemble de variable et les règles des règles de logique) on peut utiliser comme support la logique du ppremier ordre par exemple.
 
