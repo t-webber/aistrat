@@ -1,4 +1,4 @@
-""" main client program to launch for auto playing """
+""" principale programme client à lancer pour jouer automatiquement """
 
 import sys
 import time
@@ -29,7 +29,7 @@ if TWO_PLAYERS:
 
 def main():
     """ 
-    function to get the player who need to play, plays its turn and ends it
+    fonction pour connaitre le joueur dont c'est le tour, le faire jouer et finir son tour
     """
 
     time.sleep(0.1)  # avoid spamming the server
