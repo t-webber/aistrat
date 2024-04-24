@@ -39,9 +39,7 @@ def end_turn(player, token):
 
 def create_player():
     """ Cree le joueur """
-    print("MAKING REQUEST")
     dataplayer = requests.get(IP+"/getToken", timeout=TIME_OUT).json()
-    print("PLAYER = ", dataplayer)
     player = dataplayer['player']
     token = dataplayer['token']
     return player, token
@@ -226,17 +224,4 @@ def get_defenders(y, x):
     if d[KNIGHT]:
         for _ in range(d[KNIGHT]):
             result.append((y, x))
-    # print(f"Nombre de defenseurs de {y,x} pour {current_player()}: {result}")
     return result
-
-
-if __name__ == "__main__":
-    current_player, current_token = create_player()
-    get_data(current_player, current_token)
-    R = get_map()
-    (R[0])
-    move("C", 0, 0, 1, 0, current_player, current_token)
-    move("C", 0, 1, 1, 1, current_player, current_token)
-    get_data(current_player, current_token)
-    R = get_map()
-    (R)

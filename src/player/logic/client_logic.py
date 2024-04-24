@@ -49,6 +49,15 @@ def distance_to_list(current_position: api.Coord, list_positions: list[api.Coord
     return d
 
 
+def exists_close(current_position: api.Coord, list_targets: list[api.Coord], sep: int) -> bool:
+    """ Check if there is a target close to the current position """
+    y_curr, x_curr = current_position
+    for (y, x) in list_targets:
+        if distance(y, x, y_curr, x_curr) <= sep:
+            return True
+    return False
+
+
 def hongrois_distance(acteurs, objets):
     """
     Calcule la distance hongroise entre  les acteurs et objets donnés.

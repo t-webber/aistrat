@@ -19,7 +19,7 @@ else:
     TWO_PLAYERS = False
 
 print(sys.argv)
-print(TWO_PLAYERS)
+print("TWO_PLAYERS ? = ", TWO_PLAYERS)
 
 
 player1, token1 = api.create_player()

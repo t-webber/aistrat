@@ -62,7 +62,7 @@ def check_build(pawns, castles, player, token, gold, eknights):
         d = cl.distance_to_list((y, x), castles)
 
         # si le pions est suffisamment loin de la bordure
-        if border <= x <= border_x and border <= y <= border_y and d >= 3:
+        if border <= x <= border_x and border <= y <= border_y and d >= 3 and not cl.exists_close(pawn, eknights, 2):
             api.build(api.CASTLE, y, x, player, token)
             pawns.remove(pawn)
             gold -= api.PRICES[api.CASTLE]
