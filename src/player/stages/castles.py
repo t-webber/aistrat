@@ -85,7 +85,7 @@ def create_pawns(castles, player, token, eknight, knight, gold, defenders, nb_go
                 n -= 1
 
         # garder un equilibre entre defense et attaque et produire plus tôt
-        elif gold> api.PRICES[api.KNIGHT] and (len(knight)<=(1/2*len(defenders)) or len(knight)<=2/3*len(defenders)):
+        elif gold> api.PRICES[api.KNIGHT] and (len(knight)<=(1/2*len(defenders)) or len(knight)<=2/3*nb_pawn):
             if api.build(api.KNIGHT, y, x, player, token):
                 gold -= api.PRICES[api.KNIGHT]
 
@@ -95,7 +95,7 @@ def create_pawns(castles, player, token, eknight, knight, gold, defenders, nb_go
                 gold -= api.PRICES[api.KNIGHT]
 
         # Pas assez d'argent, et de l'argent est disponible sur la carte (ou du brouillard de guerre)
-        elif gold > api.PRICES[api.PAWN] * 1.25 and nb_gold + nb_fog > nb_pawn and 2/3*len(defenders)<= len(knight):
+        elif gold > api.PRICES[api.PAWN] * 1.25 and nb_gold + nb_fog > nb_pawn and 2/3*nb_pawn <= len(knight):
             api.build(api.PAWN, y, x, player, token)
             gold -= api.PRICES[api.PAWN]
             nb_pawn += 1
