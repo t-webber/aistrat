@@ -5,7 +5,10 @@ import player.logic.client_logic as cl
 
 
 def fuite(pawns, knights, eknights, defense, player, token):
-    for p in pawns:
+    i = 0
+    while i < len(pawns):
+        p = pawns[i]
+        i += 1
         direc_enemies, total_enemies = cl.neighbors(p, eknights)
         if total_enemies > 0:
             direc_allies, allies_backup = cl.neighbors(p, knights)
@@ -22,10 +25,11 @@ def fuite(pawns, knights, eknights, defense, player, token):
             if cl.prediction_combat(total_enemies, allies+allies_backup)[0]:
                 # si on perd le combat même avec les alliés on fuit
                 for (direc, nb) in direc_enemies.items():
-                    if nb == 0 and (p[0] + direc[0], p[1]+direc[1]) in api.get_moves(p[0], p[1]):
+                    if nb == 0 and (p[0] + direc[0], p[1]+direc[1]) in api.get_moves(p[0], p[1]) and cl.neighbors((p[0] + direc[0], p[1]+direc[1]), eknights)[1] == 0:
                         api.move(api.PAWN, p[0], p[1], p[0] +
                                  direc[0], p[1]+direc[1], player, token)
                         pawns.remove((p[0], p[1]))
+                        i -= 1
                         break
             else:
                 while cl.prediction_combat(total_enemies, allies_defense)[0] and allies - allies_defense > 0:
@@ -41,6 +45,7 @@ def fuite(pawns, knights, eknights, defense, player, token):
                             if (p[0]+direc[0], p[1]+direc[1]) in knights:
                                 knights.remove((p[0]+direc[0], p[1]+direc[1]))
                             allies_backup -= 1
+                            allies += 1
                             direc_allies[direc] -= 1
                             break
 
@@ -49,7 +54,7 @@ def farm(pawns, player, token, good_gold, eknights, ecastles):
     """ 
     récolte l'or quand c'est possible, sinon ce déplace vers la pile disponible la plus proche
     """
-
+    
     # simple_gold = golds
     if good_gold and pawns:
         # affecation problem

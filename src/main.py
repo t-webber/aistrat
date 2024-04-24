@@ -6,7 +6,7 @@ import api
 from player import next_turn as p
 
 
-if len(sys.argv) > 2:
+if len(sys.argv) > 2 and sys.argv[2] :
     api.init(sys.argv[2])
 else:
     api.init("http://localhost:8080")
