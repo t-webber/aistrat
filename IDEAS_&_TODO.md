@@ -9,3 +9,6 @@ revoir la défense (les péons se font massacrer par l'attaque)
 faire une ligne de front où sont centralisées les défenseurs 
 
 mesurer ce qui prend du temps et l'optimiser
+
+faire former des chevaliers en urgence lorsqu'un château est fortement menacé.
+
