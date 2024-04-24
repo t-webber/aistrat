@@ -1,10 +1,11 @@
-""" global functions available for all strategies """
+""" fonctions globales disponibles pour toutes les strategie """
 
 from scipy.optimize import linear_sum_assignment
 import numpy as np
 import api as api
 
 defense_knights = {"A": [], "B": []}
+
 
 def move_defender(y, x, ny, nx, player):
     for i in range(len(defense_knights[player])):
@@ -30,22 +31,40 @@ def visibility_score(carte, punishment=0):
 
 def distance(x1, y1, x2, y2):
     """
-    Calculates the Manhattan distance between two points (x1, y1) and (x2, y2).
+    calcule la distance de Manhattan entre (x1, y1) et (x2, y2).
 
-    Parameters:
-        x1, y1 : The coordinates of the first point.
-        x2, y2 : The coordinates of the second point.
+    Parametres:
+        x1, y1 : les coordonées du premier point.
+        x2, y2 : Les coordonées du second point.
     """
     return abs(x1 - x2) + abs(y1 - y2)
 
 
+def distance_to_list(current_position: api.Coord, list_positions: list[api.Coord]):
+    """ donne la distance au château le plus proche """
+    d = float('inf')
+    y_curr, x_curr = current_position
+    for (y, x) in list_positions:
+        d = min(distance(y, x, y_curr, x_curr), d)
+    return d
+
+
+def exists_close(current_position: api.Coord, list_targets: list[api.Coord], sep: int) -> bool:
+    """ Check if there is a target close to the current position """
+    y_curr, x_curr = current_position
+    for (y, x) in list_targets:
+        if distance(y, x, y_curr, x_curr) <= sep:
+            return True
+    return False
+
+
 def hongrois_distance(acteurs, objets):
     """
-    Calculates the Hungarian distance between the given actors and objects.
+    Calcule la distance hongroise entre  les acteurs et objets donnés.
 
-    Parameters:
-        acteurs: list of actors.
-        objets: list of objects.
+    Parametres:
+        acteurs: liste des acteurs.
+        objets: liste des objets.
     """
     matrice_cost = np.abs(
         np.array(acteurs)[:, np.newaxis] - np.array(objets)).sum(axis=2)
@@ -54,10 +73,10 @@ def hongrois_distance(acteurs, objets):
 
 def clean_golds(golds, pawns, ecastles):
     """
-    Gives the priority to the big piles near other small piles, and sends only one pawn.
+    Donne la priorité aux grosses piles à côté d'autres petites piles et n'envoie qu'un péon.
 
     Args:
-        golds: list of gold piles, where each pile is represented as a tuple (x, y, amount).
+        golds: liste des piles d'or, ou chaque pile est représenté par le tuple (x, y, quantité).
 
     Returns: list of gold piles after removing the close piles.
     """
@@ -85,12 +104,12 @@ def clean_golds(golds, pawns, ecastles):
 
 def algo_hongrois(matrice_hongrois):
     """
-    Applies the Hungarian algorithm to solve the assignment problem.
+    Applique la méthode hongroise pour résoudre le problème d'assignation.
 
     Args:
-        matrice_hongrois (numpy.ndarray): The cost matrix representing the assignment problem.
+        matrice_hongrois (numpy.ndarray): La matrice de cout représentant le problème.
 
-    Returns: zip object containing the indices of the assigned rows and columns.
+    Returns: objet zip contenant les indices des colonnes et lignes assignées.
     """
     a, b = linear_sum_assignment(matrice_hongrois)
     return zip(a, b)
@@ -98,16 +117,16 @@ def algo_hongrois(matrice_hongrois):
 
 def prediction_combat(a, d):
     """
-    Predicts the winner of a combat
+    Prédit le gaganant d'un combat
 
     Parameters:
-        a (int): Force of attacker.
-        d (int): Force du defender.
+        a (int): Force de l'attaquant.
+        d (int): Force du defenseur.
 
-    Returns: tuple (bool, int, int) where:
-        - bool: True if the attacker wins, False otherwise.
-        - int: Number of losses for the attacker.
-        - int: Number of losses for the defender.
+    Returns: tuple (bool, int, int) où:
+        - bool: True si l'attaquant gagne, False sinon.
+        - int: nombre de pertes de l'attaquant.
+        - int: nombre de pertes du défenseur.
     """
     pertes_a = 0
     pertes_d = 0
@@ -121,7 +140,7 @@ def prediction_combat(a, d):
 
 def neighbors(case, knights):
     """
-    return the number of knights in the 4 directions of a case
+    renvoie le nombre de chevaliers ennemis dans les quatres case adjacentes à une case
     """
     dir_case = {(0, 1): 0, (1, 0): 0, (0, -1): 0, (-1, 0): 0}
     for k in knights:

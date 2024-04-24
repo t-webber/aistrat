@@ -22,13 +22,13 @@ turn_data = []
 
 
 def init(ip: str):
-    """ Initialize the API """
+    """ Initialise l'API """
     global IP
     IP = ip
 
 
 def end_turn(player, token):
-    """ End the turn of the player """
+    """fin du tour du joueur """
     try:
         requests.get(
             f"{IP}/endturn/{player}/{token}", timeout=TIME_OUT)
@@ -38,17 +38,15 @@ def end_turn(player, token):
 
 
 def create_player():
-    """ Create the player """
-    print("MAKING REQUEST")
+    """ Cree le joueur """
     dataplayer = requests.get(IP+"/getToken", timeout=TIME_OUT).json()
-    print("PLAYER = ", dataplayer)
     player = dataplayer['player']
     token = dataplayer['token']
     return player, token
 
 
 def move(kind, oldy, oldx, newy, newx, player, token) -> bool:
-    """ Try moving """
+    """ essaie de bouger """
     try:
         requests.get(
             f"{IP}/move/{player}/{kind}/{oldy}/{oldx}/{newy}/{newx}/{token}", timeout=TIME_OUT)
@@ -58,7 +56,7 @@ def move(kind, oldy, oldx, newy, newx, player, token) -> bool:
 
 
 def build(kind, y, x, player, token) -> bool:
-    """ Build a kind at at (y,x) """
+    """ construit une unité de type "kind" en (y,x) """
     try:
         requests.get(
             f"{IP}/build/{player}/{y}/{x}/{kind}/{token}", timeout=TIME_OUT).json()
@@ -68,7 +66,7 @@ def build(kind, y, x, player, token) -> bool:
 
 
 def get_data(player, token):
-    """ get all data for the turn """
+    """ reçoit toutes les information pour le tour """
     global turn_data
     try:
         res = requests.get(f"{IP}/view/{player}/{token}", timeout=TIME_OUT)
@@ -113,7 +111,7 @@ def get_winner():
 
 
 def farm(y, x, player, token) -> bool:
-    """ Farm a peon on (y, x) """
+    """ fait récolter de l'argent au péon en (y, x) """
     try:
         (requests.get(
             f"{IP}/farm/{player}/{y}/{x}/{token}", timeout=TIME_OUT).json())
@@ -123,7 +121,7 @@ def farm(y, x, player, token) -> bool:
 
 
 def auto_farm(player, token) -> bool:
-    """ Farm all peons """
+    """ fait récolter de l'argent à tous les péons """
     try:
         (requests.get(
             f"{IP}/autofarm/{player}/{token}", timeout=TIME_OUT).json())
@@ -149,7 +147,7 @@ def other(player):
 
 
 def get_kinds(player) -> dict[str, list[Coord]]:
-    """ returns the list of the coordinates of all the present units on the map """
+    """ Renvoie la liste des coordonées de toutes les unitées présentes sur la carte """
     result = {PAWN: [], CASTLE: [], KNIGHT: [],
               GOLD: [], 'fog': [], EKNIGHT: [], EPAWN: [], ECASTLE: []}
     carte = get_map()
@@ -188,7 +186,7 @@ def get_kinds(player) -> dict[str, list[Coord]]:
 
 
 def get_moves(y, x):
-    """ Function to get the avaible cells around the current position """
+    """ Fonction renvoyant toutes les cases disponibles autours d'une case donnée """
     moves = []
     for i in [-1, 1]:
         if size_map()[0] > y+i >= 0:
@@ -220,22 +218,10 @@ def add_visible(carte, unit):
 
 
 def get_defenders(y, x):
+    ''' Renvoie la liste des chevaliers présents sur une case donnée '''
     d = get_map()[y][x][current_player()]
     result = []
     if d[KNIGHT]:
         for _ in range(d[KNIGHT]):
             result.append((y, x))
-    # print(f"Nombre de defenseurs de {y,x} pour {current_player()}: {result}")
     return result
-
-
-if __name__ == "__main__":
-    current_player, current_token = create_player()
-    get_data(current_player, current_token)
-    R = get_map()
-    (R[0])
-    move("C", 0, 0, 1, 0, current_player, current_token)
-    move("C", 0, 1, 1, 1, current_player, current_token)
-    get_data(current_player, current_token)
-    R = get_map()
-    (R)

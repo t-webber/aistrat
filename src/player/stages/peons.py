@@ -49,7 +49,7 @@ def fuite(pawns, knights, eknights, defense, player, token):
 
 def farm(pawns, player, token, good_gold, eknights, ecastles):
     """ 
-    farm gold when possible, else go to nearest avaible gold
+    récolte l'or quand c'est possible, sinon ce déplace vers la pile disponible la plus proche
     """
 
     # simple_gold = golds
@@ -110,7 +110,7 @@ def path_one(units_to_move, other_units, eknights):
                 stuck += 1
                 continue
             ennemies = cl.neighbors(move, eknights)[1]
-            print(ennemies)
+            # print(ennemies)
             if score > maxscore and (ennemies == 0
                                      or ennemies <= len(api.get_defenders(boy[0], boy[1]))):
                 maxscore = score

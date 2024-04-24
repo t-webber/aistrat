@@ -51,3 +51,7 @@
 
 - Nicolas: Changement de rôle pour la gestion de l'armée, prise en main et premières améliorations sur le mouvement des troupes avec des péons en collaboration avec Pierre.
 - Pierre : fin du debug de la defense opportuniste et reflexion avec nicholas sur le mouvement combiné des chevaliers et des peons et sur la production des chevaliers plus tôt dans la partie.
+
+## 24/04
+
+- Pierre : production de plus d'attaquants, preparation de la présentation de mis parcours, traduction de commentaires pour uniformiser la langue vers le français
