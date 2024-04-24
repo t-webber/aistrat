@@ -52,7 +52,7 @@ def nexturn(player, token):
                          len(golds), len(pawns), len(fog))
     peons.fuite(pawns, knights, eknights, defense, player, token)
 
-    builder.check_build(pawns, castles, player, token, gold)
+    builder.check_build(pawns, castles, player, token, gold, eknights)
     # je farm d'abord ce que je vois
     peons.farm(pawns, player, token, good_gold, eknights, ecastles)
     # j'explore ensuite dans la direction opposée au spawn

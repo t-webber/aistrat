@@ -32,6 +32,9 @@ Dans un jeu non déterministe on ajoute un ou plusieurs étages de chance dans l
 
 Trop de possibilité pour l'appliquer directement mais peut être juste sur la gestion des combats ça pourrrait peut être se faire
 
+
+
+
 # Recherche arborescente Monte carlo.
 
 On joue aléatoirement un grand nombre de partie et on note les actions ayant mené à la victoire. On construit ainsi un arbre ou chaque noeud est étiqueté par le nombre de simulations passant par ce noeud et le nombre de simulations gagantes passant par ce noeud. On choisi ensuite à partir de ces informations l'action à effectuer. C'est bien pour les jeux à haut niveau de liberté mais il risque d'y avoir trop de liberté dans ce jeu ci ou alors de nouveau sur des situations bien précise.
@@ -47,3 +50,18 @@ On utilise un ensemble de faits et de règle (on peut fair une analogie avec la 
 On utilise ensuite des moteurs d'inférence pour résoudre le problème et prendre des décisions. Cette stratégie si je comprend bien revien à traduire la situation en formule logique ayant déjà une évaluation partielle et à le résoudre.
 
 Cela parait compliqué à mettre en place et nécessite des recherches et réflexions poussées en logique, pour un résultat qui semble loin d'être garanti, je ne recommande pas.
+
+# Stratégie dans un jeu 4X
+
+(page 20)
+On peut répartir les taches de l'IA sous différents niveaux. Chaque niveau décide d'actions et d'objectif qu'il va soit executer directement, soit délégué au niveau inférieur. Les niveaux sont les suivants : stratégique (gestion des ressources, des objectifs de victoire...), opérationnel (diplomacie, économie...), tactique (géographie du terrain, analyse des ennemis..)  et individuel (pathfinding des unités, combats...).
+
+Dans notre cas, le niveau opérationnel n'existe pas. On peut cependant s'inspirer de cette répartition des prises de décisions : 
+Le niveau stratégique décide de quoi défendre en priorité et où, ainsi que la priorité stratégique (attaque, défense, économie privilégié).
+Le niveau tactique décide de ou placer les unités militaire, leur assignations aux zones à défendre ou attaquer, ainsi que l'assignation des péons aux piles d'or.
+Le niveau individuel ne servirai qu'au pathfinding (facile).
+
+(page 25)
+On peut laisser les unités faire leur tâche de manière autonome, sans les superviser à chaque tour. Pour éviter qu'elles meurent seule, il leur suffit de rappeler leur existence lorsqu'un ennemi se rapproche.
+
+[voir ici](https://www.theseus.fi/bitstream/handle/10024/134060/Toni_Laaveri.pdf?sequence=1)
