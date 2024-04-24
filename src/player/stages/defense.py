@@ -5,13 +5,8 @@ import random as rd
 
 def agressiv_defense(defense, epawns, player, token, eknigths):
     '''
-    Looks at already on traget defense knights and attacks nearby enemys prioritizing enemy pawns while unsurring that the pawn they defend will still be defended for this turn
-    Args:
-        defense (list): A list of tuples representing the position of defense unit that havent moved already
-        epawns (list): A list of tuples representing the positions of the enemy pawns.
-        player (string): describes the playing player
-        token (str): A token representing the player
-        eknight (list): A list of tuples representing the positions of the enemy knights.
+    Regarde les défenseurs déjà sur place et attaque les ennemis proches en priorisant les péons ennemis tout en s'assurant que les péons défendus le seront toujours pour le reste du tour
+    
     Returns
         None
     '''
@@ -45,17 +40,10 @@ def agressiv_defense(defense, epawns, player, token, eknigths):
 
 def move_defense(defense, pawns, player, token, eknight):
     """
-    Moves the knights according to their attributed pawn to defend.
+    attribue les chevaliers disponibles aux péons donnés et les bouge vers ces péons
 
-    Args:
-        hongroise: result of hungarian method on pawns and defense
-        defense (list): A list of tuples representing the position of defense unit that havent moved already
-        pawns (list): A list of tuples representing the positions of the pawns.
-        player (string): describes the playing player
-        token (str): A token representing the player
-
-    Returns
-        defense knights that still need to move
+    Returns:
+       chevalier de la défense non attribués
     """
     if pawns == []:
         return defense, []
@@ -105,13 +93,7 @@ def move_defense(defense, pawns, player, token, eknight):
 
 def defend(pawns, defense, eknights, castle, player, token):
     """
-    Defends the pawns using the defense strategy against enemy knights.
-
-    Args:
-        pawns (list): A list of tuples representing the positions of the pawns.
-        defense (list): A list of tuples representing the positions of the defense units.
-        eknights (list): A list of tuples representing the positions of the enemy knights.
-        token (str): A token representing the player.
+    Défend les péons en utilisant la strategie de défense (attribution par Méthode hongroise priorisé en fonction de la distance au ennemis)
 
     Returns:
         None

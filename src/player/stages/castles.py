@@ -1,11 +1,11 @@
-""" Add castles when needed """
+""" Gestion des château : construction et production """
 
 import api
 import player.logic.client_logic as cl
 
 
 def move_peon_to_first_location(player, token, pawns, border, border_y, border_x):
-    """ Build the first castle """
+    """construit le premier château """
     destination = (border, border) if player == "A" else (border_y, border_x)
     d = cl.distance_to_list(destination, pawns)
     # si d == 0, le pion est au bon endroit donc il va construire un château ici
@@ -36,7 +36,7 @@ def move_peon_to_first_location(player, token, pawns, border, border_y, border_x
 
 
 def check_build(pawns, castles, player, token, gold, eknights):
-    """ Build some castle, and, at the beggining, take control of a pawn to build the first castle in the right place  """
+    """ Construit des châteaux, et, au début, prend controle d'un péons pour construire le premier château au bon endroit  """
     len_y, len_x = api.size_map()
 
     # définis les bordures pour ne pas y construire de château
@@ -70,7 +70,7 @@ def check_build(pawns, castles, player, token, gold, eknights):
 
 
 def create_pawns(castles, player, token, eknight, knight, gold, defenders, nb_gold, nb_pawn, nb_fog):
-    """ The castles will spawn units here """
+    """ TLe château cree des unitées  """
     n = len(eknight) - len(knight)
 
     for (y, x) in castles:

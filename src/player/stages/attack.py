@@ -5,16 +5,16 @@ import player.logic.client_logic as cl
 
 def prediction_combat(a, d):
     """
-    Predicts the winner of a fight
+    Prédit le gaganant d'un combat
 
     Parameters:
-        a (int): Force of attacker.
-        d (int): Force du defender.
+        a (int): Force de l'attaquant.
+        d (int): Force du defenseur.
 
-    Returns: tuple (bool, int, int) where:
-        - bool: True if the attacker wins, False otherwise.
-        - int: Number of losses for the attacker.
-        - int: Number of losses for the defender.
+    Returns: tuple (bool, int, int) où:
+        - bool: True si l'attaquant gagne, False sinon.
+        - int: nombre de pertes de l'attaquant.
+        - int: nombre de pertes du défenseur.
     """
     pertes_a = 0
     pertes_d = 0
@@ -132,7 +132,7 @@ def destroy_castle(knights, castles, eknights, player, token):
     chasse les chateaux adverses, si possibilité de le détruire, le détruit
     """
     if knights and castles:
-        # affecation problem
+        # probleme d'affectation
         # choisis les chateaux vers lesquelles vont se diriger les chevaliers
         # pour en minimiser le nombre total de mouvements
         vus = []

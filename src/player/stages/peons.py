@@ -39,7 +39,7 @@ def fuite(pawns, knights, eknights, defense, player, token):
 
 def farm(pawns, player, token, good_gold, eknights, ecastles):
     """ 
-    farm gold when possible, else go to nearest avaible gold
+    récolte l'or quand c'est possible, sinon ce déplace vers la pile disponible la plus proche
     """
 
     # simple_gold = golds
