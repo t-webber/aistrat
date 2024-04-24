@@ -95,7 +95,7 @@ def create_pawns(castles, player, token, eknight, knight, gold, defenders, nb_go
                 gold -= api.PRICES[api.KNIGHT]
 
         # Pas assez d'argent, et de l'argent est disponible sur la carte (ou du brouillard de guerre)
-        elif gold > api.PRICES[api.PAWN] * 1.25 and nb_gold + nb_fog > nb_pawn:
+        elif gold > api.PRICES[api.PAWN] * 1.25 and nb_gold + nb_fog > nb_pawn and 2/3*len(defenders)<= len(knight):
             api.build(api.PAWN, y, x, player, token)
             gold -= api.PRICES[api.PAWN]
             nb_pawn += 1
