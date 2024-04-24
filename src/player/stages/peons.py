@@ -7,7 +7,6 @@ import player.logic.client_logic as cl
 def fuite(pawns, knights, eknights, defense, player, token):
     for p in pawns:
         direc_enemies, total_enemies = cl.neighbors(p, eknights)
-        print("p",p,"total enemies", total_enemies)
         if total_enemies > 0:
             direc_allies, allies_backup = cl.neighbors(p, knights)
             allies = 0
@@ -35,7 +34,6 @@ def fuite(pawns, knights, eknights, defense, player, token):
                 # on peut réussir à gagner le combat avec les alliés et on le fait venir
                 while cl.prediction_combat(total_enemies, allies)[0] and allies_backup > 0:
                     for direc, nb in direc_allies.items():
-                        print("direc",direc,"nb",nb)
                         if nb > 0:
                             api.move(
                                 api.KNIGHT, p[0]+direc[0], p[1]+direc[1], p[0], p[1], player, token)
