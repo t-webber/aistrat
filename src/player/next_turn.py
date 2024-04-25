@@ -8,6 +8,7 @@ import player.logic.client_logic as cl
 import player.stages.castles as builder
 import player.stages.attack as atk
 import player.stages.defense as dfd
+import player.stages.decisions as dec
 
 
 def nexturn(player, token):
@@ -69,3 +70,6 @@ def nexturn(player, token):
         atk.destroy_castle(knights, ecastles, eknights, player, token)
         if len(knights) == a:
             break
+    # inventory=dec.inventory_zones()
+    # print(inventory)
+    # print(dec.get_diff("M","Mid",inventory))
