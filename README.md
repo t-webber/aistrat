@@ -38,11 +38,30 @@ cette fonction gere l'exploration des peons qui ne sont pas assignés à une min
 ## check_build, create_pawns
 
 Ces fonctions s'occupent des châteaux. check_buil en gère la construction. On en construit premièrement un en case (2,2). Puis on en construit un si on peut lorsqu'on est assez loin de nos autres chateaux et pas trop proche des bords. A noter que check_build ne déplace pas les unites dans ce but. (On peut se dire que les chateaux sont construits là où les peons sont deja en train de se deplacer et qu'on ne leur impose rien).
-create_pawns s'occupe de creer les unites avec nos chateaux. Au debut on construit d'abord des peons. On priorise ensuite la defense s'il y a trop de chevaliers adverses et sinon on construit des chevaliers pour l'attaque. Il y a donc 2 types de chevaliers : ceux assignés à la defense et ceux à l'attaque.
 
-## defend
+### création des unités
 
-fonction qui utilise les chevaliers assignes à la défense pour défendre les péons.
+fonction create pawns
+
+Les premières unités sont formées selon un build order prédéfinit.
+
+Ensuite elle suivent la logique suivante:si il y a plus de chevaliers ennemis en vue que de défenseurs, on priorise la formation de défenseurs. Sinon si l'équilibre est mauvais entre attaque et défense ou attaque et péons (pas assez d'attaquant) on rééquilibre en formant des attaquant. Sinon si on a construit suffissement de château et au moins quelques péons on construit plus d'attaquant. Enfin sinon si il reste des cases non explorées ou des piles d'or disponible on forme des péons. 
+
+## defense
+
+### defense orienté péon 
+
+fonction defend
+
+La défense se repose sur un groupe de chevaliers appelés defenseurs dont la seul tache est de défendre, cette tâche est attribuée à la formation du chevalier. Le but est d'attribué aux cibles portentielles des défenseurs selon la menace qui plane sur elles. L'algorithme attribut un défenseur à chaque cible potentielle (péon, château) pour chacun des ennemis à une distance de 1 de cette dernière. Si il reste des défenseurs de libres on recommence en regardant es ennemis à une distance de 2 puis de 3 jusqu'à épuisement du groupe des défenseurs.
+
+fonction agressiv_defense
+
+Les défenseurs qui n'ont pas bougés (ils sont déjà arrivé à leur poste de défense et celui ci n'as pas bougé), regardent si il y a des ennemis accessibles à une distance de 1. Il les attaques si
+- le combat est gagant.
+- l'attaque ne met pas en danger le péon protégé lors du tour adverse.
+
+Il est possible d'attaquer plusieurs cases depuis une seul, la priorisation se fait selon le nombre de péons détruits.
 
 ## hunt, destroy_castle
 
