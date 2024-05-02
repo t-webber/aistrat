@@ -70,6 +70,7 @@ def nexturn(player, token):
         atk.destroy_castle(knights, ecastles, eknights, player, token)
         if len(knights) == a:
             break
+    peons.explore_knight(knights, player, token, eknights, ecastles, pawns+castles)
     # inventory=dec.inventory_zones()
     # print(inventory)
     # print(dec.get_diff("M","Mid",inventory))
