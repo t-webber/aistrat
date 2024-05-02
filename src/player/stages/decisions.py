@@ -114,6 +114,7 @@ def inbound_ennemies():
 
 
 def menacing_ennemies():
+    """Renvoie les unités proches de nos alliés"""
     results={'Attackable Castle':[],'Dangerous Knight':[],"Killable peon":[]}
     player=api.current_player()
     total_units=api.get_kinds(player)
