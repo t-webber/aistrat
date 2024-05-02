@@ -35,7 +35,7 @@ def inventory_zones():
     inventory={"UArG":copy.deepcopy(base_dict),"ArG":copy.deepcopy(base_dict),"Mid":copy.deepcopy(base_dict),"AvG":copy.deepcopy(base_dict),"UAvG":base_dict}
     for unit_type in unit_types:
         for entity in total_units[unit_type]:
-                inventory[myZone(entity,player)][unit_type].append(entity)
+            inventory[myZone(entity,player)][unit_type].append(entity)
     return inventory
 
 def myZone(entity,player):
