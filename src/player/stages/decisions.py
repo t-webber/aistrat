@@ -29,27 +29,28 @@ def inventory_zones():
     if cuts is None:
         define_global()
     player=api.current_player()
-    if player=="A":
-        ref=(0,0)
-    else: ref=(taille[0]-1,taille[1]-1)
     total_units=api.get_kinds(player)
     unit_types=["C",'B','M','C2','B2','M2','fog']
     base_dict={"C":[],"B":[],"M":[],"C2":[],"B2":[],"M2":[],'fog':[]}
     inventory={"UArG":copy.deepcopy(base_dict),"ArG":copy.deepcopy(base_dict),"Mid":copy.deepcopy(base_dict),"AvG":copy.deepcopy(base_dict),"UAvG":base_dict}
     for unit_type in unit_types:
         for entity in total_units[unit_type]:
-            distanceN1=dist1(entity,ref)
-            if distanceN1<=cuts[0]:
-                inventory['UArG'][unit_type].append(entity)
-            elif distanceN1<=cuts[1]:
-                inventory['ArG'][unit_type].append(entity)
-            elif distanceN1<=cuts[2]:
-                inventory['Mid'][unit_type].append(entity)
-            elif distanceN1<=cuts[3]:
-                inventory['AvG'][unit_type].append(entity)
-            else:
-                inventory['UAvG'][unit_type].append(entity)
+                inventory[myZone(entity,player)][unit_type].append(entity)
     return inventory
+
+def myZone(entity,player):
+    '''Renvoie la zone d'une entité'''
+    if player=="A":
+        ref=(0,0)
+    else: ref=(taille[0]-1,taille[1]-1)
+    distanceN1=dist1(entity,ref)
+    for i in range(len(cuts)):
+        if distanceN1<=cuts[i]:
+            return zones[i]
+    return('UAvG')
+
+
+
 
 def dist1(pt1,pt2):
     """Calcule la norme 1 du vecteur entre les 2 points"""
