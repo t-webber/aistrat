@@ -37,7 +37,7 @@
 - Tom : add cli `./start_match` and fix timeout.
 - Jules : On regarde où on va pour éviter de faire se suicider nos troupes.
 - Martin et Jules : implémentation de l'attaque des nos chevaliers pour traquer les peons adverses et leurs chateaux.
-- Pierre : Version finale en terme d'architecture de la fonction de répartition des chevaliers en défense. 
+- Pierre : Version finale en terme d'architecture de la fonction de répartition des chevaliers en défense.
 
 ## 02/04
 
@@ -45,13 +45,15 @@
 - Nicolas: Correction de la fonction de détection de trous et de pathing des unités. Ajout d'une logique intermédiaire pour l'ordre des actions: farm des bons or -> déplacment optimal -> farm des mauvais or -> déplacement vers trous lointains.
 - Jules : compréhension globale du programme et donc écriture du README.
 - Martin: amélioration de la traque, saisi d'opportunités lorqu'on peut tuer un adversaire voisin.
-- Pierre : Debug de la défense et utilisation des défenseurs inutilisés pour de possibles attaques d'opportunité. 
+- Pierre : Debug de la défense et utilisation des défenseurs inutilisés pour de possibles attaques d'opportunité.
 
 ## 09/04
 
 - Nicolas: Changement de rôle pour la gestion de l'armée, prise en main et premières améliorations sur le mouvement des troupes avec des péons en collaboration avec Pierre.
 - Pierre : fin du debug de la defense opportuniste et reflexion avec nicholas sur le mouvement combiné des chevaliers et des peons et sur la production des chevaliers plus tôt dans la partie.
+- Jules : Correction de suicides d'unités
 
 ## 24/04
 
 - Pierre : production de plus d'attaquants, preparation de la présentation de mis parcours, traduction de commentaires pour uniformiser la langue vers le français
+- Jules : Correction de fuite
