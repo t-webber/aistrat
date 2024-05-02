@@ -183,16 +183,16 @@ def explore(pawns, player, token, eknights, ecastles, otherunits=[], reste_gold=
             api.move(api.PAWN, one_move[0][0], one_move[0][1],
                      one_move[1][0], one_move[1][1], player, token)
 
-def explore_generic(units, player, token, eknights, ecastles, otherunits=[]):
+def explore_knight(units, player, token, eknights, ecastles, otherunits=[]):
     """ 
     Envoie en exploration les "pawns" inactifs pour le tour
     """
     moves, remaining_pawns = path(units, otherunits, eknights)
     for one_move in moves:
-        api.move(api.PAWN, one_move[0][0], one_move[0][1],
+        api.move(api.KNIGHT, one_move[0][0], one_move[0][1],
                  one_move[1][0], one_move[1][1], player, token)
     if len(remaining_pawns) > 0:
         moves_trou = path_trou(remaining_pawns, otherunits, eknights)
         for one_move in moves_trou:
-            api.move(api.PAWN, one_move[0][0], one_move[0][1],
+            api.move(api.KNIGHT, one_move[0][0], one_move[0][1],
                      one_move[1][0], one_move[1][1], player, token)
