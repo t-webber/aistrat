@@ -58,7 +58,7 @@ On peut répartir les taches de l'IA sous différents niveaux. Chaque niveau dé
 
 Dans notre cas, le niveau opérationnel n'existe pas. On peut cependant s'inspirer de cette répartition des prises de décisions : 
 Le niveau stratégique décide de quoi défendre en priorité et où, ainsi que la priorité stratégique (attaque, défense, économie privilégié).
-Le niveau tactique décide de ou placer les unités militaire, leur assignations aux zones à défendre ou attaquer, ainsi que l'assignation des péons aux piles d'or.
+Le niveau tactique décide de où placer les unités militaire, leur assignations aux zones à défendre ou attaquer, ainsi que l'assignation des péons aux piles d'or.
 Le niveau individuel ne servirai qu'au pathfinding (facile).
 
 (page 25)

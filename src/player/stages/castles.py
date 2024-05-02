@@ -3,6 +3,7 @@
 import api
 import player.logic.client_logic as cl
 
+build_order=[api.PAWN,api.PAWN,api.KNIGHT,api.KNIGHT,api.PAWN,api.PAWN]
 
 def move_peon_to_first_location(player, token, pawns, border, border_y, border_x):
     """construit le premier château """
@@ -75,26 +76,33 @@ def create_pawns(castles, player, token, eknight, knight, gold, defenders, nb_go
 
     for (y, x) in castles:
         # Nous somme attaqués, production de défenseurs
-        if n > 0:
-            if gold > api.PRICES[api.KNIGHT]:
-                api.build(api.KNIGHT, y, x, player, token)
-                gold -= api.PRICES[api.KNIGHT]
-                defenders.append((y, x))
-                api.PRICES[api.KNIGHT] -= 1
-                n -= 1
+        if build_order !=[]:
+            suivant = build_order.pop()
+            if gold>api.PRICES[suivant]:
+                api.build(suivant,y,x, player, token)
+                gold -= api.PRICES[suivant]
+            else :
+                build_order.append(suivant)
+        else:
+            if n > 0:
+                if gold > api.PRICES[api.KNIGHT]:
+                    api.build(api.KNIGHT, y, x, player, token)
+                    gold -= api.PRICES[api.KNIGHT]
+                    defenders.append((y, x))
+                    n -= 1
 
-        # garder un équilibre entre defense et attaque et produire plus tôt
-        elif gold > api.PRICES[api.KNIGHT] and (2 * len(knight) <= len(defenders) or len(knight) <= 2/3*nb_pawn):
-            if api.build(api.KNIGHT, y, x, player, token):
-                gold -= api.PRICES[api.KNIGHT]
+            # garder un équilibre entre defense et attaque et produire plus tôt
+            elif gold > api.PRICES[api.KNIGHT] and (2 * len(knight) <= len(defenders) or len(knight) <= 2/3*nb_pawn):
+                if api.build(api.KNIGHT, y, x, player, token):
+                    gold -= api.PRICES[api.KNIGHT]
 
-        # trop d'argent on achète des défenseurs
-        elif gold > api.PRICES[api.KNIGHT] * 2 and len(castles) >= 2:
-            if api.build(api.KNIGHT, y, x, player, token):
-                gold -= api.PRICES[api.KNIGHT]
+            # trop d'argent on achète des défenseurs
+            elif gold > api.PRICES[api.KNIGHT] * 2 and len(castles) >= 2 and nb_pawn>3:
+                if api.build(api.KNIGHT, y, x, player, token):
+                    gold -= api.PRICES[api.KNIGHT]
 
-        # Pas assez d'argent, et de l'argent est disponible sur la carte (ou du brouillard de guerre)
-        elif gold > api.PRICES[api.PAWN] * 1.25 and nb_gold + nb_fog > nb_pawn and 2/3*nb_pawn <= len(knight):
-            api.build(api.PAWN, y, x, player, token)
-            gold -= api.PRICES[api.PAWN]
-            nb_pawn += 1
+            # Pas assez d'argent, et de l'argent est disponible sur la carte (ou du brouillard de guerre)
+            elif gold > api.PRICES[api.PAWN] * 1.25 and nb_gold + nb_fog > nb_pawn  and len(knight)>=2/3*nb_pawn:
+                api.build(api.PAWN, y, x, player, token)
+                gold -= api.PRICES[api.PAWN]
+                nb_pawn += 1
