@@ -1,4 +1,18 @@
-# Lancer une partie
+# AISTRAT1 : Résolution algorithmique d'un jeu de stratégie
+
+## Voir la documentation
+
+La documentation se présente sous la forme d'un [mdbook](https://rust-lang.github.io/mdBook/index.html). Pour la consulter, il suffit de lancer la commande suivante
+
+```bash
+./docs/mdbook serve --open
+```
+
+et vous aurez une magnifique documentation détaillée de notre projet !
+
+> À noter : la documentation est en anglais, mais le code est en français.
+
+## Lancer une partie
 
 Si le serveur est déjà lancé et qu'on veut simplement connecter notre algorithme au serveur, il suffit d'exécuter la commande suivante
 
@@ -18,60 +32,8 @@ Pour lancer l'algorithme contre lui-même, on peut utiliser rajouter l'options `
 ./start_match  <url-du-server> -two
 ```
 
-# Idee strategie naif
+> DISCLAIMER: Le CLI ne marche pas sur MacOS, et l'option `-two` ne marche que sur Windows.
 
-On découpe un tour de l'IA en plusieurs fonctions indépendantes (c'est surtout le fait qu'elles soient indépendantes qui pourra être amelioré). Le fait de faire ceci permet de travailler efficacement en groupe mais le manque de communication entre les différentes parties nuit forcément à l'IA. On a donc pas mal de fonctions ayant chacun un rôle mais travaillant parfois ensemble
+## Présentation globale de notre algorithme
 
-## clean_golds et farm
-
-Ces fonctions permettent d'envoyer nos peons prendre du gold. clean_golds fait un premier traitement des cases de golds qu'on voit et évite d'envoyer 2 peons sur des cases adjacentes si elles ne sont pas très intéressantes (ce qui encourage l'exploration).
-farm utilise l'algorithme hongrois pour assigner nos peons à l'or.
-
-## fuite
-
-cette fonction permet de faire fuire nos peons s'ils sont trop proches des attaquants adverses et qu'on a pas assez de defenseurs
-
-## explore
-
-cette fonction gere l'exploration des peons qui ne sont pas assignés à une mine d'or grâce à un algorithme d'éclairement maximal.
-
-## Builder : construction des châteaux et des unités (fichier `stages/castles.py`)
-
-## `build_castle`
-
-Cette fonctions s'occupent de la construction châteaux. On commence par prendre le contrôle d'un péon au début, afin de construire un château le plus rapidement possible en (2, 2). Puis on construit les autres châteaux en fonction de règles :
-
-- **règle d'or:** il faut asser d'or pour construire le château (le coût d'un château pour l'instant, soit 15 or)
-- **règle d'espacement:** on ne construit pas de châteaux trop proches les uns des autres (fixé à une distance de 4 cases pour l'instant)
-- **règle de distance:** on ne construit pas de châteaux trop proches des bords de la carte (fixé à une distance de 2 cases pour l'instant)
-- **règle de quantité:** on a une majoration du nombre de châteaux qu'on peut construire (dépend de la taille de la carte)
-
-### `create_units`
-
-`create_units` s'occupe de créer les unites avec nos châteaux. La construction des unités se fait selon la logique suivante :
-
-- si on a moins de la moitié des châteaux qu'on est censé construire, on est au début de la partie donc on ne construit pas de chevaliers, on construit des péons et on garde de l'or pour construire les châteaux
-- si le rapport $\dfrac{|\{ \text{chevaliers enemmis} \}|}{| \{ \text{ chevaliers alliés } \} |}$ est suppérieur à un certain pourcentage, on construit des chevaliers qu'on assigne à la défense.
-- si on a "beaucoup" d'or, on construit des chevaliers qu'on assigne à l'attaque.
-- sinon, on construit des péons ou on économise de l'or.
-
-## defense
-
-### defense orienté péon
-
-fonction defend
-
-La défense se repose sur un groupe de chevaliers appelés defenseurs dont la seul tache est de défendre, cette tâche est attribuée à la formation du chevalier. Le but est d'attribué aux cibles portentielles des défenseurs selon la menace qui plane sur elles. L'algorithme attribut un défenseur à chaque cible potentielle (péon, château) pour chacun des ennemis à une distance de 1 de cette dernière. Si il reste des défenseurs de libres on recommence en regardant es ennemis à une distance de 2 puis de 3 jusqu'à épuisement du groupe des défenseurs.
-
-fonction agressiv_defense
-
-Les défenseurs qui n'ont pas bougés (ils sont déjà arrivé à leur poste de défense et celui ci n'as pas bougé), regardent si il y a des ennemis accessibles à une distance de 1. Il les attaques si
-
-- le combat est gagant.
-- l'attaque ne met pas en danger le péon protégé lors du tour adverse.
-
-Il est possible d'attaquer plusieurs cases depuis une seul, la priorisation se fait selon le nombre de péons détruits.
-
-## hunt, destroy_castle
-
-On utilise les chevaliers restants pour attaquer les peons adverses :un chevalier chasse un peon adverse avec l'algorithme hongrois légèrement modifié (comme les peons adverses peuvent bouger, on peut privilégier le court terme plutôt que le coût total comme pour l'algothme hongrois) puis avec l'algorithme hongrois classique, on envoie un chevalier par chateau.
+On découpe un tour de l'algorithme en plusieurs fonctions indépendantes (c'est surtout le fait qu'elles soient indépendantes qui pourra être amelioré). Le fait de faire ceci permet de travailler efficacement en groupe mais le manque de communication entre les différentes parties nuit forcément à l'algorithme. On a donc pas mal de fonctions ayant chacun un rôle mais travaillant parfois ensemble
