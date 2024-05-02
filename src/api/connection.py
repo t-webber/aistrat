@@ -13,7 +13,7 @@ EPAWN = "C2"
 FOG = "fog"
 ECASTLE = "B2"
 
-PRICES = {PAWN: 5, CASTLE: 15, KNIGHT: 10}
+PRICES = {PAWN: 10, CASTLE: 15, KNIGHT: 10}
 
 map_size = None
 
