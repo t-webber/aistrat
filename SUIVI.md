@@ -57,3 +57,7 @@
 
 - Pierre : production de plus d'attaquants, preparation de la présentation de mis parcours, traduction de commentaires pour uniformiser la langue vers le français
 - Jules : Correction de fuite
+
+## 02/05
+
+- Nicolas: Continuation de l'implémentation de fonctions pour jauger la partie en fonction de zones déterminées préalablemenrt entre arrière-garde et avant garde du champ de bataille ainsi que pour voir les unités perçant nos défenses
