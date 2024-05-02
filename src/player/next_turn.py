@@ -48,12 +48,12 @@ def nexturn(player, token):
             knights.remove(d)
     good_gold, bad_gold = cl.clean_golds(golds, pawns, ecastles)
 
-    builder.create_pawns(castles, player, token,
+    builder.create_units(castles, player, token,
                          eknights, knights, gold, cl.defense_knights[player],
                          len(golds), len(pawns), len(fog))
     peons.fuite(pawns, knights, eknights, defense, player, token)
 
-    builder.check_build(pawns, castles, player, token, gold, eknights)
+    builder.build_castle(pawns, castles, player, token, gold, eknights)
     # je farm d'abord ce que je vois
     peons.farm(pawns, player, token, good_gold, eknights, ecastles)
     # j'explore ensuite dans la direction opposée au spawn
@@ -70,7 +70,8 @@ def nexturn(player, token):
         atk.destroy_castle(knights, ecastles, eknights, player, token)
         if len(knights) == a:
             break
-    peons.explore_knight(knights, player, token, eknights, ecastles, pawns+castles)
+    peons.explore_knight(knights, player, token, eknights,
+                         ecastles, pawns+castles)
     # inventory=dec.inventory_zones()
     # print(inventory)
     # print(dec.get_diff("M","Mid",inventory))
