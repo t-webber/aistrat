@@ -10,7 +10,7 @@ La documentation se présente sous la forme d'un [mdbook](https://rust-lang.gith
 
 et vous aurez une magnifique documentation détaillée de notre projet !
 
-> À noter : la documentation est en anglais, mais le code est en français.
+> À noter : la documentation est en français, mais le code est en anglais.
 
 ## Lancer une partie
 

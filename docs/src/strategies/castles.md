@@ -1,6 +1,10 @@
-# Builder : construction des châteaux et des unités (fichier `stages/castles.py`)
+# Construction des châteaux et des unités
 
-## `build_castle`
+- fichier: `player/stages/castles.py`
+
+## Construction des châteaux
+
+- fonction: `build_castle`
 
 Cette fonctions s'occupent de la construction châteaux. On commence par prendre le contrôle d'un péon au début, afin de construire un château le plus rapidement possible en (2, 2). Puis on construit les autres châteaux en fonction de règles :
 
@@ -9,7 +13,9 @@ Cette fonctions s'occupent de la construction châteaux. On commence par prendre
 - **règle de distance:** on ne construit pas de châteaux trop proches des bords de la carte (fixé à une distance de 2 cases pour l'instant)
 - **règle de quantité:** on a une majoration du nombre de châteaux qu'on peut construire (dépend de la taille de la carte)
 
-## `create_units`
+## Création des unités
+
+- fonction: `create_units`
 
 `create_units` s'occupe de créer les unites avec nos châteaux. La construction des unités se fait selon la logique suivante :
 
