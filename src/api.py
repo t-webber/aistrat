@@ -18,7 +18,7 @@ PRICES = {PAWN: 10, CASTLE: 15, KNIGHT: 10}
 map_size = None
 
 taille = [0, 0]
-turn_data = []
+turn_data = {}
 
 
 def init(ip: str):
