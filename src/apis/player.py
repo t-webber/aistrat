@@ -10,7 +10,7 @@ import player.stages.castles as builder
 import player.stages.attack as atk
 import player.stages.defense as dfd
 import player.stages.peons as peons
-from Typing import Set
+from typing import Set
 
 
 class Coord:

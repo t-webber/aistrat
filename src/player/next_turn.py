@@ -61,8 +61,9 @@ def nexturn(player, token):
                   ecastles, knights+castles, bad_gold)
 
     atk.free_pawn(knights, player, token, eknights, epawns)
-
     left_defense = dfd.defend(pawns, defense, eknights, castles, player, token)
+    #left_defense = dfd.eknight_based_defense ( defense, eknights, castles, token)
+
     dfd.agressiv_defense(left_defense, epawns, player, token, eknights)
     while knights:
         a = len(knights)
