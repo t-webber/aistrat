@@ -72,4 +72,6 @@
 ## 07/05
 
 - Pierre: fonction de défense visant à entraver les déplacements ennemis (non finie)
-- Nicolas: Mise à jour du wiki sur l'exploration, la récupération de gold et client_logic. Restructuration du code des fonctions d'exploration et travail en collaboration pour la mise en place de la mémoire sur plusieurs tours
+- Tout le monde: travail en collaboration pour la mise en place de la mémoire sur plusieurs tours avec l'ajout de classes
+- Nicolas: Mise à jour du wiki sur l'exploration, la récupération de gold et client_logic. Restructuration du code des fonctions d'exploration
+- Jules : Restructuration de fuite et d'attaque pour la nouvelle frome de données
