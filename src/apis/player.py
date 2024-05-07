@@ -141,3 +141,5 @@ class Player:
                                self.eknights, self.id, self.token)
             if len(copy_knights) == a:
                 break
+
+        connection.end_turn(self.id, self.token)
