@@ -2,6 +2,8 @@
 
 ## API de connection avec le server
 
+<div style="text-align:justify">
+
 - fichier: `api.py`
 
 Nous avons réaliser une API pour nous connecter au serveur facilement. Cette API possède notamment
@@ -14,3 +16,7 @@ Nous avons réaliser une API pour nous connecter au serveur facilement. Cette AP
 ## API pour la logique communément utilisée
 
 - fichier: `player/logic/client_logic.py`
+
+client_logic est un fichier qui contient des fonctions communes utilisables potentiellement par plusieurs algorithmes du code ou des fonctions pour des parties du programme trop petites pour justifier un fichier séparé (L'implémentation de l'algorithme hongrois pour le déplacement des unités, calculs de distances, les prédiction de combat...)
+
+</div>
