@@ -98,3 +98,22 @@ def create_pawns(castles, player, token, eknight, knight, gold, defenders, nb_go
             api.build(api.PAWN, y, x, player, token)
             gold -= api.PRICES[api.PAWN]
             nb_pawn += 1
+
+
+
+def create_pawns_fl(castles, player, token, eknight, knight, gold, defenders, nb_gold, nb_pawn, nb_fog):
+    """ TLe château cree des unitées  """
+    n = len(eknight) - len(knight)
+
+    for (y, x) in castles:
+        # garder un équilibre entre defense et attaque et produire plus tôt
+        if gold > api.PRICES[api.KNIGHT] and (len(knight) <= nb_pawn or gold > 2*api.PRICES[api.KNIGHT]):
+            if api.build(api.KNIGHT, y, x, player, token):
+                gold -= api.PRICES[api.KNIGHT]
+
+
+        # Pas assez d'argent, et de l'argent est disponible sur la carte (ou du brouillard de guerre)
+        elif gold > api.PRICES[api.PAWN] * 1.25 and nb_gold + nb_fog > nb_pawn and 2/3*nb_pawn <= len(knight):
+            api.build(api.PAWN, y, x, player, token)
+            gold -= api.PRICES[api.PAWN]
+            nb_pawn += 1

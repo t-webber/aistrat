@@ -43,7 +43,7 @@ def main():
         api.end_turn(player1, token1)
     elif TWO_PLAYERS:
         api.get_data(player2, token2)
-        p.nexturn(player2, token2)
+        p.next_turn_fl(player2, token2)
         api.end_turn(player2, token2)
 
 
