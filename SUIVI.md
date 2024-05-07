@@ -65,3 +65,4 @@
 
 - Nicolas: Continuation de l'implémentation de fonctions pour jauger la partie en fonction de zones déterminées préalablemenrt entre arrière-garde et avant garde du champ de bataille ainsi que pour voir les unités perçant nos défenses
 - Tom: début de l'implémenation en oop pour garder des données sur plusieurs tours + Présentation de mi-parcourt
+- Jules: Ajout du fait que les attaquants explorent. Implémentation d'une interface de jeu en local, ainsi qu'un réseau test de type Q-learning qui apprend à jouer au jeu.
