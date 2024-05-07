@@ -2,6 +2,7 @@ import random as rd
 import numpy as np
 from apis import connection
 import player.logic.client_logic as cl
+import player.stages.exploration as ex
 
 
 def fuite(pawns, knights, eknights, defense, player, token):
@@ -102,59 +103,6 @@ def farm(pawns, player, token, good_gold, eknights, ecastles):
         for p in vus:  # j'enlève ceux que je bouge
             pawns.remove(p)
 
-
-def path_one(units_to_move, other_units, eknights):
-    '''Cherche le meilleur chemin pour une unité de units_to_move pour voir plus de la map'''
-    maxscore = cl.visibility_score(
-        connection.get_visible(units_to_move+other_units))
-    bestpawn = (-1, -1)
-    bestmove = (-1, -1)
-    for boy in units_to_move:
-        stuck = 0
-        moves = connection.get_moves(boy[0], boy[1])
-        static_units = [
-            other_boy for other_boy in units_to_move if other_boy != boy]+other_units
-        static_view = connection.get_visible(static_units)
-        for move in moves:
-            new_map = connection.add_visible(static_view, move)
-            score = cl.visibility_score(new_map)
-            if abs(score-maxscore) <= 1:
-                stuck += 1
-                continue
-            ennemies = cl.neighbors(move, eknights)[1]
-            # print(ennemies)
-            if score > maxscore and (ennemies == 0
-                                     or ennemies <= len(connection.get_defenders(boy[0], boy[1]))):
-                maxscore = score
-                bestpawn = boy
-                bestmove = move
-
-    return bestpawn, bestmove
-
-
-def path_trou(units_to_move, other_units, eknights):
-    '''Dirige les péons vers des trous'''
-    resultat = []
-    everybody = units_to_move+other_units
-    visibility = connection.get_visible(everybody)
-    trous_list = cl.trous(visibility)
-    for boy in units_to_move:
-        milieu_du_trou = cl.plus_proche_trou(trous_list, boy)
-        moves = connection.get_moves(boy[0], boy[1])
-        vecteur_trou = np.array(
-            (milieu_du_trou[0]-boy[0], milieu_du_trou[1]-boy[1]))
-        max_trou = -1
-        bestmove_trou = (0, 0)
-        for move in moves:
-            vector_move = np.array((move[0]-boy[0], move[1]-boy[1]))
-            ennemies = cl.neighbors(move, eknights)[1]
-            if np.dot(vecteur_trou, vector_move) > max_trou \
-                    and (ennemies == 0 or ennemies <= len(connection.get_defenders(boy[0], boy[1]))):
-                bestmove_trou = move
-        resultat.append((boy, bestmove_trou))
-    return resultat
-
-
 def path(units_to_move, other_units, eknights):
     '''Essaye de chercher un chemin d'exploration optimal pour les units_to_move pour révéler
     le maximum de la carte pour les péons. Prend en compte other_units pour la visibilité'''
@@ -162,7 +110,7 @@ def path(units_to_move, other_units, eknights):
     strategie = 0
     for i in range(len(units_to_move)):
         if strategie == 0:
-            bestpawn, bestmove = path_one(units_to_move, other_units, eknights)
+            bestpawn, bestmove = ex.path_one(units_to_move, other_units, eknights)
             if bestpawn == (-1, -1):
                 strategie = 1
                 i -= 1
@@ -187,7 +135,7 @@ def explore(pawns, player, token, eknights, ecastles, otherunits=[], reste_gold=
     if len(reste_gold) > 0:
         farm(remaining_pawns, player, token, reste_gold, eknights, ecastles)
     if len(remaining_pawns) > 0:
-        moves_trou = path_trou(remaining_pawns, otherunits, eknights)
+        moves_trou = ex.path_trou(remaining_pawns, otherunits, eknights)
         for one_move in moves_trou:
             connection.move(connection.PAWN, one_move[0][0], one_move[0][1],
                             one_move[1][0], one_move[1][1], player, token)
@@ -202,7 +150,7 @@ def explore_knight(units, player, token, eknights, ecastles, otherunits=[]):
         connection.move(connection.KNIGHT, one_move[0][0], one_move[0][1],
                         one_move[1][0], one_move[1][1], player, token)
     if len(remaining_pawns) > 0:
-        moves_trou = path_trou(remaining_pawns, otherunits, eknights)
+        moves_trou = ex.path_trou(remaining_pawns, otherunits, eknights)
         for one_move in moves_trou:
             connection.move(connection.KNIGHT, one_move[0][0], one_move[0][1],
                             one_move[1][0], one_move[1][1], player, token)

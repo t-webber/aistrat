@@ -19,6 +19,11 @@ class Coord:
 
 class GoldPile:
     """ (y, x, gold) """
+    
+    def __init__(self, y, x, gold):
+        self.y = y
+        self.x = x
+        self.gold = gold
 
 
 class Player:
@@ -28,6 +33,7 @@ class Player:
 
     def __init__(self):
         self.id, self.token = connection.create_player()
+        self.turn = 0
         # units
         self.pawns: Set[Pawn] = set()
         self.epawns: Set[Pawn] = set()
@@ -38,9 +44,9 @@ class Player:
         self.defense: Set[Knight] = set()
         # resources
         self.gold: int = 0
-        self.good_gold: set(GoldPile) = set()
-        self.bad_gold: set(GoldPile) = set()
-        self.fog: set(GoldPile) = set()
+        self.good_gold: Set[GoldPile] = set()
+        self.bad_gold: Set[GoldPile] = set()
+        self.fog: Set[GoldPile] = set()
 
     @property
     def golds(self):
@@ -116,7 +122,7 @@ class Player:
 
     def next_turn(self):
         " joue le prochain tour pour le joueur "
-
+        self.turn += 1
         self.check_attack_defense()
 
         builder.create_units(self.castles, self.id, self.token,
