@@ -2,16 +2,17 @@
 
 import sys
 import time
-import api
+from apis import connection
 from player import next_turn as p
+from apis.player import Player
 
 
-if len(sys.argv) > 2 and sys.argv[2] :
-    api.init(sys.argv[2])
+if len(sys.argv) > 2 and sys.argv[2]:
+    connection.init(sys.argv[2])
 else:
-    api.init("http://localhost:8080")
+    connection.init("http://localhost:8080")
 
-print("IP = ", api.IP)
+print("IP = ", connection.IP)
 
 if len(sys.argv) > 1:
     TWO_PLAYERS = sys.argv[1] == '2'
@@ -22,9 +23,9 @@ print(sys.argv)
 print("TWO_PLAYERS ? = ", TWO_PLAYERS)
 
 
-player1, token1 = api.create_player()
+player1 = Player()
 if TWO_PLAYERS:
-    player2, token2 = api.create_player()
+    player2 = Player()
 
 
 def main():
@@ -34,17 +35,14 @@ def main():
 
     time.sleep(0.1)  # avoid spamming the server
     t = time.time()
-    while not api.get_data(player1, token1):
+    while not connection.get_data(player1.id, player1.token):
         if time.time() - t > 10:
             print("!!! TIMEOUT !!!")
             sys.exit(1)
-    if api.current_player() == player1:
-        p.nexturn(player1, token1)
-        api.end_turn(player1, token1)
+    if connection.current_player() == player1:
+        player1.next_turn()
     elif TWO_PLAYERS:
-        api.get_data(player2, token2)
-        p.nexturn(player2, token2)
-        api.end_turn(player2, token2)
+        player2.next_turn()
 
 
 if __name__ == "__main__":

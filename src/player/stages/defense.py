@@ -1,12 +1,12 @@
 import player.logic.client_logic as cl
-import api
+from apis import connection
 import random as rd
 
 
 def agressiv_defense(defense, epawns, player, token, eknigths):
     '''
     Regarde les défenseurs déjà sur place et attaque les ennemis proches en priorisant les péons ennemis tout en s'assurant que les péons défendus le seront toujours pour le reste du tour
-    
+
     Returns
         None
     '''
@@ -32,7 +32,8 @@ def agressiv_defense(defense, epawns, player, token, eknigths):
                                            direction[0], d[1]+direction[1])
                     for _ in range(i):
                         defense.remove(d)
-                        api.move(api.KNIGHT, y, x, y2, x2, player, token)
+                        connection.move(connection.KNIGHT, y,
+                                        x, y2, x2, player, token)
                         cl.move_defender(y, x, y2, x2, player)
                     agressiv_defenders -= i
                     near_eknights -= dir_knights[direction]
@@ -57,31 +58,39 @@ def move_defense(defense, pawns, player, token, eknight):
         # Pour ne pas que le defenseur aille toujours d'abord en haut puis à gauche
         if rd.random() > 0.5:
             if xd > xp and (yd, xd-1) not in eknight:
-                api.move(api.KNIGHT, yd, xd, yd, xd - 1, player, token)
+                connection.move(connection.KNIGHT, yd, xd,
+                                yd, xd - 1, player, token)
                 cl.move_defender(yd, xd, yd, xd - 1, player)
             elif xd < xp and (yd, xd+1) not in eknight:
-                api.move(api.KNIGHT, yd, xd, yd, xd + 1, player, token)
+                connection.move(connection.KNIGHT, yd, xd,
+                                yd, xd + 1, player, token)
                 cl.move_defender(yd, xd, yd, xd + 1, player)
             elif yd > yp and (yd-1, xd) not in eknight:
-                api.move(api.KNIGHT, yd, xd, yd-1, xd, player, token)
+                connection.move(connection.KNIGHT, yd, xd,
+                                yd-1, xd, player, token)
                 cl.move_defender(yd, xd, yd-1, xd, player)
             elif yd < yp and (yd + 1, xd) not in eknight:
-                api.move(api.KNIGHT, yd, xd, yd + 1, xd, player, token)
+                connection.move(connection.KNIGHT, yd, xd,
+                                yd + 1, xd, player, token)
                 cl.move_defender(yd, xd, yd+1, xd, player)
             else:
                 arrived.append(defense[d])
         else:
             if yd > yp and (yd - 1, xd) not in eknight:
-                api.move(api.KNIGHT, yd, xd, yd - 1, xd, player, token)
+                connection.move(connection.KNIGHT, yd, xd,
+                                yd - 1, xd, player, token)
                 cl.move_defender(yd, xd, yd-1, xd, player)
             elif yd < yp and (yd + 1, xd) not in eknight:
-                api.move(api.KNIGHT, yd, xd, yd + 1, xd, player, token)
+                connection.move(connection.KNIGHT, yd, xd,
+                                yd + 1, xd, player, token)
                 cl.move_defender(yd, xd, yd + 1, xd, player)
             elif xd > xp and (yd, xd - 1) not in eknight:
-                api.move(api.KNIGHT, yd, xd, yd, xd - 1, player, token)
+                connection.move(connection.KNIGHT, yd, xd,
+                                yd, xd - 1, player, token)
                 cl.move_defender(yd, xd, yd, xd - 1, player)
             elif xd < xp and (yd, xd + 1) not in eknight:
-                api.move(api.KNIGHT, yd, xd, yd, xd + 1, player, token)
+                connection.move(connection.KNIGHT, yd, xd,
+                                yd, xd + 1, player, token)
                 cl.move_defender(yd, xd, yd, xd + 1, player)
             else:
                 arrived.append(defense[d])
