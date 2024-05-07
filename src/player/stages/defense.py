@@ -118,3 +118,43 @@ def defend(pawns, defense, eknights, castle, player, token):
         arrived += arrived2
         compteur += 1
     return arrived
+
+def eknight_based_defense(defense, eknights, player, token):
+    defense_id=[(defense[i],i) for i in range(len(defense))]
+    eknight_id=[(eknights[i],i) for i in range(len(eknights))]
+    attributions=dict([(eknight_id[i],(-1,None)) for i in range(len(eknight_id))])
+    for defender in defense_id:
+        min=1000000000
+        cible=None
+        for attacker in eknight_id:
+            dist=abs(attacker[0][0]-defender[0][0])*5 - (abs(attacker[0][0]-defender[0][0])==1)*4
+            if player=='A':
+                dist+=abs(attacker[0][1]-defender[0][1])*(((attacker[0][1]-defender[0][1])>0) + 5*((attacker[0][1]-defender[0][1])<0))
+            elif player=='B':
+                dist+=abs(attacker[0][1]-defender[0][1])*(5*((attacker[0][1]-defender[0][1])>0) + ((attacker[0][1]-defender[0][1])<0))
+            if dist< min and dist<attributions[attacker][0]:
+                min=dist
+                cible=attacker
+        if cible!= None:
+            old_defender=attributions[cible][1]
+            attributions[cible]=(min,defender)
+            if old_defender is not None:
+                defense_id.append(old_defender)
+    
+    for (attacker,i) in attributions:
+        _,defender=attributions[(attacker,i)]
+        if defender is not None:
+            yd,xd=defender
+            if (attacker[0]-defender[0]>0):
+                api.move(api.KNIGHT, yd, xd, yd-1, xd, player, token)
+                cl.move_defender(yd, xd, yd-1, xd, player)
+            elif (attacker[0]-defender[0]<0):
+                api.move(api.KNIGHT, yd, xd, yd+1, xd, player, token)
+                cl.move_defender(yd, xd, yd+1, xd, player)
+            elif (attacker[1]-defender[1]>1*(player=='A')):
+                api.move(api.KNIGHT, yd, xd, yd, xd-1, player, token)
+                cl.move_defender(yd, xd, yd, xd-1, player)
+            elif (attacker[1]-defender[1]<(-1)*(player=='B')):
+                api.move(api.KNIGHT, yd, xd, yd, xd+1, player, token)
+                cl.move_defender(yd, xd, yd, xd+1, player)
+    return()
