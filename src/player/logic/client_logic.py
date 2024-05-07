@@ -210,3 +210,12 @@ def plus_proche_trou(list_trous, unit):
             best = milieu
             best_dist = distance_trou
     return best
+
+
+def not_moved(units):
+    '''donne les unités n'ayant pas bougé ce tour'''
+    units_not_moved = set()
+    for unit in units:
+        if not unit.moved:
+            units_not_moved.add(unit)
+    return units_not_moved
