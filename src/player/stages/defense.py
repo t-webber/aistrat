@@ -1,12 +1,12 @@
 import player.logic.client_logic as cl
-import api
+from apis import connection
 import random as rd
 
 
 def agressiv_defense(defense, epawns, player, token, eknigths):
     '''
     Regarde les défenseurs déjà sur place et attaque les ennemis proches en priorisant les péons ennemis tout en s'assurant que les péons défendus le seront toujours pour le reste du tour
-    
+
     Returns
         None
     '''
@@ -32,7 +32,8 @@ def agressiv_defense(defense, epawns, player, token, eknigths):
                                            direction[0], d[1]+direction[1])
                     for _ in range(i):
                         defense.remove(d)
-                        api.move(api.KNIGHT, y, x, y2, x2, player, token)
+                        connection.move(connection.KNIGHT, y,
+                                        x, y2, x2, player, token)
                         cl.move_defender(y, x, y2, x2, player)
                     agressiv_defenders -= i
                     near_eknights -= dir_knights[direction]
@@ -57,31 +58,39 @@ def move_defense(defense, pawns, player, token, eknight):
         # Pour ne pas que le defenseur aille toujours d'abord en haut puis à gauche
         if rd.random() > 0.5:
             if xd > xp and (yd, xd-1) not in eknight:
-                api.move(api.KNIGHT, yd, xd, yd, xd - 1, player, token)
+                connection.move(connection.KNIGHT, yd, xd,
+                                yd, xd - 1, player, token)
                 cl.move_defender(yd, xd, yd, xd - 1, player)
             elif xd < xp and (yd, xd+1) not in eknight:
-                api.move(api.KNIGHT, yd, xd, yd, xd + 1, player, token)
+                connection.move(connection.KNIGHT, yd, xd,
+                                yd, xd + 1, player, token)
                 cl.move_defender(yd, xd, yd, xd + 1, player)
             elif yd > yp and (yd-1, xd) not in eknight:
-                api.move(api.KNIGHT, yd, xd, yd-1, xd, player, token)
+                connection.move(connection.KNIGHT, yd, xd,
+                                yd-1, xd, player, token)
                 cl.move_defender(yd, xd, yd-1, xd, player)
             elif yd < yp and (yd + 1, xd) not in eknight:
-                api.move(api.KNIGHT, yd, xd, yd + 1, xd, player, token)
+                connection.move(connection.KNIGHT, yd, xd,
+                                yd + 1, xd, player, token)
                 cl.move_defender(yd, xd, yd+1, xd, player)
             else:
                 arrived.append(defense[d])
         else:
             if yd > yp and (yd - 1, xd) not in eknight:
-                api.move(api.KNIGHT, yd, xd, yd - 1, xd, player, token)
+                connection.move(connection.KNIGHT, yd, xd,
+                                yd - 1, xd, player, token)
                 cl.move_defender(yd, xd, yd-1, xd, player)
             elif yd < yp and (yd + 1, xd) not in eknight:
-                api.move(api.KNIGHT, yd, xd, yd + 1, xd, player, token)
+                connection.move(connection.KNIGHT, yd, xd,
+                                yd + 1, xd, player, token)
                 cl.move_defender(yd, xd, yd + 1, xd, player)
             elif xd > xp and (yd, xd - 1) not in eknight:
-                api.move(api.KNIGHT, yd, xd, yd, xd - 1, player, token)
+                connection.move(connection.KNIGHT, yd, xd,
+                                yd, xd - 1, player, token)
                 cl.move_defender(yd, xd, yd, xd - 1, player)
             elif xd < xp and (yd, xd + 1) not in eknight:
-                api.move(api.KNIGHT, yd, xd, yd, xd + 1, player, token)
+                connection.move(connection.KNIGHT, yd, xd,
+                                yd, xd + 1, player, token)
                 cl.move_defender(yd, xd, yd, xd + 1, player)
             else:
                 arrived.append(defense[d])
@@ -118,3 +127,46 @@ def defend(pawns, defense, eknights, castle, player, token):
         arrived += arrived2
         compteur += 1
     return arrived
+
+def eknight_based_defense(defense, eknights, player, token):
+    defense_id=[(defense[i],i) for i in range(len(defense))]
+    eknight_id=[(eknights[i],i) for i in range(len(eknights))]
+    attributions=dict([(eknight_id[i],(-1,None)) for i in range(len(eknight_id))])
+    for defender in defense_id:
+        print("oui")
+        min=1000000000
+        cible=None
+        for attacker in eknight_id:
+            dist=abs(attacker[0][0]-defender[0][0])*5 - (abs(attacker[0][0]-defender[0][0])==1)*4
+            if player=='A':
+                dist+=abs(attacker[0][1]-defender[0][1])*(((attacker[0][1]-defender[0][1])>0) + 5*((attacker[0][1]-defender[0][1])<0))
+            elif player=='B':
+                dist+=abs(attacker[0][1]-defender[0][1])*(5*((attacker[0][1]-defender[0][1])>0) + ((attacker[0][1]-defender[0][1])<0))
+            if dist< min and (dist<attributions[attacker][0] or attributions[attacker][0]== -1):
+                min=dist
+                cible=attacker
+                print("attrib")
+        if cible!= None:
+            print("attrib def")
+            old_defender=attributions[cible][1]
+            attributions[cible]=(min,defender)
+            if old_defender is not None:
+                defense_id.append(old_defender)
+    
+    for (attacker,i) in attributions:
+        _,defender=attributions[(attacker,i)]
+        if defender is not None:
+            yd,xd=defender
+            if (attacker[0]-defender[0]>0):
+                connection.move(connection.KNIGHT, yd, xd, yd-1, xd, player, token)
+                cl.move_defender(yd, xd, yd-1, xd, player)
+            elif (attacker[0]-defender[0]<0):
+                connection.move(connection.KNIGHT, yd, xd, yd+1, xd, player, token)
+                cl.move_defender(yd, xd, yd+1, xd, player)
+            elif (attacker[1]-defender[1]>1*(player=='A')):
+                connection.move(connection.KNIGHT, yd, xd, yd, xd-1, player, token)
+                cl.move_defender(yd, xd, yd, xd-1, player)
+            elif (attacker[1]-defender[1]<(-1)*(player=='B')):
+                connection.move(connection.KNIGHT, yd, xd, yd, xd+1, player, token)
+                cl.move_defender(yd, xd, yd, xd+1, player)
+    return()

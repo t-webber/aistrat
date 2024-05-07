@@ -2,7 +2,7 @@
 
 from scipy.optimize import linear_sum_assignment
 import numpy as np
-import api as api
+from apis import connection
 
 defense_knights = {"A": [], "B": []}
 
@@ -40,7 +40,7 @@ def distance(x1, y1, x2, y2):
     return abs(x1 - x2) + abs(y1 - y2)
 
 
-def distance_to_list(current_position: api.Coord, list_positions: list[api.Coord]):
+def distance_to_list(current_position: connection.Coord, list_positions: list[connection.Coord]):
     """ donne la distance au château le plus proche """
     d = float('inf')
     y_curr, x_curr = current_position
@@ -49,7 +49,7 @@ def distance_to_list(current_position: api.Coord, list_positions: list[api.Coord
     return d
 
 
-def exists_close(current_position: api.Coord, list_targets: list[api.Coord], sep: int) -> bool:
+def exists_close(current_position: connection.Coord, list_targets: list[connection.Coord], sep: int) -> bool:
     """ Check if there is a target close to the current position """
     y_curr, x_curr = current_position
     for (y, x) in list_targets:
@@ -148,65 +148,10 @@ def neighbors(case, knights):
             dir_case[(k[0]-case[0], k[1]-case[1])] += 1
     return dir_case, sum(dir_case.values())
 
-
-def trous(grille):
-    '''Cherche tous les lieux avec un éclairage extrêmement faible'''
-    sortie = []
-    vus = np.zeros((len(grille), len(grille[0])))
-    for i, x in enumerate(grille):
-        for j, y in enumerate(x):
-            if vus[i][j] == 0 and grille[i][j] == 0:
-                a_chercher = [(i, j)]
-                vus[i][j] = 1
-                trou = []
-                while len(a_chercher) > 0:
-                    pixel = a_chercher.pop()
-                    cases_adjacentes = api.get_moves(pixel[0], pixel[1])
-                    for case in cases_adjacentes:
-                        if grille[case[0]][case[1]] == 0 and vus[case[0]][case[1]] == 0:
-                            vus[case[0]][case[1]] = 1
-                            a_chercher.append(case)
-                    trou.append(pixel)
-                sortie.append((trou))
-    return sortie
-
-
-def plus_gros_trou(grille):
-    '''Cherche la plus grande surface continue mal éclairée'''
-    holes = trous(grille)
-    taille_max = 0
-    trou_max = holes[0]
-    for one_hole in holes:
-        nbr_cases_trou = len(one_hole)
-        if nbr_cases_trou > taille_max:
-            taille_max = nbr_cases_trou
-            trou_max = one_hole
-    return trou_max
-
-
-def milieu_trou(trou):
-    '''Trouve le milieu d'un trou (arrondi à l'entier inférieur)'''
-    i = 0
-    j = 0
-    for k in trou:
-        i += k[0]
-        j += k[1]
-    milieu = (i//len(trou), j//len(trou))
-    return milieu
-
-
-def plus_proche_trou(list_trous, unit):
-    '''Trouve le trou le plus proche de l'unité'''
-    joueur = api.current_player()
-    if joueur == 'A':
-        best = api.map_size
-    else:
-        best = (0, 0)
-    best_dist = float('inf')
-    for trou in list_trous:
-        milieu = milieu_trou(trou)
-        distance_trou = distance(milieu[0], milieu[1], unit[0], unit[1])
-        if distance_trou < best_dist:
-            best = milieu
-            best_dist = distance_trou
-    return best
+def not_moved(units):
+    '''donne les unités n'ayant pas bougé ce tour'''
+    units_not_moved = set()
+    for unit in units:
+        if not unit.moved:
+            units_not_moved.add(unit)
+    return units_not_moved
