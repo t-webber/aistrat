@@ -133,6 +133,7 @@ def eknight_based_defense(defense, eknights, player, token):
     eknight_id=[(eknights[i],i) for i in range(len(eknights))]
     attributions=dict([(eknight_id[i],(-1,None)) for i in range(len(eknight_id))])
     for defender in defense_id:
+        print("oui")
         min=1000000000
         cible=None
         for attacker in eknight_id:
@@ -141,10 +142,12 @@ def eknight_based_defense(defense, eknights, player, token):
                 dist+=abs(attacker[0][1]-defender[0][1])*(((attacker[0][1]-defender[0][1])>0) + 5*((attacker[0][1]-defender[0][1])<0))
             elif player=='B':
                 dist+=abs(attacker[0][1]-defender[0][1])*(5*((attacker[0][1]-defender[0][1])>0) + ((attacker[0][1]-defender[0][1])<0))
-            if dist< min and dist<attributions[attacker][0]:
+            if dist< min and (dist<attributions[attacker][0] or attributions[attacker][0]== -1):
                 min=dist
                 cible=attacker
+                print("attrib")
         if cible!= None:
+            print("attrib def")
             old_defender=attributions[cible][1]
             attributions[cible]=(min,defender)
             if old_defender is not None:
@@ -155,15 +158,15 @@ def eknight_based_defense(defense, eknights, player, token):
         if defender is not None:
             yd,xd=defender
             if (attacker[0]-defender[0]>0):
-                api.move(api.KNIGHT, yd, xd, yd-1, xd, player, token)
+                connection.move(connection.KNIGHT, yd, xd, yd-1, xd, player, token)
                 cl.move_defender(yd, xd, yd-1, xd, player)
             elif (attacker[0]-defender[0]<0):
-                api.move(api.KNIGHT, yd, xd, yd+1, xd, player, token)
+                connection.move(connection.KNIGHT, yd, xd, yd+1, xd, player, token)
                 cl.move_defender(yd, xd, yd+1, xd, player)
             elif (attacker[1]-defender[1]>1*(player=='A')):
-                api.move(api.KNIGHT, yd, xd, yd, xd-1, player, token)
+                connection.move(connection.KNIGHT, yd, xd, yd, xd-1, player, token)
                 cl.move_defender(yd, xd, yd, xd-1, player)
             elif (attacker[1]-defender[1]<(-1)*(player=='B')):
-                api.move(api.KNIGHT, yd, xd, yd, xd+1, player, token)
+                connection.move(connection.KNIGHT, yd, xd, yd, xd+1, player, token)
                 cl.move_defender(yd, xd, yd, xd+1, player)
     return()
