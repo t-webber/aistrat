@@ -44,7 +44,7 @@ def main():
         connection.end_turn(player1,token1)
     elif TWO_PLAYERS:
         connection.get_data(player2,token2)
-        p.nexturn(player2, token2)
+        p.nexturn_fl(player2, token2)
         connection.end_turn(player2,token2)
 
 
