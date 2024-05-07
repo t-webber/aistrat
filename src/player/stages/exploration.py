@@ -51,7 +51,8 @@ def path_trou(units_to_move, other_units, eknights):
                     and (ennemies == 0 or ennemies <= len(connection.get_defenders(boy[0], boy[1]))):
                 bestmove_trou = move
         resultat.append((boy, bestmove_trou))
-    return resultat
+    for res in resultat:
+        res[0].move(res[1])
 
 
 def trous(grille):

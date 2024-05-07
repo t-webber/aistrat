@@ -2,6 +2,7 @@
 import numpy as np
 import requests
 from apis.kinds import Coord
+from apis.player import Player
 
 IP = "http://localhost:8080"
 TIME_OUT = 0.01
@@ -66,11 +67,11 @@ def build(kind, y, x, player, token) -> bool:
         return False
 
 
-def get_data(player, token):
+def get_data(player: Player):
     """ reçoit toutes les information pour le tour """
     global turn_data
     try:
-        res = requests.get(f"{IP}/view/{player}/{token}", timeout=TIME_OUT)
+        res = requests.get(f"{IP}/view/{player.id}/{player.token}", timeout=TIME_OUT)
     except:
         return False
     turn_data = res.json()
@@ -136,14 +137,14 @@ def get_info(y, x):
     return turn_data[y][x]
 
 
-def other(player):
+def other(player_id: str):
     '''Renvoie l'autre joueur par rapport à player'''
-    if player == 'A':
+    if player_id == 'A':
         return 'B'
     return 'A'
 
 
-def get_kinds(player) -> dict[str, list[Coord]]:
+def get_kinds(player: str) -> dict[str, list[Coord]]:
     """ Renvoie la liste des coordonées de toutes les unitées présentes sur la carte """
     result = {PAWN: [], CASTLE: [], KNIGHT: [],
               GOLD: [], 'fog': [], EKNIGHT: [], EPAWN: [], ECASTLE: []}
@@ -176,7 +177,7 @@ def get_kinds(player) -> dict[str, list[Coord]]:
                 if d2[CASTLE]:
                     for _ in range(d2[CASTLE]):
                         result[ECASTLE].append((y, x))
-                g = carte[y][x][GOLD]
+                g = col[GOLD]
                 if g:
                     result[GOLD].append((y, x, g))
     return result
