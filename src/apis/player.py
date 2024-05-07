@@ -4,11 +4,21 @@ fichier qui implémente la classe Player
 
 import sys
 from apis import connection
+from apis.kinds import Pawn, Knight, Castle
 import player.logic.client_logic as cl
 import player.stages.castles as builder
 import player.stages.attack as atk
 import player.stages.defense as dfd
 import player.stages.peons as peons
+from Typing import Set
+
+
+class Coord:
+    """ (y, x) """
+
+
+class GoldPile:
+    """ (y, x, gold) """
 
 
 class Player:
@@ -19,18 +29,18 @@ class Player:
     def __init__(self):
         self.id, self.token = connection.create_player()
         # units
-        self.pawns = set()
-        self.epawns = set()
-        self.eknights = set()
-        self.castles = set()
-        self.ecastles = set()
-        self.attack = set()
-        self.defense = set()
+        self.pawns: Set[Pawn] = set()
+        self.epawns: Set[Pawn] = set()
+        self.eknights: Set[Knight] = set()
+        self.castles: Set[Knight] = set()
+        self.ecastles: Set[Castle] = set()
+        self.attack: Set[Knight] = set()
+        self.defense: Set[Knight] = set()
         # resources
-        self.gold = 0
-        self.good_gold = set()
-        self.bad_gold = set()
-        self.fog = set()
+        self.gold: int = 0
+        self.good_gold: set(GoldPile) = set()
+        self.bad_gold: set(GoldPile) = set()
+        self.fog: set(GoldPile) = set()
 
     @property
     def golds(self):
@@ -112,16 +122,17 @@ class Player:
         builder.create_units(self.castles, self.id, self.token,
                              self.eknights, self.knights, self.gold, self.defense,
                              len(self.golds), len(self.pawns), len(self.fog))
+
         peons.fuite(self.pawns, self.knights, self.eknights,
                     self.defense, self.id, self.token)
 
         builder.build_castle(self.pawns, self.castles,
                              self.id, self.token, self.gold, self.eknights)
         # je farm d'abord ce que je vois
-        peons.farm(self.pawns, self.id, self.token,
+        peons.farm(cl.not_moved(self.pawns), self.id, self.token,
                    self.good_gold, self.eknights, self.ecastles)
         # j'explore ensuite dans la direction opposée au spawn
-        peons.explore(self.pawns, self.id, self.token, self.eknights,
+        peons.explore(cl.not_moved(self.pawns), self.id, self.token, self.eknights,
                       self.ecastles, self.knights+self.castles, self.bad_gold)
 
         atk.free_pawn(self.knights, self.id, self.token,
@@ -141,5 +152,11 @@ class Player:
                                self.eknights, self.id, self.token)
             if len(copy_knights) == a:
                 break
+
+        self.end_turn()
+
+    def end_turn(self):
+        for p in self.pawns:
+            p.moved = False
 
         connection.end_turn(self.id, self.token)
