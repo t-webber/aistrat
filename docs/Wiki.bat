@@ -1,0 +1,2 @@
+mdbook serve --open
+pause

@@ -5,7 +5,7 @@
 La documentation se présente sous la forme d'un [mdbook](https://rust-lang.github.io/mdBook/index.html). Pour la consulter, il suffit de lancer la commande suivante
 
 ```bash
-./docs/mdbook serve --open
+cd ./docs ; ./mdbook serve --open
 ```
 
 et vous aurez une magnifique documentation détaillée de notre projet !

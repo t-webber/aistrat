@@ -3,7 +3,7 @@
 import numpy as np
 import random as rd
 import player.stages.peons as peons
-import api
+from apis import connection
 import player.logic.client_logic as cl
 import player.stages.castles as builder
 import player.stages.attack as atk
@@ -17,19 +17,19 @@ def nexturn(player, token):
         - build a castle
         - farm coins
     """
-    kinds = api.get_kinds(player)
-    pawns: list[api.Coord] = kinds[api.PAWN]
-    knights: list[api.Coord] = kinds[api.KNIGHT]
-    eknights: list[api.Coord] = kinds[api.EKNIGHT]
-    epawns: list[api.Coord] = kinds[api.EPAWN]
-    fog = kinds[api.FOG]
+    kinds = connection.get_kinds(player)
+    pawns: list[connection.Coord] = kinds[connection.PAWN]
+    knights: list[connection.Coord] = kinds[connection.KNIGHT]
+    eknights: list[connection.Coord] = kinds[connection.EKNIGHT]
+    epawns: list[connection.Coord] = kinds[connection.EPAWN]
+    fog = kinds[connection.FOG]
     # liste des chevaliers attribués à la défense
-    defense: list[api.Coord] = cl.defense_knights[player]
-    golds: list[api.Coord] = kinds[api.GOLD]
-    castles: list[api.Coord] = kinds[api.CASTLE]
-    ecastles: list[api.Coord] = kinds[api.ECASTLE]
+    defense: list[connection.Coord] = cl.defense_knights[player]
+    golds: list[connection.Coord] = kinds[connection.GOLD]
+    castles: list[connection.Coord] = kinds[connection.CASTLE]
+    ecastles: list[connection.Coord] = kinds[connection.ECASTLE]
     try:
-        gold = api.get_gold()[player]
+        gold = connection.get_gold()[player]
     except:
         gold = 0
 

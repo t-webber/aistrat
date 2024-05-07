@@ -4,6 +4,7 @@
 
 - [Explication des stratégies](./strategies/introduction.md)
 
+  - [API](./strategies/api.md)
   - [Fuite](./strategies/fuite.md)
   - [Construction](./strategies/castles.md)
   - [Exploration](./strategies/explore.md)

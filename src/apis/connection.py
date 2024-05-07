@@ -1,6 +1,7 @@
 """ API to communicate between client and serve """
 import numpy as np
 import requests
+from apis.kinds import Coord
 
 IP = "http://localhost:8080"
 TIME_OUT = 0.01
@@ -133,10 +134,6 @@ def auto_farm(player, token) -> bool:
 def get_info(y, x):
     '''Récupère une info particulière sur le tour'''
     return turn_data[y][x]
-
-
-class Coord:
-    """ (y, x) """
 
 
 def other(player):
