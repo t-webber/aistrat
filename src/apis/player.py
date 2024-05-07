@@ -3,7 +3,7 @@ fichier qui implémente la classe Player
 """
 
 import sys
-from api import connection
+from apis import connection
 import player.logic.client_logic as cl
 import player.stages.castles as builder
 import player.stages.attack as atk
@@ -57,9 +57,9 @@ class Player:
             print("epawns changed", file=sys.stderr)
             sys.exit(1)
 
-        if self.attack + self.defense != set(kinds[connection.KNIGHT]):
-            print("knights changed", file=sys.stderr)
-            sys.exit(1)
+        # if self.attack + self.defense != set(kinds[connection.KNIGHT]):
+        #     print("knights changed", file=sys.stderr)
+        #     sys.exit(1)
 
         if self.eknights != set(kinds[connection.EKNIGHT]):
             print("eknights changed", file=sys.stderr)
@@ -73,9 +73,9 @@ class Player:
             print("ecastles changed", file=sys.stderr)
             sys.exit(1)
 
-        if self.good_gold + self.bad_gold != len(set(kinds[connection.GOLD])):
-            print("gold changed", file=sys.stderr)
-            sys.exit(1)
+        # if self.good_gold + self.bad_gold != len(set(kinds[connection.GOLD])):
+        #     print("gold changed", file=sys.stderr)
+        #     sys.exit(1)
 
         if self.fog != set(kinds[connection.FOG]):
             print("fog changed", file=sys.stderr)
@@ -109,14 +109,14 @@ class Player:
 
         self.check_attack_defense()
 
-        builder.create_pawns(self.castles, self.id, self.token,
+        builder.create_units(self.castles, self.id, self.token,
                              self.eknights, self.knights, self.gold, self.defense,
                              len(self.golds), len(self.pawns), len(self.fog))
         peons.fuite(self.pawns, self.knights, self.eknights,
                     self.defense, self.id, self.token)
 
-        builder.check_build(self.pawns, self.castles,
-                            self.id, self.token, self.gold, self.eknights)
+        builder.build_castle(self.pawns, self.castles,
+                             self.id, self.token, self.gold, self.eknights)
         # je farm d'abord ce que je vois
         peons.farm(self.pawns, self.id, self.token,
                    self.good_gold, self.eknights, self.ecastles)
@@ -141,3 +141,5 @@ class Player:
                                self.eknights, self.id, self.token)
             if len(copy_knights) == a:
                 break
+
+        connection.end_turn(self.id, self.token)
