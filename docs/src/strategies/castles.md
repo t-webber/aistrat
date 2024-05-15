@@ -6,7 +6,7 @@
 
 - fonction: `build_castle`
 
-Cette fonctions s'occupent de la construction châteaux. On commence par prendre le contrôle d'un péon au début, afin de construire un château le plus rapidement possible en (2, 2). Puis on construit les autres châteaux en fonction de règles :
+Cette fonctions s'occupe de la construction châteaux. On commence par prendre le contrôle d'un péon au début, afin de construire un château le plus rapidement possible en (2, 2). Puis on construit les autres châteaux en fonction de règles :
 
 - **règle d'or:** il faut asser d'or pour construire le château (le coût d'un château pour l'instant, soit 15 or)
 - **règle d'espacement:** on ne construit pas de châteaux trop proches les uns des autres (fixé à une distance de 4 cases pour l'instant)
