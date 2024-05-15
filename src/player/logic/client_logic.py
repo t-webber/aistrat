@@ -3,6 +3,7 @@
 from scipy.optimize import linear_sum_assignment
 import numpy as np
 from apis import connection
+from apis.kinds import Unit
 
 defense_knights = {"A": [], "B": []}
 
@@ -68,7 +69,7 @@ def hongrois_distance(acteurs, objets):
     """
     matrice_cost = np.abs(
         np.array(acteurs)[:, np.newaxis] - np.array(objets)).sum(axis=2)
-    return algo_hongrois(matrice_cost)
+    return (algo_hongrois(matrice_cost),acteurs)
 
 
 def clean_golds(golds, pawns, ecastles):
@@ -142,16 +143,26 @@ def neighbors(case, knights):
     """
     renvoie le nombre de chevaliers ennemis dans les quatres case adjacentes à une case
     """
-    dir_case = {(0, 1): 0, (1, 0): 0, (0, -1): 0, (-1, 0): 0}
+    dir_case = {(0, 1): [], (1, 0): [], (0, -1): [], (-1, 0): []}
     for k in knights:
-        if (k[0]-case[0], k[1]-case[1]) in dir_case:
-            dir_case[(k[0]-case[0], k[1]-case[1])] += 1
-    return dir_case, sum(dir_case.values())
+        if (k.y-case[0], k.x-case[1]) in dir_case:
+            dir_case[(k.y-case[0], k.x-case[1])].append(k)
+    return dir_case, sum(len(dir_case[d]) for d in dir_case)
 
 def not_moved(units):
     '''donne les unités n'ayant pas bougé ce tour'''
     units_not_moved = set()
     for unit in units:
-        if not unit.moved:
+        if not unit.used:
             units_not_moved.add(unit)
     return units_not_moved
+
+
+
+def find_unit(units: Unit, y: int, x: int):
+    """
+    find a unit in a list of units by its coordinates
+    """
+    for unit in units:
+        if unit.y == y and unit.x == x:
+            return unit
