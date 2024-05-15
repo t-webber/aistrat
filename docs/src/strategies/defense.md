@@ -1,6 +1,6 @@
 ## defense
 
-### defense orienté péon
+### defense orientée péon
 
 fonction defend
 

@@ -7,6 +7,7 @@
   - [API](./strategies/api.md)
   - [Fuite](./strategies/fuite.md)
   - [Construction](./strategies/castles.md)
+  - [Golds](./strategies/golds.md)
   - [Exploration](./strategies/explore.md)
   - [Défense](./strategies/defense.md)
   - [Attaque](./strategies/attaque.md)
@@ -17,3 +18,9 @@
   - [Idées d'amélioration](./organisation/ideas.md)
   - [Planning](./organisation/planning.md)
   - [Recherches](./organisation/research.md)
+
+---
+
+- [Annexes]()
+  - [L'algorithme hongrois](./annexes/algo_hongrois.md)
+  - [la fonction neighbors](./annexes/neighbors.md)
