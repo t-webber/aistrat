@@ -90,11 +90,6 @@ def farm(pawns, player, token, good_gold, eknights, ecastles):
                     pawns[p].move(y,x+1)
                 else:
                     connection.farm(y, x, player, token)
-<<<<<<< HEAD
-        for p in vus:  # j'enlève ceux que je bouge
-            pawns.remove(p)
-=======
->>>>>>> 1e3efb4f47896afe1609b7dbb46a34848365c825
 
 def path(units_to_move, other_units, eknights):
     '''Essaye de chercher un chemin d'exploration optimal pour les units_to_move pour révéler

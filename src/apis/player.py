@@ -9,12 +9,7 @@ import player.logic.client_logic as cl
 import player.stages.castles as builder
 import player.stages.attack as atk
 import player.stages.defense as dfd
-<<<<<<< HEAD
-import player.stages.peons as peons
-from typing import Set
-=======
 from player.stages import peons
->>>>>>> 1e3efb4f47896afe1609b7dbb46a34848365c825
 
 
 class Coord:
