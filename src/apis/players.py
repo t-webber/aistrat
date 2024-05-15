@@ -6,10 +6,13 @@ import sys
 from apis import connection
 from apis.kinds import Pawn, Knight, Castle
 import player.logic.client_logic as cl
-import player.stages.castles as builder
+from player.stages.castles import create_units, build_castle
 import player.stages.attack as atk
 import player.stages.defense as dfd
 from player.stages import peons
+
+PLAYER_A = "A"
+PLAYER_B = "B"
 
 
 class Coord:
@@ -23,10 +26,17 @@ class GoldPile:
         self.y = y
         self.x = x
         self.gold = gold
+        self.used = False
 
     def reduce(self):
+        """ farm a gold pile """
         self.gold -= 1
+        self.used = True
         return self.gold
+
+    def update(self):
+        """ update gold pile """
+        self.used = False
 
 
 class Player:
@@ -40,8 +50,9 @@ class Player:
 
         self.turn = 0
         # units
-        self.pawns: list[Pawn] = [Pawn(0, 0, self) for _ in range(3)] if self.id == "A" else\
-                                 [Pawn(connection.size_map()[0], connection.size_map()[1], self) for _ in range(3)]
+        self.pawns: list[Pawn] = [Pawn(0, 0, self) for _ in range(3)] if self == PLAYER_A else\
+                                 [Pawn(connection.size_map()[0], connection.size_map()[
+                                       1], self) for _ in range(3)]
         self.epawns: list[Pawn] = []
         self.eknights: list[Knight] = []
         self.castles: list[Knight] = []
@@ -51,10 +62,15 @@ class Player:
         # resources
         self.gold: int = 0
         self.good_gold, self.bad_gold = cl.clean_golds(
-                                            connection.get_kinds(self.id)[connection.GOLD], 
-                                            self.pawns, self.ecastles)
+            connection.get_kinds(self.id)[connection.GOLD],
+            self.pawns, self.ecastles)
 
         self.fog: list[GoldPile] = []
+
+    def __eq__(self, other):
+        if isinstance(other, Player):
+            return self.id == other.id
+        return self.id == other
 
     @property
     def golds(self):
@@ -62,7 +78,7 @@ class Player:
         return self.good_gold.extend(self.bad_gold)
 
     @property
-    def knights(self):
+    def knights(self) -> list[Knight]:
         " recupérer tous les chevaliers "
         return self.attack.extend(self.defense)
 
@@ -118,10 +134,15 @@ class Player:
             print("gold cleaning changed", file=sys.stderr)
             sys.exit(1)
 
+        for gold in self.good_gold:
+            gold.update()
+        for gold in self.bad_gold:
+            gold.update()
+
     def check_attack_defense(self):
         """ 
-        vérifie que les chevaliers sont bien attribués à l'attaque ou à la défense, 
-        et les attribuent dans le cas échéant
+        vérifie que les chevaliers sont bien attribués à l'attaque
+        ou à la défense, et les attribuent dans le cas échéant
         """
         for d in self.defense:
             if d not in self.knights():
@@ -134,12 +155,12 @@ class Player:
         self.turn += 1
         self.check_attack_defense()
 
-        builder.create_units(self)
+        create_units(self)
 
         peons.fuite(self.pawns, self.knights, self.eknights,
                     self.defense)
 
-        builder.build_castle(self)
+        build_castle(self)
         # je farm d'abord ce que je vois
         peons.farm(self.pawns, self.id, self.token,
                    self.good_gold, self.eknights, self.ecastles)

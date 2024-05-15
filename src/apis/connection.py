@@ -2,7 +2,7 @@
 import numpy as np
 import requests
 from apis.kinds import Coord
-from apis.player import Player
+from apis.players import Player
 
 IP = "http://localhost:8080"
 TIME_OUT = 0.01
@@ -71,7 +71,8 @@ def get_data(player: Player):
     """ reçoit toutes les information pour le tour """
     global turn_data
     try:
-        res = requests.get(f"{IP}/view/{player.id}/{player.token}", timeout=TIME_OUT)
+        res = requests.get(
+            f"{IP}/view/{player.id}/{player.token}", timeout=TIME_OUT)
     except:
         return False
     turn_data = res.json()

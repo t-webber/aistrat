@@ -3,7 +3,7 @@
 import sys
 import time
 from apis import connection
-from apis.player import Player
+from apis.players import Player
 
 
 if len(sys.argv) > 2 and sys.argv[2]:

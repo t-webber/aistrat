@@ -5,11 +5,14 @@ Blackboxes for units
 from apis import connection
 import sys
 
+
 class Coord:
     """ (y, x) """
 
+
 X = 1
 Y = 0
+
 
 class Unit:
     """
@@ -33,6 +36,11 @@ class Unit:
         print("Error: key not found", file=sys.stderr)
         sys.exit(1)
 
+    def coordinates(self):
+        """
+        Renvoie les coordonnées de l'unité
+        """
+        return (self.y, self.x)
 
 
 class Person(Unit):
@@ -68,10 +76,12 @@ class Pawn(Person):
         """
         farm a gold pile
         """
-        res = connection.farm(self.y, self.x, self.player.id, self.player.token)
+        res = connection.farm(
+            self.y, self.x, self.player.id, self.player.token)
         if res:
             self.used = True
         return res
+
 
 class Knight(Person):
     """"
