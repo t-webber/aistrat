@@ -2,18 +2,22 @@
 
 [Introduction](../../README.md)
 
-- [Explication des stratégies](./strategies/introduction.md)
+- [Documentation de notre projet](./stages/introduction.md)
 
-  - [API](./strategies/api.md)
-  - [Fuite](./strategies/fuite.md)
-  - [Construction](./strategies/castles.md)
-  - [Exploration](./strategies/explore.md)
-  - [Défense](./strategies/defense.md)
-  - [Attaque](./strategies/attaque.md)
+  - [API](./stages/api.md)
+  - [Fuite](./stages/fuite.md)
+  - [Construction](./stages/castles.md)
+  - [Exploration](./stages/explore.md)
+  - [Défense](./stages/defense.md)
+  - [Attaque](./stages/attaque.md)
+
+- [Stratégies futurtes](./strategies/introduction.md)
+
+  - ["Blitzkrieg"](./strategies/blitzkrieg.md)
+  - [Autres idées](./strategies/ideas.md)
 
 - [Organisation](./organisation/introduction.md)
 
-  - [Avancée du projet](../../SUIVI.md)
-  - [Idées d'amélioration](./organisation/ideas.md)
+  - [Avancée du projet](./suivi.md)
   - [Planning](./organisation/planning.md)
   - [Recherches](./organisation/research.md)

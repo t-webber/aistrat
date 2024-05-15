@@ -1,3 +1,3 @@
-# Explication du code et des stratégies
+# Stratégies pour le futur
 
-Dans ce chapitre, nous expliquons le code de notre projet et les stratégies que nous avons implémentées.
+Dans cette partie, nous expliquons les stratégies qu'on pourra choisir dans le futur.
