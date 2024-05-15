@@ -35,17 +35,21 @@ def main():
 
     time.sleep(0.1)  # avoid spamming the server
     t = time.time()
+<<<<<<< HEAD
+    while not connection.get_data(player1, token1):
+=======
     while not connection.get_data(player1):
+>>>>>>> 1e3efb4f47896afe1609b7dbb46a34848365c825
         if time.time() - t > 10:
             print("!!! TIMEOUT !!!")
             sys.exit(1)
     if connection.current_player() == player1:
         p.nexturn(player1, token1)
-        connection.end_turn(player1, token1)
+        connection.end_turn(player1,token1)
     elif TWO_PLAYERS:
-        connection.get_data(player2, token2)
+        connection.get_data(player2,token2)
         p.nexturn(player2, token2)
-        connection.end_turn(player2, token2)
+        connection.end_turn(player2,token2)
 
 
 if __name__ == "__main__":
