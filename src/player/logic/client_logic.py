@@ -3,7 +3,7 @@
 from scipy.optimize import linear_sum_assignment
 import numpy as np
 from apis import connection
-from apis.kinds import Unit
+from apis.kinds import Unit, Knight, Pawn, Castle, GoldPile
 
 defense_knights = {"A": [], "B": []}
 
@@ -41,11 +41,12 @@ def distance(x1, y1, x2, y2):
     return abs(x1 - x2) + abs(y1 - y2)
 
 
-def distance_to_list(current_position: connection.Coord, list_positions: list[connection.Coord]):
+def distance_to_list(current_position: connection.Coord, list_units: list[Unit]):
     """ donne la distance au château le plus proche """
     d = float('inf')
     y_curr, x_curr = current_position
-    for (y, x) in list_positions:
+    for unit in list_units:
+        y, x = unit.coord
         d = min(distance(y, x, y_curr, x_curr), d)
     return d
 
@@ -59,7 +60,7 @@ def exists_close(current_position: connection.Coord, list_targets: list[connecti
     return False
 
 
-def hongrois_distance(acteurs, objets):
+def hongrois_distance(acteurs: list[Unit], objets: list[Unit]):
     """
     Calcule la distance hongroise entre  les acteurs et objets donnés.
 
@@ -67,12 +68,16 @@ def hongrois_distance(acteurs, objets):
         acteurs: liste des acteurs.
         objets: liste des objets.
     """
+    print(acteurs, objets)
+    first = np.array(
+        list(filter(lambda unit: unit.x == np.newaxis, np.array(acteurs))))
+    print("first", first)
     matrice_cost = np.abs(
-        np.array(acteurs)[:, np.newaxis] - np.array(objets)).sum(axis=2)
+        first - np.array(objets)).sum(axis=2)
     return (algo_hongrois(matrice_cost), acteurs)
 
 
-def clean_golds(golds, pawns, ecastles):
+def clean_golds(golds: list[GoldPile], pawns: list[Pawn], ecastles: list[Castle]):
     """
     Donne la priorité aux grosses piles à côté d'autres petites piles et n'envoie qu'un péon.
 
@@ -116,7 +121,7 @@ def algo_hongrois(matrice_hongrois):
     return zip(a, b)
 
 
-def prediction_combat(a, d):
+def prediction_combat(a: int, d: int):
     """
     Prédit le gaganant d'un combat
 
@@ -139,7 +144,7 @@ def prediction_combat(a, d):
     return (d <= 0, pertes_a <= pertes_d, pertes_a, pertes_d)
 
 
-def neighbors(case, knights):
+def neighbors(case: tuple[int, int], knights: list[Knight]):
     """
     renvoie un couple avec :
     1 : une liste contenant les 4 listes contenant les unités sur cette case (sens trigo, droite en premier)
@@ -152,7 +157,7 @@ def neighbors(case, knights):
     return dir_case, sum(len(dir_case[d]) for d in dir_case)
 
 
-def not_moved(units):
+def not_moved(units: list[Unit]):
     '''donne les unités n'ayant pas bougé ce tour'''
     units_not_moved = set()
     for unit in units:

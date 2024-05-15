@@ -58,17 +58,31 @@ def move_everyone(case: Coord, allies_voisins: dict[Coord, list[Knight]]):
 def prediction_attaque(case_attaquee, knights: list[Knight], eknights: list[Knight]):
     """
     Regarde les résultats d'un combat en prenant en compte une contre attaque sur la case au tour suivant
+
+    Parameters:
+        case_attaquee: case que l'on souhaite attaquée, ou il y a les défenseurs ennemis.
+        knights: liste de nos attaquants.
+        eknights: liste des défenseurs ennemis.
+
+    Returns:
+        bool: True si l'attaque est favorable, False sinon.
     """
-    allies_voisins, defenseurs = cl.neighbors(case_attaquee, knights)
-    attaquants_voisins, at = cl.neighbors(case_attaquee, eknights)[1]
+    if not eknights:
+        return True
+    allies_voisins, attaquants = cl.neighbors(case_attaquee, knights)
+    defenseurs_voisins, defenseurs_voisins_nombre = cl.neighbors(
+        case_attaquee, eknights)
+    defenseurs = connection.get_map(
+    )[case_attaquee[0]][case_attaquee[1]][eknights[0].player][connection.KNIGHT]
     b1, b2, pertes_attaque, pertes_defense = prediction_combat(
         attaquants, defenseurs)
     if b1 and b2:
         attaquants -= pertes_attaque
-        defenseurs = defenseurs_voisins
         b1, b2, pertes_attaque2, pertes_defense2 = prediction_combat(
-            attaquants, defenseurs)
-        return ((pertes_attaque + pertes_attaque2) >= (pertes_defense + pertes_defense2))
+            attaquants, defenseurs_voisins_nombre)
+        return (pertes_attaque + pertes_attaque2) <= (pertes_defense + pertes_defense2)
+    else:
+        return False
 
 
 def attaque(case_attaquee, knights: list[Knight], eknights: list[Knight]):
@@ -82,12 +96,12 @@ def hunt(knights: list[Knight], epawns: list[Pawn], eknights: list[Knight]):
     chasse les péons adverses, en assignant un chevalier à un péon adverse qui va le traquer
     """
     for k in knights:
-        voisins, somme = cl.neighbors(k, epawns)
-        voisins_ennemis, _ = cl.neighbors(k, eknights)
-        if somme:
-            for coord, neighbor in voisins.items():
-                if neighbor and not voisins_ennemis[coor]:
-                    k.move(k.y + i[0], k.x + i[1])
+        voisins, nb_allies = cl.neighbors(k.coord, epawns)
+        voisins_ennemis, _ = cl.neighbors(k.coord, eknights)
+        # if somme:
+        #     for coord, neighbor in voisins.items():
+        #         if neighbor and not voisins_ennemis[]:
+        #             k.move(k.y + i[0], k.x + i[1])
 
     if knights and epawns:
         # affecation problem
@@ -97,7 +111,7 @@ def hunt(knights: list[Knight], epawns: list[Pawn], eknights: list[Knight]):
         for k, ep in cl.hongrois_distance(knights, epawns):
             vus.append(knights[k])
             y, x = knights[k].coordinate()
-            i, j = epawns[ep]
+            i, j = epawns[ep].coordinate()
             if abs(y - i) + abs(x - j) == 1:
                 attaque((i, j), knights, eknights)
             else:
@@ -133,8 +147,8 @@ def destroy_castle(knights: list[Knight], castles: list[Castle],
         vus = []
         for k, ep in cl.hongrois_distance(knights, castles):
             vus.append(knights[k])
-            y, x = knights[k]
-            i, j = castles[ep]
+            y, x = knights[k].coordinate()
+            i, j = castles[ep].coordinate()
             if abs(y - i) + abs(x - j) == 1:
                 attaque((i, j), knights, eknights)
             else:
@@ -167,5 +181,5 @@ def free_pawn(knights: list[Knight], eknights: list[Knight], epawns: list[Pawn])
     for knight in knights:
         if not knight.used:
             for epawn in epawns:
-                if cl.distance(knight[1], knight[0], epawn[1], epawn[0]) == 1 and epawn not in eknights:
+                if cl.distance(knight.x, knight.y, epawn.x, epawn.y) == 1 and epawn not in eknights:
                     knight.move(epawn[0], epawn[1])

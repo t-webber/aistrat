@@ -2,24 +2,16 @@
 import numpy as np
 import requests
 from apis.kinds import Coord
-from apis.players import Player
+from apis.consts import PAWN, CASTLE, KNIGHT, GOLD, EKNIGHT, EPAWN, ECASTLE
 
 IP = "http://localhost:8080"
 TIME_OUT = 0.01
-PAWN = "C"
-CASTLE = "B"
-KNIGHT = "M"
-GOLD = 'G'
-EKNIGHT = "M2"
-EPAWN = "C2"
-FOG = "fog"
-ECASTLE = "B2"
+
 
 PRICES = {PAWN: 10, CASTLE: 15, KNIGHT: 10}
 
-map_size = None
+MAP_SIZE = None
 
-taille = [0, 0]
 turn_data = {}
 
 
@@ -67,12 +59,12 @@ def build(kind, y, x, player, token) -> bool:
         return False
 
 
-def get_data(player: Player):
+def get_data(player_id: str, token: str):
     """ reçoit toutes les information pour le tour """
     global turn_data
     try:
         res = requests.get(
-            f"{IP}/view/{player.id}/{player.token}", timeout=TIME_OUT)
+            f"{IP}/view/{player_id}/{token}", timeout=TIME_OUT)
     except:
         return False
     turn_data = res.json()
@@ -86,11 +78,11 @@ def get_map():
 
 def size_map():
     '''Renvoie la taille de la carte de jeu'''
-    global map_size
-    if map_size is None:
+    global MAP_SIZE
+    if MAP_SIZE is None:
         initial_map = get_map()
-        map_size = (len(initial_map), len(initial_map[0]))
-    return map_size
+        MAP_SIZE = (len(initial_map), len(initial_map[0]))
+    return MAP_SIZE
 
 
 def current_player():

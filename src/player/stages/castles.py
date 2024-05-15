@@ -1,25 +1,24 @@
 """ Gestion des château : construction et production """
 
 from apis import connection
-from apis.players import Player, Knight
 import player.logic.client_logic as cl
-from apis.kinds import Pawn, Knight, Castle
+from apis.kinds import Pawn, Knight
 
 
 build_order = [connection.PAWN, connection.PAWN, connection.KNIGHT,
                connection.KNIGHT, connection.PAWN, connection.PAWN]
 
 
-def move_peon_to_first_location(player, token, pawns: list[Pawn], border, border_y, border_x):
+def move_peon_to_first_location(player, border, border_y, border_x):
     """construit le premier château """
     destination = (border, border) if player == "A" else (border_y, border_x)
-    d = cl.distance_to_list(destination, pawns)
+    d = cl.distance_to_list(destination, player.pawns)
     # si d == 0, le pion est au bon endroit
     # donc il va construire un château ici
     if d == 0:
         return
 
-    for pawn in pawns:
+    for pawn in player.pawns:
         # ce pions est le plus proche de la bonne localisation
         if cl.distance(pawn.y, pawn.x, destination[0], destination[1]) == d:
             if player == "A":
@@ -34,11 +33,10 @@ def move_peon_to_first_location(player, token, pawns: list[Pawn], border, border
                     pawn.move(pawn.y - 1, pawn.x)
                 else:  # déplace en x
                     pawn.move(pawn.y, pawn.x - 1)
-            pawns.remove(pawn)
             break
 
 
-def build_castle(player: Player):
+def build_castle(player):
     """ 
     Construit des châteaux, et, au début, prend controle d'un péons 
     pour construire le premier château au bon endroit  
@@ -58,7 +56,7 @@ def build_castle(player: Player):
     # le met en (2,2) et ensuite construit un château
     if len(player.castles) == 0:
         move_peon_to_first_location(
-            player, player.token, player.pawns, border, border_y, border_x)
+            player, border, border_y, border_x)
 
     # Si il y a suffisemment de châteaux ou pas assez d'argent, n'essaie rien
     if len(player.castles) >= min(len_y, len_x) // 2 or player.gold < connection.PRICES[connection.CASTLE]:
@@ -78,9 +76,9 @@ def build_castle(player: Player):
             return
 
 
-def create_units(player: Player):
+def create_units(player):
     """ Création des unités par le château  """
-    n = len(player.eknight) - len(player.knight)
+    n = len(player.eknights) - len(player.defense) - len(player.attack)
     nb_pawn = len(player.pawns)
 
     for (y, x) in player.castles:

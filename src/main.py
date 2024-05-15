@@ -1,4 +1,4 @@
-""" principale programme client à lancer pour jouer automatiquement """
+""" programme principal client à lancer pour jouer automatiquement """
 
 import sys
 import time
@@ -34,17 +34,14 @@ def main():
 
     time.sleep(0.1)  # avoid spamming the server
     t = time.time()
-    while not connection.get_data(player1):
+    while not connection.get_data(player1.id, player1.token):
         if time.time() - t > 10:
             print("!!! TIMEOUT !!!")
             sys.exit(1)
     if connection.current_player() == player1:
-        player1.nexturn()
-        player1.end_turn()
+        player1.next_turn()
     elif TWO_PLAYERS:
-        connection.get_data(player2)
-        player2.nexturn()
-        player2.end_turn()
+        player2.next_turn()
 
 
 if __name__ == "__main__":

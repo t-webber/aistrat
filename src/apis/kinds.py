@@ -2,12 +2,32 @@
 Blackboxes for units
 """
 
-from apis import connection
 import sys
+from apis import connection
 
 
 class Coord:
     """ (y, x) """
+
+
+class GoldPile:
+    """ (y, x, gold) """
+
+    def __init__(self, y, x, gold):
+        self.y = y
+        self.x = x
+        self.gold = gold
+        self.used = False
+
+    def reduce(self):
+        """ farm a gold pile """
+        self.gold -= 1
+        self.used = True
+        return self.gold
+
+    def update(self):
+        """ update gold pile """
+        self.used = False
 
 
 X = 1
@@ -28,19 +48,25 @@ class Unit:
         self.player = player
         self.used = False
 
-    def __getitem__(self, key):
-        if key in (0, 'y', 'Y'):
-            return self.y
-        if key in (1, 'x', 'X'):
-            return self.x
-        print("Error: key not found", file=sys.stderr)
-        sys.exit(1)
+    # def __getitem__(self, key):
+    #     if key in (0, 'y', 'Y'):
+    #         return self.y
+    #     if key in (1, 'x', 'X'):
+    #         return self.x
+    #     print(f"Error: key not found: {key}", file=sys.stderr)
+    #     sys.exit(1)
 
-    def coordinates(self):
+    @property
+    def coord(self):
         """
         Renvoie les coordonnées de l'unité
         """
         return (self.y, self.x)
+
+    def __str__(self):
+        return f"({self.y}, {self.x})"
+
+    __repr__ = __str__
 
 
 class Person(Unit):

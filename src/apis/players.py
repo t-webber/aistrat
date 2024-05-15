@@ -4,39 +4,13 @@ fichier qui implémente la classe Player
 
 import sys
 from apis import connection
-from apis.kinds import Pawn, Knight, Castle
+from apis.kinds import Pawn, Knight, Castle, GoldPile
+from apis.consts import PLAYER_A, FOG
 import player.logic.client_logic as cl
 from player.stages.castles import create_units, build_castle
 import player.stages.attack as atk
 import player.stages.defense as dfd
 from player.stages import peons
-
-PLAYER_A = "A"
-PLAYER_B = "B"
-
-
-class Coord:
-    """ (y, x) """
-
-
-class GoldPile:
-    """ (y, x, gold) """
-
-    def __init__(self, y, x, gold):
-        self.y = y
-        self.x = x
-        self.gold = gold
-        self.used = False
-
-    def reduce(self):
-        """ farm a gold pile """
-        self.gold -= 1
-        self.used = True
-        return self.gold
-
-    def update(self):
-        """ update gold pile """
-        self.used = False
 
 
 class Player:
@@ -46,7 +20,7 @@ class Player:
 
     def __init__(self):
         self.id, self.token = connection.create_player()
-        connection.get_data(self)
+        connection.get_data(self.id, self.token)
 
         self.turn = 0
         # units
@@ -77,6 +51,11 @@ class Player:
         " recupérer toutes les piles d'or "
         return self.good_gold.extend(self.bad_gold)
 
+    # @property.setter
+    # def knights(self) -> list[Knight]:
+    #     " recupérer tous les chevaliers "
+    #     passŒ
+
     @property
     def knights(self) -> list[Knight]:
         " recupérer tous les chevaliers "
@@ -87,7 +66,7 @@ class Player:
         vérifie que les données du tour ont bien été récupérées
         et qu'il n'y a pas eu d'erreur non signalée
         """
-        connection.get_data(self)
+        connection.get_data(self.id, self.token)
         kinds = connection.get_kinds(self.id)
 
         if self.pawns != set(kinds[connection.PAWN]):
@@ -118,7 +97,7 @@ class Player:
             print("gold changed", file=sys.stderr)
             sys.exit(1)
 
-        if self.fog != set(kinds[connection.FOG]):
+        if self.fog != set(kinds[FOG]):
             print("fog changed", file=sys.stderr)
             sys.exit(1)
 
@@ -166,7 +145,7 @@ class Player:
                    self.good_gold, self.eknights, self.ecastles)
         # j'explore ensuite dans la direction opposée au spawn
         peons.explore(self.pawns, self.id, self.token, self.eknights,
-                      self.ecastles, self.knights.union(self.castles), self.bad_gold)
+                      self.ecastles, self.knights + self.castles, self.bad_gold)
 
         atk.free_pawn(self.knights, self.eknights, self.epawns)
 
