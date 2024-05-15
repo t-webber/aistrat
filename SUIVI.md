@@ -75,3 +75,4 @@
 - Tout le monde: travail en collaboration pour la mise en place de la mémoire sur plusieurs tours avec l'ajout de classes
 - Nicolas: Mise à jour du wiki sur l'exploration, la récupération de gold et client_logic. Restructuration du code des fonctions d'exploration
 - Jules : Restructuration de fuite et d'attaque pour la nouvelle frome de données
+- Erwan : début d'une branche "Blitzkrieg" avec développement d'une stratégie différente pour la comparer avec notre main stratégie.
