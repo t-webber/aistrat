@@ -60,11 +60,9 @@ def farm(pawns, player, token, good_gold, eknights, ecastles):
         # pour en minimiser le nombre total de mouvements
         gold_location = []
         gold_location = [(item[0], item[1]) for item in good_gold]
-        vus = []
         # je fais bouger les peons vers leur mine d'or
         result_data=cl.hongrois_distance(pawns, gold_location)
         for p, g in result_data:
-            vus.append(pawns[p])
             y, x = pawns[p].y(),pawns[p].x()
             i, j, _ = good_gold[g]
             gold_location.remove((i, j))

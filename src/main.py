@@ -22,9 +22,9 @@ print(sys.argv)
 print("TWO_PLAYERS ? = ", TWO_PLAYERS)
 
 
-player1, token1 = connection.create_player()
+player1 = Player()
 if TWO_PLAYERS:
-    player2, token2 = connection.create_player()
+    player2 = Player()
 
 
 def main():
@@ -39,12 +39,12 @@ def main():
             print("!!! TIMEOUT !!!")
             sys.exit(1)
     if connection.current_player() == player1:
-        p.nexturn(player1, token1)
-        connection.end_turn(player1, token1)
+        player1.nexturn()
+        player1.end_turn()
     elif TWO_PLAYERS:
-        connection.get_data(player2, token2)
-        p.nexturn(player2, token2)
-        connection.end_turn(player2, token2)
+        connection.get_data(player2)
+        player2.nexturn()
+        player2.end_turn()
 
 
 if __name__ == "__main__":

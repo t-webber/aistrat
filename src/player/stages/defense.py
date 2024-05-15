@@ -168,15 +168,11 @@ def eknight_based_defense(defense, eknights, player, token):
         if defender is not None:
             yd,xd=defender
             if (attacker[0]-defender[0]>0):
-                connection.move(connection.KNIGHT, yd, xd, yd-1, xd, player, token)
-                cl.move_defender(yd, xd, yd-1, xd, player)
+                defender.move(yd-1,xd)
             elif (attacker[0]-defender[0]<0):
-                connection.move(connection.KNIGHT, yd, xd, yd+1, xd, player, token)
-                cl.move_defender(yd, xd, yd+1, xd, player)
+                defender.move(yd+1,xd)
             elif (attacker[1]-defender[1]>1*(player=='A')):
-                connection.move(connection.KNIGHT, yd, xd, yd, xd-1, player, token)
-                cl.move_defender(yd, xd, yd, xd-1, player)
+                defender.move(yd,xd-1)
             elif (attacker[1]-defender[1]<(-1)*(player=='B')):
-                connection.move(connection.KNIGHT, yd, xd, yd, xd+1, player, token)
-                cl.move_defender(yd, xd, yd, xd+1, player)
+                defender.move(yd,xd+1)
     return()
