@@ -3,6 +3,7 @@
 import sys
 import time
 from apis import connection
+from player import next_turn as p
 from apis.player import Player
 
 
@@ -34,11 +35,7 @@ def main():
 
     time.sleep(0.1)  # avoid spamming the server
     t = time.time()
-<<<<<<< HEAD
     while not connection.get_data(player1, token1):
-=======
-    while not connection.get_data(player1):
->>>>>>> 1e3efb4f47896afe1609b7dbb46a34848365c825
         if time.time() - t > 10:
             print("!!! TIMEOUT !!!")
             sys.exit(1)
