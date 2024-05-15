@@ -39,6 +39,7 @@ def main():
         if time.time() - t > 10:
             print("!!! TIMEOUT !!!")
             sys.exit(1)
+    
     if connection.current_player() == player1:
         p.nexturn(player1, token1)
         connection.end_turn(player1,token1)
