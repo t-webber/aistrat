@@ -9,12 +9,8 @@ import player.logic.client_logic as cl
 import player.stages.castles as builder
 import player.stages.attack as atk
 import player.stages.defense as dfd
-<<<<<<< HEAD
 import player.stages.peons as peons
 from typing import Set
-=======
-from player.stages import peons
->>>>>>> 1e3efb4f47896afe1609b7dbb46a34848365c825
 
 
 class Coord:
@@ -23,15 +19,11 @@ class Coord:
 
 class GoldPile:
     """ (y, x, gold) """
-
+    
     def __init__(self, y, x, gold):
         self.y = y
         self.x = x
         self.gold = gold
-
-    def reduce(self):
-        self.gold -= 1
-        return self.gold
 
 
 class Player:
@@ -41,42 +33,36 @@ class Player:
 
     def __init__(self):
         self.id, self.token = connection.create_player()
-        connection.get_data(self)
-
         self.turn = 0
         # units
-        self.pawns: list[Pawn] = [Pawn(0, 0, self) for _ in range(3)] if self.id == "A" else\
-                                 [Pawn(connection.size_map()[0], connection.size_map()[1], self) for _ in range(3)]
-        self.epawns: list[Pawn] = []
-        self.eknights: list[Knight] = []
-        self.castles: list[Knight] = []
-        self.ecastles: list[Castle] = []
-        self.attack: list[Knight] = []
-        self.defense: list[Knight] = []
+        self.pawns: Set[Pawn] = set()
+        self.epawns: Set[Pawn] = set()
+        self.eknights: Set[Knight] = set()
+        self.castles: Set[Knight] = set()
+        self.ecastles: Set[Castle] = set()
+        self.attack: Set[Knight] = set()
+        self.defense: Set[Knight] = set()
         # resources
         self.gold: int = 0
-        self.good_gold, self.bad_gold = cl.clean_golds(
-                                            connection.get_kinds(self.id)[connection.GOLD], 
-                                            self.pawns, self.ecastles)
-
-        self.fog: list[GoldPile] = []
+        self.good_gold: Set[GoldPile] = set()
+        self.bad_gold: Set[GoldPile] = set()
+        self.fog: Set[GoldPile] = set()
 
     @property
     def golds(self):
         " recupérer toutes les piles d'or "
-        return self.good_gold.extend(self.bad_gold)
+        return self.good_gold + self.bad_gold
 
     @property
     def knights(self):
         " recupérer tous les chevaliers "
-        return self.attack.extend(self.defense)
+        return self.attack + self.defense
 
     def checks_turn_data(self):
         """
         vérifie que les données du tour ont bien été récupérées
         et qu'il n'y a pas eu d'erreur non signalée
         """
-        connection.get_data(self)
         kinds = connection.get_kinds(self.id)
 
         if self.pawns != set(kinds[connection.PAWN]):
@@ -87,9 +73,9 @@ class Player:
             print("epawns changed", file=sys.stderr)
             sys.exit(1)
 
-        if self.attack.extend(self.defense) != set(kinds[connection.KNIGHT]):
-            print("knights changed", file=sys.stderr)
-            sys.exit(1)
+        # if self.attack + self.defense != set(kinds[connection.KNIGHT]):
+        #     print("knights changed", file=sys.stderr)
+        #     sys.exit(1)
 
         if self.eknights != set(kinds[connection.EKNIGHT]):
             print("eknights changed", file=sys.stderr)
@@ -103,9 +89,9 @@ class Player:
             print("ecastles changed", file=sys.stderr)
             sys.exit(1)
 
-        if self.good_gold.extend(self.bad_gold) != len(set(kinds[connection.GOLD])):
-            print("gold changed", file=sys.stderr)
-            sys.exit(1)
+        # if self.good_gold + self.bad_gold != len(set(kinds[connection.GOLD])):
+        #     print("gold changed", file=sys.stderr)
+        #     sys.exit(1)
 
         if self.fog != set(kinds[connection.FOG]):
             print("fog changed", file=sys.stderr)
@@ -139,20 +125,24 @@ class Player:
         self.turn += 1
         self.check_attack_defense()
 
-        builder.create_units(self)
+        builder.create_units(self.castles, self.id, self.token,
+                             self.eknights, self.knights, self.gold, self.defense,
+                             len(self.golds), len(self.pawns), len(self.fog))
 
         peons.fuite(self.pawns, self.knights, self.eknights,
-                    self.defense)
+                    self.defense, self.id, self.token)
 
-        builder.build_castle(self)
+        builder.build_castle(self.pawns, self.castles,
+                             self.id, self.token, self.gold, self.eknights)
         # je farm d'abord ce que je vois
-        peons.farm(self.pawns, self.id, self.token,
+        peons.farm(cl.not_moved(self.pawns), self.id, self.token,
                    self.good_gold, self.eknights, self.ecastles)
         # j'explore ensuite dans la direction opposée au spawn
-        peons.explore(self.pawns, self.id, self.token, self.eknights,
-                      self.ecastles, self.knights.union(self.castles), self.bad_gold)
+        peons.explore(cl.not_moved(self.pawns), self.id, self.token, self.eknights,
+                      self.ecastles, self.knights+self.castles, self.bad_gold)
 
-        atk.free_pawn(self.knights, self.eknights, self.epawns)
+        atk.free_pawn(self.knights, self.id, self.token,
+                      self.eknights, self.epawns)
 
         left_defense = dfd.defend(
             self.pawns, self.defense, self.eknights, self.castles, self.id, self.token)
@@ -163,23 +153,16 @@ class Player:
         while copy_knights:
             a = len(copy_knights)
             atk.hunt(copy_knights, self.epawns,
-                     self.eknights)
+                     self.eknights, self.id, self.token)
             atk.destroy_castle(copy_knights, self.ecastles,
-                               self.eknights)
+                               self.eknights, self.id, self.token)
             if len(copy_knights) == a:
                 break
 
         self.end_turn()
 
     def end_turn(self):
-        """
-        Termine le tour du joueur
-        """
         for p in self.pawns:
-            p.used = False
-        for k in self.knights:
-            k.used = False
-        for c in self.castles:
-            c.used = False
+            p.moved = False
 
         connection.end_turn(self.id, self.token)

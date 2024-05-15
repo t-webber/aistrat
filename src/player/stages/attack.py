@@ -1,8 +1,7 @@
 import random as rd
 from apis import connection
-from apis.kinds import Pawn, Knight
 import player.logic.client_logic as cl
-from typing import List
+
 
 def prediction_combat(a, d):
     """
@@ -31,31 +30,38 @@ def compte_soldats_ennemis_cases_adjacentes(player, case):
     """
     compte les soldats ennemis à une distance de 1 d'une case
     """
-    y, x = case
+    Y, X = case
     carte = connection.get_map()
-    voisins = connection.get_moves(y, x)
+    voisins = connection.get_moves(Y, X)
     eknight = 0
     for c in voisins:
-        eknight += carte[y + c[0]][x + c[1]][player][connection.EKNIGHT]
+        eknight += carte[Y + c[0]][X + c[1]][player][connection.EKNIGHT]
     return eknight
 
 
-def move_everyone(case: connection.Coord, allies_voisins: dict[connection.Coord, list[Knight]]):
+def move_everyone(player, token, case, allies_voisins, knights):
     """
     Bouge tous les attaquants sur la case ciblée
     """
-    for l in allies_voisins.values():
-        while l:
-            l[-1].move(case[0], case[1])
-            l.pop()
+    Y, X = case
+    for i in allies_voisins:
+        y, x = i
+        for j in range(allies_voisins[i]):
+            connection.move(connection.KNIGHT, Y + y,
+                            X + x, Y, X, player, token)
+            # knights.remove((Y + y, X + x)) already removed in hunt
 
 
-def prediction_attaque(case_attaquee, knights: list[Knight], eknights: list[Knight]):
+def prediction_attaque(player, case_attaquee, knights, eknights):
     """
     Regarde les résultats d'un combat en prenant en compte une contre attaque sur la case au tour suivant
     """
-    allies_voisins, attaquants = cl.neighbors(case_attaquee, knights)
-    defenseurs, defenseurs_voisins = cl.neighbors(case_attaquee, eknights)[1]
+    carte = connection.get_map()
+    Y, X = case_attaquee
+    attaquants = cl.neighbors(case_attaquee, knights)[1]
+    allies_voisins = cl.neighbors(case_attaquee, knights)[0]
+    defenseurs_voisins = cl.neighbors(case_attaquee, eknights)[1]
+    defenseurs = carte[Y][X][connection.other(player)][connection.KNIGHT]
     b1, b2, pertes_attaque, pertes_defense = prediction_combat(
         attaquants, defenseurs)
     if b1 and b2:
@@ -66,12 +72,13 @@ def prediction_attaque(case_attaquee, knights: list[Knight], eknights: list[Knig
         return ((pertes_attaque + pertes_attaque2) >= (pertes_defense + pertes_defense2))
 
 
-def attaque(case_attaquee, knights: list[Knight], eknights : list[Knight]):
+def attaque(player, case_attaquee, knights, eknights, token):
     allies_voisins = cl.neighbors(case_attaquee, knights)[0]
-    if prediction_attaque(case_attaquee, knights, eknights):
-        move_everyone(case_attaquee, allies_voisins)
+    if prediction_attaque(player, case_attaquee, knights, eknights):
+        move_everyone(player, token, case_attaquee, allies_voisins, knights)
 
-def hunt(knights: list[Knight], epawns: list[Pawn], eknights: list[Knight]):
+
+def hunt(knights, epawns, eknights, player, token):
     """ 
     chasse les péons adverses, en assignant un chevalier à un péon adverse qui va le traquer
     """
@@ -80,9 +87,13 @@ def hunt(knights: list[Knight], epawns: list[Pawn], eknights: list[Knight]):
         voisins_ennemis, _ = cl.neighbors(k, eknights)
         if somme:
             for i in voisins:
-                if voisins[i] and not voisins_ennemis[i]:
-                    k.move(k.y + i[0], k.x + i[1])
-                        
+                if voisins[i]:
+                    if not voisins_ennemis[i]:
+                        y, x = k
+                        connection.move(connection.KNIGHT, y, x, y +
+                                        i[0], x + i[1], player, token)
+                        if k in knights:  # erreur si y pas ça, mais comprend pas pk
+                            knights.remove(k)
     if knights and epawns:
         # affecation problem
         # choisis les mines d'or vers lesquelles vont se diriger les peons
@@ -93,29 +104,39 @@ def hunt(knights: list[Knight], epawns: list[Pawn], eknights: list[Knight]):
             y, x = knights[k]
             i, j = epawns[ep]
             if abs(y - i) + abs(x - j) == 1:
-                attaque((i, j), knights, eknights)
+                attaque(player, (i, j), knights, eknights, token)
             else:
                 if rd.random() > 0.5:  # pour ne pas que le chevalier aille toujours d'abord en haut puis à gauche
-                    if x > j and cl.neighbors((y, x), eknights)[0][(0, -1)] == []:
-                        k.move(y, x - 1)
-                    elif x < j and cl.neighbors((y, x), eknights)[0][(0, 1)] == []:
-                        k.move(y, x + 1)
-                    elif y > i and cl.neighbors((y, x), eknights)[0][(-1, 0)] == []:
-                        k.move(y - 1, x)
-                    elif y < i and cl.neighbors((y, x), eknights)[0][(1, 0)] == []:
-                        k.move(y + 1, x)
+                    if x > j and cl.neighbors((y, x), eknights)[0][(0, -1)] == 0:
+                        connection.move(connection.KNIGHT, y, x,
+                                        y, x - 1, player, token)
+                    elif x < j and cl.neighbors((y, x), eknights)[0][(0, 1)] == 0:
+                        connection.move(connection.KNIGHT, y, x,
+                                        y, x + 1, player, token)
+                    elif y > i and cl.neighbors((y, x), eknights)[0][(-1, 0)] == 0:
+                        connection.move(connection.KNIGHT, y, x,
+                                        y - 1, x, player, token)
+                    elif y < i and cl.neighbors((y, x), eknights)[0][(1, 0)] == 0:
+                        connection.move(connection.KNIGHT, y, x,
+                                        y + 1, x, player, token)
                 else:
-                    if y > i and cl.neighbors((y, x), eknights)[0][(-1, 0)] == []:
-                        k.move(y - 1, x)
-                    elif y < i and cl.neighbors((y, x), eknights)[0][(1, 0)] == []:
-                        k.move(y + 1, x)
-                    elif x > j and cl.neighbors((y, x), eknights)[0][(0, -1)] == []:
-                        k.move(y, x - 1)
-                    elif x < j and cl.neighbors((y, x), eknights)[0][(0, 1)] == []:
-                        k.move(y, x + 1)
+                    if y > i and cl.neighbors((y, x), eknights)[0][(-1, 0)] == 0:
+                        connection.move(connection.KNIGHT, y, x,
+                                        y - 1, x, player, token)
+                    elif y < i and cl.neighbors((y, x), eknights)[0][(1, 0)] == 0:
+                        connection.move(connection.KNIGHT, y, x,
+                                        y + 1, x, player, token)
+                    elif x > j and cl.neighbors((y, x), eknights)[0][(0, -1)] == 0:
+                        connection.move(connection.KNIGHT, y, x,
+                                        y, x - 1, player, token)
+                    elif x < j and cl.neighbors((y, x), eknights)[0][(0, 1)] == 0:
+                        connection.move(connection.KNIGHT, y, x,
+                                        y, x + 1, player, token)
+        for k in vus:  # j'enlève ceux que je bouge
+            knights.remove(k)
 
 
-def destroy_castle(knights, castles, eknights):
+def destroy_castle(knights, castles, eknights, player, token):
     """ 
     chasse les chateaux adverses, si possibilité de le détruire, le détruit
     """
@@ -129,36 +150,44 @@ def destroy_castle(knights, castles, eknights):
             y, x = knights[k]
             i, j = castles[ep]
             if abs(y - i) + abs(x - j) == 1:
-                attaque((i, j), knights, eknights)
+                attaque(player, (i, j), knights, eknights, token)
             else:
                 if rd.random() > 0.5:  # pour ne pas que le chevalier aille toujours d'abord en haut puis à gauche
-                    if x > j and cl.neighbors((y, x), eknights)[0][(0, -1)] == []:
-                        k.move(y, x - 1)
-                    elif x < j and cl.neighbors((y, x), eknights)[0][(0, 1)] == []:
-                        k.move(y, x + 1)
-                    elif y > i and cl.neighbors((y, x), eknights)[0][(-1, 0)] == []:
-                        k.move(y - 1, x)
-                    elif y < i and cl.neighbors((y, x), eknights)[0][(1, 0)] == []:
-                        k.move(y + 1, x)
+                    if x > j and cl.neighbors((y, x), eknights)[0][(0, -1)] == 0:
+                        connection.move(connection.KNIGHT, y, x,
+                                        y, x - 1, player, token)
+                    elif x < j and cl.neighbors((y, x), eknights)[0][(0, 1)] == 0:
+                        connection.move(connection.KNIGHT, y, x,
+                                        y, x + 1, player, token)
+                    elif y > i and cl.neighbors((y, x), eknights)[0][(-1, 0)] == 0:
+                        connection.move(connection.KNIGHT, y, x,
+                                        y - 1, x, player, token)
+                    elif y < i and cl.neighbors((y, x), eknights)[0][(1, 0)] == 0:
+                        connection.move(connection.KNIGHT, y, x,
+                                        y + 1, x, player, token)
                 else:
-                    if y > i and cl.neighbors((y, x), eknights)[0][(-1, 0)] == []:
-                        k.move(y - 1, x)
-                    elif y < i and cl.neighbors((y, x), eknights)[0][(1, 0)] == []:
-                        k.move(y + 1, x)
-                    elif x > j and cl.neighbors((y, x), eknights)[0][(0, -1)] == []:
-                        k.move(y, x - 1)
-                    elif x < j and cl.neighbors((y, x), eknights)[0][(0, 1)] == []:
-                        k.move(y, x + 1)
+                    if y > i and cl.neighbors((y, x), eknights)[0][(-1, 0)] == 0:
+                        connection.move(connection.KNIGHT, y, x,
+                                        y - 1, x, player, token)
+                    elif y < i and cl.neighbors((y, x), eknights)[0][(1, 0)] == 0:
+                        connection.move(connection.KNIGHT, y, x,
+                                        y + 1, x, player, token)
+                    elif x > j and cl.neighbors((y, x), eknights)[0][(0, -1)] == 0:
+                        connection.move(connection.KNIGHT, y, x,
+                                        y, x - 1, player, token)
+                    elif x < j and cl.neighbors((y, x), eknights)[0][(0, 1)] == 0:
+                        connection.move(connection.KNIGHT, y, x,
+                                        y, x + 1, player, token)
         for k in vus:  # j'enlève ceux que je bouge
             knights.remove(k)
 
 
-def free_pawn(knights: list[Knight], eknights: list[Knight], epawns: list[Pawn]):
+def free_pawn(knights, player, token, eknights, epawns):
     """
         libère les péons bloqués par les chevaliers adverses
         """
     for knight in knights:
-        if not knight.used:
-            for epawn in epawns:
-                if cl.distance(knight[1], knight[0], epawn[1], epawn[0]) == 1 and epawn not in eknights:
-                    knight.move(epawn[0], epawn[1])
+        for epawn in epawns:
+            if cl.distance(knight[1], knight[0], epawn[1], epawn[0]) == 1 and epawn not in eknights:
+                connection.move(connection.KNIGHT, knight[0], knight[1],
+                                epawn[0], epawn[1], player, token)

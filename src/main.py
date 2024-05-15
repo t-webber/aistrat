@@ -3,6 +3,7 @@
 import sys
 import time
 from apis import connection
+from player import next_turn as p
 from apis.player import Player
 
 

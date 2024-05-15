@@ -1,11 +1,9 @@
 import player.logic.client_logic as cl
 from apis import connection
 import random as rd
-from apis import player
-from apis.kinds import Pawn, Knight, Castle
 
 
-def agressiv_defense(defense: list[Knight], epawns: list[Pawn], player, token, eknigths: list[Knight]):
+def agressiv_defense(defense, epawns, player, token, eknigths):
     '''
     Regarde les défenseurs déjà sur place et attaque les ennemis proches en priorisant les péons ennemis tout en s'assurant que les péons défendus le seront toujours pour le reste du tour
 
@@ -16,36 +14,32 @@ def agressiv_defense(defense: list[Knight], epawns: list[Pawn], player, token, e
         dir_knights, near_eknights = cl.neighbors(d, eknigths)
         dir_pawns, near_epawns = cl.neighbors(d, epawns)
 
-        if near_epawns == [] and near_eknights == []:
+        if near_epawns == 0 and near_eknights == 0:
             return
 
-        agressiv_defenders = []
+        agressiv_defenders = 0
         for d2 in defense:
-            if (d2.y, d2.x) == (d.y, d.x):
-                agressiv_defenders += d2
+            agressiv_defenders += (d2 == d)
 
         options = [(dir_pawns[d], d) for d in dir_knights]
         options.sort()
         for op in options:
             _, direction = op
 
-            will_attack = []
-
-            for i in agressiv_defenders:
-
-                will_attack += i
-                if cl.prediction_combat(len(will_attack), dir_knights[direction])[0] and not (cl.prediction_combat(len(near_eknights)-dir_knights[direction], len(agressiv_defenders)-len(will_attack))[0]):
+            for i in range(1, agressiv_defenders):
+                if cl.prediction_combat(i, dir_knights[direction])[0] and not (cl.prediction_combat(near_eknights-dir_knights[direction], agressiv_defenders-i)[0]):
                     (y, x), (y2, x2) = d, (d[0] +
                                            direction[0], d[1]+direction[1])
-                    for to_move in will_attack:
-                        defense.remove(to_move)
-                        d.move(y2, x2)
+                    for _ in range(i):
+                        defense.remove(d)
+                        connection.move(connection.KNIGHT, y,
+                                        x, y2, x2, player, token)
                         cl.move_defender(y, x, y2, x2, player)
                     agressiv_defenders -= i
                     near_eknights -= dir_knights[direction]
 
 
-def move_defense(defense:list[Knight], pawns:list[Pawn], player, token, eknight:list[Knight]):
+def move_defense(defense, pawns, player, token, eknight):
     """
     attribue les chevaliers disponibles aux péons donnés et les bouge vers ces péons
 
@@ -58,8 +52,8 @@ def move_defense(defense:list[Knight], pawns:list[Pawn], player, token, eknight:
     utilise = []
     arrived = []
     for d, p in hongroise:
-        yd, xd = defense[d].y, defense[d].x
-        yp, xp = pawns[p].y, pawns[p].x
+        yd, xd = defense[d]
+        yp, xp = pawns[p]
         utilise.append(defense[d])
         # Pour ne pas que le defenseur aille toujours d'abord en haut puis à gauche
         if rd.random() > 0.5:
@@ -106,36 +100,32 @@ def move_defense(defense:list[Knight], pawns:list[Pawn], player, token, eknight:
     return (defense, arrived)
 
 
-def defend(pawns:list[Pawn], defense:list[Knight], eknights:list[Knight], castle:list[Castle], player, token):
+def defend(pawns, defense, eknights, castle, player, token):
     """
     Défend les péons en utilisant la strategie de défense (attribution par Méthode hongroise priorisé en fonction de la distance au ennemis)
 
     Returns:
         None
     """
-    needing_help = {}
-    # needing_help = [[] for _ in range(50)]
-    pawns = list(pawns.union(castle))  # elimination des doublons
+    needing_help = [[] for i in range(50)]
+    pawns = list(set(pawns.copy()+castle))  # elimination des doublons
     for i in range(len(pawns)):
         for j in range(len(eknights)):
             (y1, x1), (y2, x2) = pawns[i], eknights[j]
             d = cl.distance(x1, y1, x2, y2)
-            if d in needing_help:
+            if (d < 50):
                 needing_help[d].append((y1, x1))
-            else:
-                needing_help[d] = [(y1, x1)]
 
     # on priorise les pions selon la distance à un chevalier ennemi
-    # compteur = 0
+    compteur = 0
     left_defense = defense.copy()
     arrived = []
-    for compteur in sorted(d.keys()):
-        if not left_defense:
-            break
+    while (bool(left_defense) and compteur < 50):
         rd.shuffle(needing_help[compteur])
         left_defense, arrived2 = move_defense(
             left_defense, needing_help[compteur], player, token, eknights)
         arrived += arrived2
+        compteur += 1
     return arrived
 
 def eknight_based_defense(defense, eknights, player, token):
@@ -166,7 +156,6 @@ def eknight_based_defense(defense, eknights, player, token):
     for (attacker,i) in attributions:
         _,defender=attributions[(attacker,i)]
         if defender is not None:
-<<<<<<< HEAD
             yd,xd=defender[0]
             if (attacker[0]-defender[0][0]>0):
                 connection.move(connection.KNIGHT, yd, xd, yd-1, xd, player, token)
@@ -178,19 +167,6 @@ def eknight_based_defense(defense, eknights, player, token):
                 connection.move(connection.KNIGHT, yd, xd, yd, xd-1, player, token)
                 cl.move_defender(yd, xd, yd, xd-1, player)
             elif (attacker[1]-defender[0][1]<(-1)*(player=='B')):
-=======
-            yd,xd=defender
-            if (attacker[0]-defender[0]>0):
-                connection.move(connection.KNIGHT, yd, xd, yd-1, xd, player, token)
-                cl.move_defender(yd, xd, yd-1, xd, player)
-            elif (attacker[0]-defender[0]<0):
-                connection.move(connection.KNIGHT, yd, xd, yd+1, xd, player, token)
-                cl.move_defender(yd, xd, yd+1, xd, player)
-            elif (attacker[1]-defender[1]>1*(player=='A')):
-                connection.move(connection.KNIGHT, yd, xd, yd, xd-1, player, token)
-                cl.move_defender(yd, xd, yd, xd-1, player)
-            elif (attacker[1]-defender[1]<(-1)*(player=='B')):
->>>>>>> 1e3efb4f47896afe1609b7dbb46a34848365c825
                 connection.move(connection.KNIGHT, yd, xd, yd, xd+1, player, token)
                 cl.move_defender(yd, xd, yd, xd+1, player)
     return()
