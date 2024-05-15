@@ -76,3 +76,8 @@
 - Nicolas: Mise à jour du wiki sur l'exploration, la récupération de gold et client_logic. Restructuration du code des fonctions d'exploration
 - Jules : Restructuration de fuite et d'attaque pour la nouvelle frome de données
 - Erwan : début d'une branche "Blitzkrieg" avec développement d'une stratégie différente pour la comparer avec notre main stratégie.
+
+## 15/05
+
+- Tout le monde: Travail sur le rapport environnement/social
+- Jules : travail en collaboration pour la même chose, ajout de documentation pour le mdbook
