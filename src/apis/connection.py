@@ -8,8 +8,6 @@ IP = "http://localhost:8080"
 TIME_OUT = 0.01
 
 
-PRICES = {PAWN: 10, CASTLE: 15, KNIGHT: 10}
-
 MAP_SIZE = None
 
 turn_data = {}
@@ -21,11 +19,11 @@ def init(ip: str):
     IP = ip
 
 
-def end_turn(player, token):
+def end_turn(player_id, token):
     """fin du tour du joueur """
     try:
         requests.get(
-            f"{IP}/endturn/{player}/{token}", timeout=TIME_OUT)
+            f"{IP}/endturn/{player_id}/{token}", timeout=TIME_OUT)
     except:
         return False
     return True
@@ -34,26 +32,26 @@ def end_turn(player, token):
 def create_player():
     """ Cree le joueur """
     dataplayer = requests.get(IP+"/getToken", timeout=TIME_OUT).json()
-    player = dataplayer['player']
+    player_id = dataplayer['player']
     token = dataplayer['token']
-    return player, token
+    return player_id, token
 
 
-def move(kind, oldy, oldx, newy, newx, player, token) -> bool:
+def move(kind, oldy, oldx, newy, newx, player_id, token) -> bool:
     """ essaie de bouger """
     try:
         requests.get(
-            f"{IP}/move/{player}/{kind}/{oldy}/{oldx}/{newy}/{newx}/{token}", timeout=TIME_OUT)
+            f"{IP}/move/{player_id}/{kind}/{oldy}/{oldx}/{newy}/{newx}/{token}", timeout=TIME_OUT)
     except:
         return False
     return True
 
 
-def build(kind, y, x, player, token) -> bool:
+def build(kind, y, x, player_id, token) -> bool:
     """ construit une unité de type "kind" en (y,x) """
     try:
         requests.get(
-            f"{IP}/build/{player}/{y}/{x}/{kind}/{token}", timeout=TIME_OUT).json()
+            f"{IP}/build/{player_id}/{y}/{x}/{kind}/{token}", timeout=TIME_OUT).json()
         return True
     except:
         return False
@@ -87,7 +85,7 @@ def size_map():
 
 def current_player():
     '''Renvoie le joueur dont c'est le tour'''
-    return turn_data["player"]
+    return turn_data["player_id"]
 
 
 def get_gold():
@@ -105,21 +103,21 @@ def get_winner():
     return turn_data["winner"]
 
 
-def farm(y, x, player, token) -> bool:
+def farm(y, x, player_id, token) -> bool:
     """ fait récolter de l'argent au péon en (y, x) """
     try:
         (requests.get(
-            f"{IP}/farm/{player}/{y}/{x}/{token}", timeout=TIME_OUT).json())
+            f"{IP}/farm/{player_id}/{y}/{x}/{token}", timeout=TIME_OUT).json())
         return True
     except:
         return False
 
 
-def auto_farm(player, token) -> bool:
+def auto_farm(player_id, token) -> bool:
     """ fait récolter de l'argent à tous les péons """
     try:
         (requests.get(
-            f"{IP}/autofarm/{player}/{token}", timeout=TIME_OUT).json())
+            f"{IP}/autofarm/{player_id}/{token}", timeout=TIME_OUT).json())
         return True
     except:
         return False
@@ -131,13 +129,13 @@ def get_info(y, x):
 
 
 def other(player_id: str):
-    '''Renvoie l'autre joueur par rapport à player'''
+    '''Renvoie l'autre joueur par rapport à player_id'''
     if player_id == 'A':
         return 'B'
     return 'A'
 
 
-def get_kinds(player: str) -> dict[str, list[Coord]]:
+def get_kinds(player_id: str) -> dict[str, list[Coord]]:
     """ Renvoie la liste des coordonées de toutes les unitées présentes sur la carte """
     result = {PAWN: [], CASTLE: [], KNIGHT: [],
               GOLD: [], 'fog': [], EKNIGHT: [], EPAWN: [], ECASTLE: []}
@@ -147,7 +145,7 @@ def get_kinds(player: str) -> dict[str, list[Coord]]:
             if col == {}:
                 result['fog'].append((y, x))
             else:
-                d = col[player]
+                d = col[player_id]
                 if d[PAWN]:
                     for _ in range(d[PAWN]):
                         result[PAWN].append((y, x))
@@ -158,7 +156,7 @@ def get_kinds(player: str) -> dict[str, list[Coord]]:
                     for _ in range(d[KNIGHT]):
                         result[KNIGHT].append((y, x))
 
-                d2 = col[other(player)]
+                d2 = col[other(player_id)]
                 if d2[KNIGHT]:
                     for _ in range(d2[KNIGHT]):
                         result[EKNIGHT].append((y, x))

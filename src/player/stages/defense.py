@@ -1,9 +1,15 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
 import random as rd
 import player.logic.client_logic as cl
 from apis.kinds import Pawn, Knight, Castle
 
+if TYPE_CHECKING:
+    from apis.players import Player
 
-def agressiv_defense(defense: list[Knight], epawns: list[Pawn], player,
+
+def agressiv_defense(defense: list[Knight], epawns: list[Pawn], player: Player,
                      token, eknigths: list[Knight]):
     '''
     Regarde les défenseurs déjà sur place et attaque les ennemis proches en
@@ -35,19 +41,19 @@ def agressiv_defense(defense: list[Knight], epawns: list[Pawn], player,
             for i in agressiv_defenders:
 
                 will_attack += i
-                if cl.prediction_combat(len(will_attack), dir_knights[direction])[0] and not (cl.prediction_combat(len(near_eknights)-dir_knights[direction], len(agressiv_defenders)-len(will_attack))[0]):
+                if cl.prediction_combat(len(will_attack), dir_knights[direction])[0] and\
+                        not (cl.prediction_combat(len(near_eknights)-dir_knights[direction], len(agressiv_defenders)-len(will_attack))[0]):
                     (y, x), (y2, x2) = d, (d[0] +
                                            direction[0], d[1]+direction[1])
                     for to_move in will_attack:
                         defense.remove(to_move)
                         d.move(y2, x2)
-                        cl.move_defender(y, x, y2, x2, player)
+                        cl.move_unit(y, x, y2, x2, player)
                     agressiv_defenders -= i
                     near_eknights -= dir_knights[direction]
 
 
-def move_defense(defense: list[Knight], pawns: list[Pawn], player,
-                 token, eknight: list[Knight]):
+def move_defense(defense: list[Knight], pawns: list[Pawn], eknight: list[Knight]):
     """
     attribue les chevaliers disponibles aux péons donnés et les bouge
     vers ces péons
@@ -128,12 +134,12 @@ def defend(pawns: list[Pawn], defense: list[Knight], eknights: list[Knight], cas
             break
         rd.shuffle(needing_help[compteur])
         left_defense, arrived2 = move_defense(
-            left_defense, needing_help[compteur], player, token, eknights)
+            left_defense, needing_help[compteur], eknights)
     arrived += arrived2
     return arrived
 
 
-def eknight_based_defense(defense: list[Knight], eknights: list[Knight], player, token):
+def eknight_based_defense(defense: list[Knight], eknights: list[Knight], player: Player):
     defense_id = [(defense[i], i) for i in range(len(defense))]
     eknight_id = [(eknights[i], i) for i in range(len(eknights))]
     attributions = dict([(eknight_id[i], (-1, None))

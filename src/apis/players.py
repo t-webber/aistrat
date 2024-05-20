@@ -35,31 +35,21 @@ class Player:
         self.defense: list[Knight] = []
         # resources
         self.gold: int = 0
+        self._golds: list[GoldPile] = [GoldPile(coord[0], coord[1], coord[2]) for coord in connection.get_kinds(self.id)[
+            connection.GOLD]]
+        print(self._golds)
+        self.good_gold: list[GoldPile]
+        self.bad_gold: list[GoldPile]
         self.good_gold, self.bad_gold = cl.clean_golds(
-            connection.get_kinds(self.id)[connection.GOLD],
-            self.pawns, self.ecastles)
-
+            self._golds, self.pawns, self.ecastles)
         self.fog: list[GoldPile] = []
+        # private
+        self._knights: list[Knight] = []
 
     def __eq__(self, other):
         if isinstance(other, Player):
             return self.id == other.id
         return self.id == other
-
-    @property
-    def golds(self):
-        " recupérer toutes les piles d'or "
-        return self.good_gold.extend(self.bad_gold)
-
-    # @property.setter
-    # def knights(self) -> list[Knight]:
-    #     " recupérer tous les chevaliers "
-    #     passŒ
-
-    @property
-    def knights(self) -> list[Knight]:
-        " recupérer tous les chevaliers "
-        return self.attack.extend(self.defense)
 
     def checks_turn_data(self):
         """
@@ -71,72 +61,81 @@ class Player:
 
         if self.pawns != set(kinds[connection.PAWN]):
             print("pawns changed", file=sys.stderr)
-            sys.exit(1)
+            # sys.exit(1)
 
         if self.epawns != set(kinds[connection.EPAWN]):
             print("epawns changed", file=sys.stderr)
-            sys.exit(1)
+            # sys.exit(1)
 
         if self.attack.extend(self.defense) != set(kinds[connection.KNIGHT]):
             print("knights changed", file=sys.stderr)
-            sys.exit(1)
+            # sys.exit(1)
 
         if self.eknights != set(kinds[connection.EKNIGHT]):
             print("eknights changed", file=sys.stderr)
-            sys.exit(1)
+            # sys.exit(1)
 
         if self.castles != set(kinds[connection.CASTLE]):
             print("castles changed", file=sys.stderr)
-            sys.exit(1)
+            # sys.exit(1)
 
         if self.ecastles != set(kinds[connection.ECASTLE]):
             print("ecastles changed", file=sys.stderr)
-            sys.exit(1)
+            # sys.exit(1)
 
         if self.good_gold.extend(self.bad_gold) != len(set(kinds[connection.GOLD])):
             print("gold changed", file=sys.stderr)
-            sys.exit(1)
+            # sys.exit(1)
 
         if self.fog != set(kinds[FOG]):
             print("fog changed", file=sys.stderr)
-            sys.exit(1)
+            # sys.exit(1)
 
         if self.defense != cl.defense_knights[self.id]:
             print("defense changed", file=sys.stderr)
-            sys.exit(1)
+            # sys.exit(1)
 
         if self.gold != connection.get_gold()[self.id]:
             print("gold changed", file=sys.stderr)
-            sys.exit(1)
+            # sys.exit(1)
 
-        if (self.good_gold, self.bad_gold) != cl.clean_golds(self.golds, self.pawns, self.ecastles):
+        if (self.good_gold, self.bad_gold) != cl.clean_golds(self._golds, self.pawns, self.ecastles):
             print("gold cleaning changed", file=sys.stderr)
-            sys.exit(1)
+            # sys.exit(1)
 
         for gold in self.good_gold:
             gold.update()
         for gold in self.bad_gold:
             gold.update()
 
-    def check_attack_defense(self):
-        """ 
-        vérifie que les chevaliers sont bien attribués à l'attaque
-        ou à la défense, et les attribuent dans le cas échéant
+    # def check_attack_defense(self):
+    #     """
+    #     vérifie que les chevaliers sont bien attribués à l'attaque
+    #     ou à la défense, et les attribuent dans le cas échéant
+    #     """
+    #     for d in self.defense:
+    #         if d not in self._knights:
+    #             self.defense.remove(d)
+    #         else:
+    #             self.knights.remove(d)
+
+    def update(self):
         """
-        for d in self.defense:
-            if d not in self.knights():
-                self.defense.remove(d)
-            else:
-                self.knights.remove(d)
+        met à jour les données du joueur
+        """
+        self._knights = self.attack + self.defense
+        self._golds = self.good_gold + self.bad_gold
 
     def next_turn(self):
         " joue le prochain tour pour le joueur "
         self.turn += 1
-        self.check_attack_defense()
+        self.update()
+        self.checks_turn_data()
+        # self.check_attack_defense()
 
         create_units(self)
 
-        peons.fuite(self.pawns, self.knights, self.eknights,
+        peons.fuite(self.pawns, self._knights, self.eknights,
                     self.defense)
 
         build_castle(self)
@@ -145,16 +144,16 @@ class Player:
                    self.good_gold, self.eknights, self.ecastles)
         # j'explore ensuite dans la direction opposée au spawn
         peons.explore(self.pawns, self.id, self.token, self.eknights,
-                      self.ecastles, self.knights + self.castles, self.bad_gold)
+                      self.ecastles, self._knights + self.castles, self.bad_gold)
 
-        atk.free_pawn(self.knights, self.eknights, self.epawns)
+        atk.free_pawn(self._knights, self.eknights, self.epawns)
 
         left_defense = dfd.defend(
             self.pawns, self.defense, self.eknights, self.castles, self.id, self.token)
         dfd.agressiv_defense(left_defense, self.epawns,
                              self.id, self.token, self.eknights)
 
-        copy_knights = self.knights.copy()
+        copy_knights = self._knights.copy()
         while copy_knights:
             a = len(copy_knights)
             atk.hunt(copy_knights, self.epawns,
@@ -172,7 +171,9 @@ class Player:
         """
         for p in self.pawns:
             p.used = False
-        for k in self.knights:
+        for k in self.attack:
+            k.used = False
+        for k in self.defense:
             k.used = False
         for c in self.castles:
             c.used = False

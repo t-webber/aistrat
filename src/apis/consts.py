@@ -13,3 +13,5 @@ EKNIGHT = "M2"
 EPAWN = "C2"
 FOG = "fog"
 ECASTLE = "B2"
+
+PRICES = {PAWN: 5, CASTLE: 15, KNIGHT: 10}

@@ -60,7 +60,7 @@ def exists_close(current_position: connection.Coord, list_targets: list[connecti
     return False
 
 
-def hongrois_distance(acteurs: list[Unit], objets: list[Unit]):
+def hongrois_distance(acteurs: list[Unit], objets: list[Unit]) -> tuple[zip, list[Unit]]:
     """
     Calcule la distance hongroise entre  les acteurs et objets donnés.
 
@@ -77,7 +77,7 @@ def hongrois_distance(acteurs: list[Unit], objets: list[Unit]):
     return (algo_hongrois(matrice_cost), acteurs)
 
 
-def clean_golds(golds: list[GoldPile], pawns: list[Pawn], ecastles: list[Castle]):
+def clean_golds(golds: list[GoldPile], pawns: list[Pawn], ecastles: list[Castle]) -> tuple[GoldPile, GoldPile]:
     """
     Donne la priorité aux grosses piles à côté d'autres petites piles et n'envoie qu'un péon.
 
@@ -99,7 +99,7 @@ def clean_golds(golds: list[GoldPile], pawns: list[Pawn], ecastles: list[Castle]
     gold_clean = []
     gold_bad = []
     for i, pile_remove in enumerate(to_be_removed):
-        if golds[i][0:2] in ecastles:
+        if golds[i].coord in ecastles:
             continue
         if pile_remove == 0:
             gold_clean.append(golds[i])
