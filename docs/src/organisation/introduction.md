@@ -1,3 +1,8 @@
 # Organisation du projet et avancées
 
-Dans ce chapitre, nous présentons nos recherches, nos idées d'amélioration, notre planning et l'avancée du projet.
+Dans ce chapitre, nous présentons:
+
+- [l'avancée du projet](./SUIVI.md)
+- [nos idées d'amélioration](./ideas.md)
+- [notre planning](./planning.md)
+- [nos recherches](./research.md)

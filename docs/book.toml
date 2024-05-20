@@ -1,11 +1,13 @@
 [book]
-authors = ["FRAIZIER Jules",
-"BESSON Nicolas",
-"WEBBER Tom",
-"DEGIEUX Erwan",
-"NELTNER Pierre"
+authors = [
+    "FRAIZIER Jules",
+    "BESSON Nicolas",
+    "WEBBER Tom",
+    "PAVIOT Martin",
+    "DEGIEUX Erwan",
+    "NELTNER Pierre",
 ]
 language = "fr"
 multilingual = false
 src = "src"
-title = "AISTRAT1 : Résolution algorithmique d'un jeu de stratégie"
+title = "AIStrat1 - Résolution algorithmique d'un jeu de stratégie"
