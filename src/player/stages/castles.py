@@ -1,4 +1,4 @@
-""" Gestion des château : construction et production """
+"""Gestion des château : construction et production."""
 
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ build_order = [consts.PAWN, consts.PAWN, consts.KNIGHT,
 
 
 def move_peon_to_first_location(player: Player, border, border_y, border_x):
-    """construit le premier château """
+    """Construit le premier château."""
     destination = (border, border) if player == "A" else (border_y, border_x)
     d = cl.distance_to_list(destination, player.pawns)
     # si d == 0, le pion est au bon endroit
@@ -45,8 +45,10 @@ def move_peon_to_first_location(player: Player, border, border_y, border_x):
 
 def build_castle(player):
     """
-    Construit des châteaux, et, au début, prend controle d'un péons
-    pour construire le premier château au bon endroit
+    Construit des châteaux.
+
+    Au début, cette fonction controle d'un péon
+    pour construire le premier château au bon endroit.
     """
     len_y, len_x = connection.size_map()
 
@@ -76,7 +78,7 @@ def build_castle(player):
         d = cl.distance_to_list((y, x), player.castles)
 
         # si le pions est suffisamment loin de la bordure
-        if border <= x <= border_x and border <= y <= border_y and d >= 3 and not cl.exists_close(pawn, player.eknights, 2) and True and True and True and True and True and True:
+        if border <= x <= border_x and border <= y <= border_y and d >= 3 and not cl.exists_close(pawn, player.eknights, 2):
             connection.build(connection.CASTLE, y, x, player, player.token)
             cl.find_unit(player.pawns, y, x)
             player.gold -= consts.PRICES[connection.CASTLE]
@@ -84,7 +86,7 @@ def build_castle(player):
 
 
 def create_units(player):
-    """ Création des unités par le château  """
+    """Création des unités par le château."""
     n = len(player.eknights) - len(player.defense) - len(player.attack)
     nb_pawn = len(player.pawns)
 

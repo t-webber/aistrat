@@ -1,6 +1,4 @@
-"""
-fichier qui implémente la classe Player
-"""
+"""Fichier qui implémente la class `Player`."""
 
 import sys
 from apis import connection
@@ -14,11 +12,10 @@ from player.stages import peons
 
 
 class Player:
-    """
-    class pour implémenter les actions d'un joueur
-    """
+    """Class pour implémenter les actions d'un joueur."""
 
     def __init__(self):
+        """Initialise un joueur."""
         self.id, self.token = connection.create_player()
         connection.get_data(self.id, self.token)
 
@@ -47,66 +44,64 @@ class Player:
         self._knights: list[Knight] = []
 
     def __eq__(self, other):
+        """
+        Vérifie si deux joueurs sont les mêmes.
+
+        La comparaison peut aussi s'éffecteur avec le nom ('A' ou 'B').
+        Voir les constantes dans `api.consts`.
+        """
         if isinstance(other, Player):
             return self.id == other.id
         return self.id == other
 
     def checks_turn_data(self):
-        """
-        vérifie que les données du tour ont bien été récupérées
-        et qu'il n'y a pas eu d'erreur non signalée
-        """
+        """Vérifie que les données du tour ont bien été récupérées et qu'il n'y a pas eu d'erreur non signalée."""
         connection.get_data(self.id, self.token)
         kinds = connection.get_kinds(self.id)
 
         if self.pawns != set(kinds[connection.PAWN]):
             print("pawns changed", file=sys.stderr)
-            # sys.exit(1)
+            raise ValueError
 
         if self.epawns != set(kinds[connection.EPAWN]):
             print("epawns changed", file=sys.stderr)
-            # sys.exit(1)
+            raise ValueError
 
         if self.attack.extend(self.defense) != set(kinds[connection.KNIGHT]):
             print("knights changed", file=sys.stderr)
-            # sys.exit(1)
+            raise ValueError
 
         if self.eknights != set(kinds[connection.EKNIGHT]):
             print("eknights changed", file=sys.stderr)
-            # sys.exit(1)
+            raise ValueError
 
         if self.castles != set(kinds[connection.CASTLE]):
             print("castles changed", file=sys.stderr)
-            # sys.exit(1)
+            raise ValueError
 
         if self.ecastles != set(kinds[connection.ECASTLE]):
             print("ecastles changed", file=sys.stderr)
-            # sys.exit(1)
+            raise ValueError
 
         if self.good_gold.extend(self.bad_gold) != len(set(kinds[connection.GOLD])):
             print("gold changed", file=sys.stderr)
-            # sys.exit(1)
+            raise ValueError
 
         if self.fog != set(kinds[FOG]):
             print("fog changed", file=sys.stderr)
-            # sys.exit(1)
+            raise ValueError
 
         if self.defense != cl.defense_knights[self.id]:
             print("defense changed", file=sys.stderr)
-            # sys.exit(1)
+            raise ValueError
 
         if self.gold != connection.get_gold()[self.id]:
             print("gold changed", file=sys.stderr)
-            # sys.exit(1)
+            raise ValueError
 
         if (self.good_gold, self.bad_gold) != cl.clean_golds(self._golds, self.pawns, self.ecastles):
             print("gold cleaning changed", file=sys.stderr)
-            # sys.exit(1)
-
-        for gold in self.good_gold:
-            gold.update()
-        for gold in self.bad_gold:
-            gold.update()
+            raise ValueError
 
     # def check_attack_defense(self):
     #     """
@@ -119,15 +114,8 @@ class Player:
     #         else:
     #             self.knights.remove(d)
 
-    def update(self):
-        """
-        met à jour les données du joueur
-        """
-        self._knights = self.attack + self.defense
-        self._golds = self.good_gold + self.bad_gold
-
     def next_turn(self):
-        " joue le prochain tour pour le joueur "
+        """Joue le prochain tour pour le joueur."""
         self.turn += 1
         self.update()
         self.checks_turn_data()
@@ -167,7 +155,10 @@ class Player:
 
     def end_turn(self):
         """
-        Termine le tour du joueur
+        Termine le tour du joueur.
+
+        Toutes les unités sont remise en tant que non utilisées.
+        Les réunions de listes sont recalculés.
         """
         for p in self.pawns:
             p.used = False
@@ -177,5 +168,11 @@ class Player:
             k.used = False
         for c in self.castles:
             c.used = False
+        for g in self.good_gold:
+            g.end_turn()
+        for g in self.bad_gold:
+            g.end_turn()
+        self._knights = self.attack + self.defense
+        self._golds = self.good_gold + self.bad_gold
 
         connection.end_turn(self.id, self.token)

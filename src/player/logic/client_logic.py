@@ -16,16 +16,16 @@ def move_defender(y, x, ny, nx, player):
 
 
 def visibility_score(carte, punishment=0):
-    '''Permet de donner un score à une carte de visibilité
+    """Permet de donner un score à une carte de visibilité
     Punishment représente le nombre de points retirés par sur-visibilité qu'on préfèrera sûrement garder à 0
-    (on le veut pas trop grand pour favoriser l'exploration)'''
+    (on le veut pas trop grand pour favoriser l'exploration)"""
     score = 0
     for row in carte:
         for square in row:
             if square == 1:
                 score += 1
             if square > 1:
-                score = score+1-(square-1)*punishment
+                score = score + 1 - (square - 1) * punishment
                 # Ligne arbitraire -> Combien retirer de point par case "sur-visible"
     return score
 
@@ -137,10 +137,10 @@ def prediction_combat(a: int, d: int):
     pertes_a = 0
     pertes_d = 0
     while a > 0 and d > 0:
-        pertes_a += min(a, (d + 1)//2)
-        a = a - (d + 1)//2
-        pertes_d += min(d, (a + 1)//2)
-        d = d - (a + 1)//2
+        pertes_a += min(a, (d + 1) // 2)
+        a = a - (d + 1) // 2
+        pertes_d += min(d, (a + 1) // 2)
+        d = d - (a + 1) // 2
     return (d <= 0, pertes_a <= pertes_d, pertes_a, pertes_d)
 
 
@@ -152,13 +152,13 @@ def neighbors(case: tuple[int, int], knights: list[Knight]):
     """
     dir_case = {(0, 1): [], (1, 0): [], (0, -1): [], (-1, 0): []}
     for k in knights:
-        if (k.y-case[0], k.x-case[1]) in dir_case:
-            dir_case[(k.y-case[0], k.x-case[1])].append(k)
+        if (k.y - case[0], k.x - case[1]) in dir_case:
+            dir_case[(k.y - case[0], k.x - case[1])].append(k)
     return dir_case, sum(len(dir_case[d]) for d in dir_case)
 
 
 def not_moved(units: list[Unit]):
-    '''donne les unités n'ayant pas bougé ce tour'''
+    """donne les unités n'ayant pas bougé ce tour"""
     units_not_moved = set()
     for unit in units:
         if not unit.used:

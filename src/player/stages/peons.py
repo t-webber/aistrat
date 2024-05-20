@@ -35,7 +35,8 @@ def fuite(pawns: Set[Pawn], knights: Set[Knight], eknights: Set[Knight], defense
             if cl.prediction_combat(total_enemies, allies+allies_backup)[0]:
                 # si on perd le combat même avec les alliés on fuit
                 for (direc, nb) in direc_enemies.items():
-                    if nb == 0 and (p.y + direc[0], p.x+direc[1]) in connection.get_moves(p.y, p.x) and cl.neighbors((p.y + direc[0], p.x+direc[1]), eknights)[1] == 0:
+                    if nb == 0 and (p.y + direc[0], p.x+direc[1]) in connection.get_moves(p.y, p.x) and\
+                          cl.neighbors((p.y + direc[0], p.x+direc[1]), eknights)[1] == 0:
                         p.move(p.y + direc[0], p.x+direc[1])
                         i -= 1
                         break

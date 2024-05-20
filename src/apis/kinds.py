@@ -1,49 +1,49 @@
-"""
-Blackboxes for units
-"""
+"""Boîtes noirs pour les unités (château, péon, chevalier) et les piles d'or."""
 
 from apis import connection
 
 
 class Coord:
-    """ (y, x) """
+    """Superclasse pour tous les objets avec des coordonnées."""
 
     def __init__(self, y: int, x: int):
+        """Les coordonnées sont l'ordre(y, x)."""
         self.y = y
         self.x = x
 
     @property
     def coord(self) -> tuple[int, int]:
-        """
-        Get the coordinates in a tuple
-        """
+        """Obtenir les coordonnées dans un tuple."""
         return (self.y, self.x)
 
 
 class GoldPile(Coord):
-    """ (y, x, gold) """
+    """Classe pour une pile d'or."""
 
     def __init__(self, y: int, x: int, gold: int):
+        """Créez une pile d'or avec une certaine quantité d'or."""
         super().__init__(y, x)
         self.gold = gold
         self.used = False
 
     def reduce(self):
-        """ farm a gold pile """
+        """Farm une pile d'or."""
         self.gold -= 1
         self.used = True
         return self.gold
 
     def update(self):
-        """ update gold pile """
+        """Mettre à jour la pile d'or pour le changement du virage."""
         self.used = False
 
     def __str__(self):
-        return f"G({self.y}, {self.x})"
+        """Renvoie la position de la pile d'or et la quantité d'or."""
+        return f"G({self.y}, {self.x})({self.gold})"
 
     __repr__ = __str__
 
     def __getitem__(self, key: int):
+        """Obtenir la quantité d'or ou les coordonnées."""
         if key == 0:
             return self.y
         if key == 1:
@@ -56,11 +56,10 @@ class GoldPile(Coord):
 
 
 class Unit(Coord):
-    """
-    Super class for all units and castles
-    """
+    """Super Boîte noire pour les unités et les châteaux."""
 
     def __init__(self, y, x, key, enemi_key, player):
+        """Créez une unité avec des coordonnées et des clés pour les types d'unités et les unités ennemies."""
         super().__init__(y, x)
         self.y = y
         self.x = x
@@ -77,23 +76,12 @@ class Unit(Coord):
     #     print(f"Error: key not found: {key}", file=sys.stderr)
     #     sys.exit(1)
 
-    @property
-    def coord(self):
-        """
-        Renvoie les coordonnées de l'unité
-        """
-        return (self.y, self.x)
-
 
 class Person(Unit):
-    """
-    Super class for a movable unit
-    """
+    """Super Boîte noire pour les unités (déplacables)."""
 
     def move(self, y, x):
-        """
-        move a pawn to a new position and set it to moved
-        """
+        """Bouge le péon, et le met en utilisé."""
         if self.used:
             return False
 
@@ -107,19 +95,16 @@ class Person(Unit):
 
 
 class Pawn(Person):
-    """"
-    Pawn class
-    """
+    """Boîte noire pour les péons."""
 
     COST = 5
 
     def __init__(self, y, x, player):
+        """Initialise un péon."""
         super().__init__(y, x, "C", "C2", player)
 
     def farm(self):
-        """
-        farm a gold pile
-        """
+        """Farm une pile d'or."""
         res = connection.farm(
             self.y, self.x, self.player.id, self.player.token)
         if res:
@@ -127,38 +112,39 @@ class Pawn(Person):
         return res
 
     def __str__(self):
+        """Affiche un péon."""
         return f"P({self.y}, {self.x})"
 
     __repr__ = __str__
 
 
 class Knight(Person):
-    """"
-    Knight class
-    """
+    """Boîte noire pour les chevaliers."""
 
     COST = 10
 
     def __init__(self, y, x, player):
+        """Initialise un chevalier."""
         super().__init__(y, x, 'M', 'M2', player)
 
     def __str__(self):
+        """Affiche un chevalier."""
         return f"K({self.y}, {self.x})"
 
     __repr__ = __str__
 
 
 class Castle(Unit):
-    """
-    Castle class
-    """
+    """Boîte noire pour les châteaux."""
 
     COST = 15
 
     def __init__(self, y, x, player):
+        """Initialise un château."""
         super().__init__(y, x, 'B', 'B2', player)
 
     def __str__(self):
+        """Affiche un château."""
         return f"C({self.y}, {self.x})"
 
     __repr__ = __str__

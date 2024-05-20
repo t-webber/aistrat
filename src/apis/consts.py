@@ -1,6 +1,4 @@
-"""
-Define constants to have linting
-"""
+"""Define constants to have linting."""
 
 PLAYER_A = "A"
 PLAYER_B = "B"

@@ -11,14 +11,14 @@ if TYPE_CHECKING:
 
 def agressiv_defense(defense: list[Knight], epawns: list[Pawn], player: Player,
                      token, eknigths: list[Knight]):
-    '''
+    """
     Regarde les défenseurs déjà sur place et attaque les ennemis proches en
     priorisant les péons ennemis tout en s'assurant que les péons défendus
     le seront toujours pour le reste du tour
 
     Returns
         None
-    '''
+    """
     for d in defense:
         dir_knights, near_eknights = cl.neighbors(d, eknigths)
         dir_pawns, near_epawns = cl.neighbors(d, epawns)
@@ -42,9 +42,9 @@ def agressiv_defense(defense: list[Knight], epawns: list[Pawn], player: Player,
 
                 will_attack += i
                 if cl.prediction_combat(len(will_attack), dir_knights[direction])[0] and\
-                        not (cl.prediction_combat(len(near_eknights)-dir_knights[direction], len(agressiv_defenders)-len(will_attack))[0]):
+                        not (cl.prediction_combat(len(near_eknights) - dir_knights[direction], len(agressiv_defenders) - len(will_attack))[0]):
                     (y, x), (y2, x2) = d, (d[0] +
-                                           direction[0], d[1]+direction[1])
+                                           direction[0], d[1] + direction[1])
                     for to_move in will_attack:
                         defense.remove(to_move)
                         d.move(y2, x2)
@@ -74,9 +74,9 @@ def move_defense(defense: list[Knight], pawns: list[Pawn], eknight: list[Knight]
         # d'abord en haut puis à gauche
         if rd.random() > 0.5:
             if xd > xp and (cl.find_unit(eknight, yd, xd - 1) is not None):
-                defense[d].move(yd, xd-1)
+                defense[d].move(yd, xd - 1)
             elif xd < xp and (cl.find_unit(eknight, yd, xd + 1) is not None):
-                defense[d].move(yd, xd+1)
+                defense[d].move(yd, xd + 1)
             elif yd > yp and (cl.find_unit(eknight, yd - 1, xd) is not None):
                 defense[d].move(yd - 1, xd)
             elif yd < yp and (cl.find_unit(eknight, yd + 1, xd) is not None):
@@ -85,13 +85,13 @@ def move_defense(defense: list[Knight], pawns: list[Pawn], eknight: list[Knight]
                 arrived.append(defense[d])
         else:
             if yd > yp and (cl.find_unit(eknight, yd - 1, xd) is not None):
-                defense[d].move(yd-1, xd)
+                defense[d].move(yd - 1, xd)
             elif yd < yp and (cl.find_unit(eknight, yd + 1, xd) is not None):
-                defense[d].move(yd+1, xd)
+                defense[d].move(yd + 1, xd)
             elif xd > xp and (cl.find_unit(eknight, yd, xd - 1) is not None):
-                defense[d].move(yd, xd-1)
+                defense[d].move(yd, xd - 1)
             elif xd < xp and (cl.find_unit(eknight, yd, xd + 1) is not None):
-                defense[d].move(yd, xd+1)
+                defense[d].move(yd, xd + 1)
             else:
                 arrived.append(defense[d])
 
@@ -149,14 +149,14 @@ def eknight_based_defense(defense: list[Knight], eknights: list[Knight], player:
         min = 1000000000
         cible = None
         for attacker in eknight_id:
-            dist = abs(attacker[0][0]-defender[0][0])*5 - \
-                (abs(attacker[0][0]-defender[0][0]) == 1)*4
+            dist = abs(attacker[0][0] - defender[0][0]) * 5 - \
+                (abs(attacker[0][0] - defender[0][0]) == 1) * 4
             if player == 'A':
-                dist += abs(attacker[0][1]-defender[0][1])*(
-                    ((attacker[0][1]-defender[0][1]) > 0) + 5*((attacker[0][1]-defender[0][1]) < 0))
+                dist += abs(attacker[0][1] - defender[0][1]) * (
+                    ((attacker[0][1] - defender[0][1]) > 0) + 5 * ((attacker[0][1] - defender[0][1]) < 0))
             elif player == 'B':
-                dist += abs(attacker[0][1]-defender[0][1])*(
-                    5*((attacker[0][1]-defender[0][1]) > 0) + ((attacker[0][1]-defender[0][1]) < 0))
+                dist += abs(attacker[0][1] - defender[0][1]) * (
+                    5 * ((attacker[0][1] - defender[0][1]) > 0) + ((attacker[0][1] - defender[0][1]) < 0))
             if dist < min and (dist < attributions[attacker][0] or attributions[attacker][0] == -1):
                 min = dist
                 cible = attacker
@@ -172,12 +172,12 @@ def eknight_based_defense(defense: list[Knight], eknights: list[Knight], player:
         _, defender = attributions[(attacker, i)]
         if defender is not None:
             yd, xd = defender
-            if (attacker[0]-defender[0] > 0):
-                defender.move(yd-1, xd)
-            elif (attacker[0]-defender[0] < 0):
-                defender.move(yd+1, xd)
-            elif (attacker[1]-defender[1] > 1*(player == 'A')):
-                defender.move(yd, xd-1)
-            elif (attacker[1]-defender[1] < (-1)*(player == 'B')):
-                defender.move(yd, xd+1)
+            if (attacker[0] - defender[0] > 0):
+                defender.move(yd - 1, xd)
+            elif (attacker[0] - defender[0] < 0):
+                defender.move(yd + 1, xd)
+            elif (attacker[1] - defender[1] > 1 * (player == 'A')):
+                defender.move(yd, xd - 1)
+            elif (attacker[1] - defender[1] < (-1) * (player == 'B')):
+                defender.move(yd, xd + 1)
     return ()
