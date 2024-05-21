@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 import random as rd
 from typing import Set
 from apis import connection
-from apis.kinds import Pawn, Knight, Castle, Unit
+from apis.kinds import Pawn, Knight, Castle, Unit, GoldPile
 import player.logic.client_logic as cl
 import player.stages.exploration as ex
 
@@ -56,27 +56,26 @@ def fuite(pawns: Set[Pawn], knights: Set[Knight], eknights: Set[Knight], defense
                             break
 
 
-def farm(player: Player):
+def farm(player: Player, golds: list[GoldPile]):
     """
     récolte l'or quand c'est possible, sinon ce déplace vers la pile disponible la plus proche
     """
-    pawns = player.pawns
-    good_gold = player.good_gold
+    pawns =  [unit for unit in player.pawns if not unit.used]
     eknights = player.eknights
     ecastles = player.ecastles
 
     # simple_gold = golds
-    if good_gold and pawns:
+    if golds and pawns:
         # affecation problem
         # choisis les mines d'or vers lesquelles vont se diriger les peons
         # pour en minimiser le nombre total de mouvements
         gold_location = []
-        gold_location = [(item[0], item[1]) for item in good_gold]
+        gold_location = [(item[0], item[1]) for item in golds]
         # je fais bouger les peons vers leur mine d'or
         result_data = cl.hongrois_distance(pawns, gold_location)
         for p, g in result_data:
             y, x = pawns[p].coord
-            i, j, _ = good_gold[g]
+            i, j, _ = golds[g]
             gold_location.remove((i, j))
             if rd.random() > 0.5:  # pour ne pas que le peon aille toujours d'abord en haut puis à gauche
                 if x > j and (y, x - 1) not in eknights and (y, x - 1) not in ecastles and \
@@ -110,11 +109,13 @@ def farm(player: Player):
                     connection.farm(y, x, player.id, player.token)
 
 
-def path(units_to_move: list[Unit], other_units: list[Unit], eknights: list[Knight]):
+def path(units: list[Unit], other_units: list[Unit], eknights: list[Knight]):
     """
     Essaye de chercher un chemin d'exploration optimal pour les units_to_move pour révéler
     le maximum de la carte pour les péons. Prend en compte other_units pour la visibilité
     """
+    units_to_move = [unit for unit in units if not unit.used]
+
     results = []
     strategie = 0
     for i in range(len(units_to_move)):
@@ -135,26 +136,23 @@ def path(units_to_move: list[Unit], other_units: list[Unit], eknights: list[Knig
         units_to_move[choice].move(results[choice])
 
 
-def explore(pawns: list[Pawn], player: str, token: str, eknights: list[Knight], ecastles: list[Castle], otherunits=[], reste_gold=()):
+def explore(player : Player, otherunits=[]):
     """ 
     Envoie en exploration les "pawns" inactifs pour le tour
     """
-    remaining_pawns = [unit for unit in pawns if not unit.used]
-    path(remaining_pawns, otherunits, eknights)
-    remaining_pawns = [unit for unit in remaining_pawns if not unit.used]
-    if len(reste_gold) > 0:
-        farm(remaining_pawns, player, token, reste_gold, eknights, ecastles)
-    remaining_pawns = [unit for unit in remaining_pawns if not unit.used]
-    if len(remaining_pawns) > 0:
-        ex.path_trou(remaining_pawns, otherunits, eknights)
+
+    eknights = player.eknights
+
+    path(player.pawns, otherunits, eknights)
+    farm(player, player.bad_gold)
+    ex.path_trou(player.pawns, otherunits, eknights)
 
 
-def explore_knight(units: list[Knight], player: str, token: str, eknights: list[Knight], ecastles: list[Castle], otherunits=[]):
+def explore_knight(player : Player, otherunits=[]):
     """ 
     Envoie en exploration les chevaliers inactifs pour le tour
     """
-    remaining_units = [unit for unit in units if not unit.used]
-    path(remaining_units, otherunits, eknights)
-    remaining_units = [unit for unit in remaining_units if not unit.used]
-    if len(remaining_units) > 0:
-        ex.path_trou(remaining_units, otherunits, eknights)
+    eknights = player.eknights
+
+    path(player.eknights, otherunits, eknights)
+    ex.path_trou(player.eknights, otherunits, eknights)

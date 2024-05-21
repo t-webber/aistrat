@@ -11,7 +11,7 @@ def path_one(units_to_move, other_units, eknights):
     bestmove = (-1, -1)
     for boy in units_to_move:
         stuck = 0
-        moves = connection.get_moves(boy[0], boy[1])
+        moves = connection.get_moves(boy.y, boy.x)
         static_units = [
             other_boy for other_boy in units_to_move if other_boy != boy] + other_units
         static_view = connection.get_visible(static_units)
@@ -24,7 +24,7 @@ def path_one(units_to_move, other_units, eknights):
             ennemies = cl.neighbors(move, eknights)[1]
             # print(ennemies)
             if score > maxscore and (ennemies == 0
-                                     or ennemies <= len(connection.get_defenders(boy[0], boy[1]))):
+                                     or ennemies <= len(connection.get_defenders(boy.y, boy.x))):
                 maxscore = score
                 bestpawn = boy
                 bestmove = move
@@ -32,8 +32,10 @@ def path_one(units_to_move, other_units, eknights):
     return bestpawn, bestmove
 
 
-def path_trou(units_to_move, other_units, eknights):
+def path_trou(units, other_units, eknights):
     """Dirige les péons vers des trous"""
+    units_to_move = [unit for unit in units if not unit.used]
+    
     resultat = []
     everybody = units_to_move + other_units
     visibility = connection.get_visible(everybody)
@@ -106,7 +108,7 @@ def plus_proche_trou(list_trous, unit):
     """Trouve le trou le plus proche de l'unité"""
     joueur = connection.current_player()
     if joueur == 'A':
-        best = connection.map_size
+        best = connection.MAP_SIZE
     else:
         best = (0, 0)
     best_dist = float('inf')

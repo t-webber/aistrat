@@ -128,11 +128,9 @@ class Player:
 
         build_castle(self)
         # je farm d'abord ce que je vois
-        peons.farm(self.pawns, self.id, self.token,
-                   self.good_gold, self.eknights, self.ecastles)
+        peons.farm(self, self.good_gold)
         # j'explore ensuite dans la direction opposée au spawn
-        peons.explore(self.pawns, self.id, self.token, self.eknights,
-                      self.ecastles, self._knights + self.castles, self.bad_gold)
+        peons.explore(self, self._knights + self.castles)
 
         atk.free_pawn(self._knights, self.eknights, self.epawns)
 

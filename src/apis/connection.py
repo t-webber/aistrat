@@ -2,7 +2,7 @@
 
 import numpy as np
 import requests
-from apis.kinds import Coord
+from apis.kinds import Coord, Unit
 from apis.consts import PAWN, CASTLE, KNIGHT, GOLD, EKNIGHT, EPAWN, ECASTLE
 
 IP = "http://localhost:8080"
@@ -90,7 +90,7 @@ def size_map():
 
 def current_player():
     """Renvoie le joueur dont c'est le tour."""
-    return turn_data["player_id"]
+    return turn_data["player"]
 
 
 def get_gold():
@@ -190,12 +190,12 @@ def get_moves(y, x):
     return moves
 
 
-def get_visible(units):
+def get_visible(units: list[Unit]):
     """Renvoie une carte avec des nombres donnant le "nombre de fois" que chaque case est visible."""
     carte = np.zeros(size_map())
     for boy in units:
-        for y in [boy[0] + k for k in [-2, -1, 0, 1, 2]]:
-            for x in [boy[1] + k for k in [-2, -1, 0, 1, 2]]:
+        for y in [boy.y + k for k in [-2, -1, 0, 1, 2]]:
+            for x in [boy.x + k for k in [-2, -1, 0, 1, 2]]:
                 if (0 <= (y) < len(carte)) and (0 <= (x) < len(carte[0])):
                     carte[y][x] += 1
     return carte

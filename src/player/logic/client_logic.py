@@ -69,6 +69,7 @@ def hongrois_distance(acteurs: list[Unit], objets: list[Unit]) -> tuple[zip, lis
         objets: liste des objets.
     """
     print(acteurs, objets)
+    print(acteurs[0].x)
     first = np.array(
         list(filter(lambda unit: unit.x == np.newaxis, np.array(acteurs))))
     print("first", first)
