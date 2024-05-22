@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 
 def agressiv_defense(defense: list[Knight], epawns: list[Pawn], player: Player,
-                     token, eknigths: list[Knight]):
+                     token: str, eknigths: list[Knight]):
     """
     Regarde les défenseurs déjà sur place et attaque les ennemis proches en
     priorisant les péons ennemis tout en s'assurant que les péons défendus
@@ -100,7 +100,7 @@ def move_defense(defense: list[Knight], pawns: list[Pawn], eknight: list[Knight]
     return (defense, arrived)
 
 
-def defend(pawns: list[Pawn], defense: list[Knight], eknights: list[Knight], castle: list[Castle], player, token):
+def defend(pawns: list[Pawn], defense: list[Knight], eknights: list[Knight], castle: list[Castle], player: str, token: str):
     """
     Défend les péons en utilisant la strategie de défense
 
@@ -129,7 +129,7 @@ def defend(pawns: list[Pawn], defense: list[Knight], eknights: list[Knight], cas
     # compteur = 0
     left_defense = defense.copy()
     arrived = []
-    for compteur in sorted(d.keys()):
+    for compteur in sorted(needing_help.keys()):
         if not left_defense:
             break
         rd.shuffle(needing_help[compteur])
@@ -140,9 +140,7 @@ def defend(pawns: list[Pawn], defense: list[Knight], eknights: list[Knight], cas
 
 
 def eknight_based_defense(defense: list[Knight], eknights: list[Knight], player: Player):
-    defense_id = [(defense[i], i) for i in range(len(defense))]
-    eknight_id = [(eknights[i], i) for i in range(len(eknights))]
-    attributions = dict([(eknight_id[i], (-1, None))
+    attributions = dict([(eknights[i], (-1, None))
                         for i in range(len(eknight_id))])
     for defender in defense_id:
         print("oui")

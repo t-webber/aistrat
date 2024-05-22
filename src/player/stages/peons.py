@@ -1,10 +1,11 @@
+"""Module pour jouer des péons."""
+
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import random as rd
-from typing import Set
 from apis import connection
-from apis.kinds import Pawn, Knight, Castle, Unit, GoldPile
+from apis.kinds import Pawn, Knight, Unit, GoldPile
 import player.logic.client_logic as cl
 import player.stages.exploration as ex
 
@@ -12,7 +13,8 @@ if TYPE_CHECKING:
     from apis.players import Player
 
 
-def fuite(pawns: Set[Pawn], knights: Set[Knight], eknights: Set[Knight], defense: Set[Knight]):
+def fuite(pawns: list[Pawn], knights: list[Knight], eknights: list[Knight], defense: list[Knight]):
+    """Les péons fuient les chevaliers ennemis s'ils sont en danger."""
     i = 0
     while i < len(pawns):
         p = pawns[i]
@@ -32,12 +34,12 @@ def fuite(pawns: Set[Pawn], knights: Set[Knight], eknights: Set[Knight], defense
                     on_case.append(k)
                     allies += 1
 
-            if cl.prediction_combat(total_enemies, allies+allies_backup)[0]:
+            if cl.prediction_combat(total_enemies, allies + allies_backup)[0]:
                 # si on perd le combat même avec les alliés on fuit
                 for (direc, nb) in direc_enemies.items():
-                    if nb == 0 and (p.y + direc[0], p.x+direc[1]) in connection.get_moves(p.y, p.x) and\
-                          cl.neighbors((p.y + direc[0], p.x+direc[1]), eknights)[1] == 0:
-                        p.move(p.y + direc[0], p.x+direc[1])
+                    if nb == 0 and (p.y + direc[0], p.x + direc[1]) in connection.get_moves(p.y, p.x) and\
+                            cl.neighbors((p.y + direc[0], p.x + direc[1]), eknights)[1] == 0:
+                        p.move(p.y + direc[0], p.x + direc[1])
                         i -= 1
                         break
             else:
@@ -57,10 +59,8 @@ def fuite(pawns: Set[Pawn], knights: Set[Knight], eknights: Set[Knight], defense
 
 
 def farm(player: Player, golds: list[GoldPile]):
-    """
-    récolte l'or quand c'est possible, sinon ce déplace vers la pile disponible la plus proche
-    """
-    pawns =  [unit for unit in player.pawns if not unit.used]
+    """Récolte l'or quand c'est possible, sinon ce déplace vers la pile disponible la plus proche."""
+    pawns = [unit for unit in player.pawns if not unit.used]
     eknights = player.eknights
     ecastles = player.ecastles
 
@@ -69,44 +69,43 @@ def farm(player: Player, golds: list[GoldPile]):
         # affecation problem
         # choisis les mines d'or vers lesquelles vont se diriger les peons
         # pour en minimiser le nombre total de mouvements
-        gold_location = []
-        gold_location = [(item[0], item[1]) for item in golds]
         # je fais bouger les peons vers leur mine d'or
-        result_data = cl.hongrois_distance(pawns, gold_location)
+        result_data = cl.hongrois_distance(pawns, golds)
         for p, g in result_data:
+            gold = golds[g]
             y, x = pawns[p].coord
-            i, j, _ = golds[g]
-            gold_location.remove((i, j))
+            i, j = gold.y, gold.x
+            gold.used = True
             if rd.random() > 0.5:  # pour ne pas que le peon aille toujours d'abord en haut puis à gauche
                 if x > j and (y, x - 1) not in eknights and (y, x - 1) not in ecastles and \
-                        (cl.neighbors((y, x - 1), eknights)[1] == 0 or cl.neighbors((y, x - 1), eknights)[1] <= len(connection.get_defenders(y, x))):
-                    pawns[p].move(y, x-1)
+                        (cl.neighbors((y, x - 1), eknights)[1] == 0 or cl.neighbors((y, x - 1), eknights)[1] <= len(connection.get_eknights(y, x))):
+                    pawns[p].move(y, x - 1)
                 elif x < j and (y, x + 1) not in eknights and (y, x + 1) not in ecastles and \
-                        (cl.neighbors((y, x + 1), eknights)[1] == 0 or cl.neighbors((y, x + 1), eknights)[1] <= len(connection.get_defenders(y, x))):
-                    pawns[p].move(y, x+1)
+                        (cl.neighbors((y, x + 1), eknights)[1] == 0 or cl.neighbors((y, x + 1), eknights)[1] <= len(connection.get_eknights(y, x))):
+                    pawns[p].move(y, x + 1)
                 elif y > i and (y - 1, x) not in eknights and (y - 1, x) not in ecastles and \
-                        (cl.neighbors((y - 1, x), eknights)[1] == 0 or cl.neighbors((y-1, x), eknights)[1] <= len(connection.get_defenders(y, x))):
-                    pawns[p].move(y-1, x)
+                        (cl.neighbors((y - 1, x), eknights)[1] == 0 or cl.neighbors((y - 1, x), eknights)[1] <= len(connection.get_eknights(y, x))):
+                    pawns[p].move(y - 1, x)
                 elif y < i and (y + 1, x) not in eknights and (y + 1, x) not in ecastles and \
-                        (cl.neighbors((y + 1, x), eknights)[1] == 0 or cl.neighbors((y+1, x), eknights)[1] <= len(connection.get_defenders(y, x))):
-                    pawns[p].move(y+1, x)
+                        (cl.neighbors((y + 1, x), eknights)[1] == 0 or cl.neighbors((y + 1, x), eknights)[1] <= len(connection.get_eknights(y, x))):
+                    pawns[p].move(y + 1, x)
                 else:
-                    connection.farm(y, x, player.id, player.token)
+                    pawns[p].farm()
             else:
                 if y > i and (y - 1, x) not in eknights and (y - 1, x) not in ecastles and \
-                        (cl.neighbors((y - 1, x), eknights)[1] == 0 or cl.neighbors((y-1, x), eknights)[1] <= len(connection.get_defenders(y, x))):
-                    pawns[p].move(y-1, x)
+                        (cl.neighbors((y - 1, x), eknights)[1] == 0 or cl.neighbors((y - 1, x), eknights)[1] <= len(connection.get_eknights(y, x))):
+                    pawns[p].move(y - 1, x)
                 elif y < i and (y + 1, x) not in eknights and (y + 1, x) not in ecastles and \
-                        (cl.neighbors((y + 1, x), eknights)[1] == 0 or cl.neighbors((y+1, x), eknights)[1] <= len(connection.get_defenders(y, x))):
-                    pawns[p].move(y+1, x)
+                        (cl.neighbors((y + 1, x), eknights)[1] == 0 or cl.neighbors((y + 1, x), eknights)[1] <= len(connection.get_eknights(y, x))):
+                    pawns[p].move(y + 1, x)
                 elif x > j and (y, x - 1) not in eknights and (y, x - 1) not in ecastles and \
-                        (cl.neighbors((y, x - 1), eknights)[1] == 0 or cl.neighbors((y, x - 1), eknights)[1] <= len(connection.get_defenders(y, x))):
-                    pawns[p].move(y, x-1)
+                        (cl.neighbors((y, x - 1), eknights)[1] == 0 or cl.neighbors((y, x - 1), eknights)[1] <= len(connection.get_eknights(y, x))):
+                    pawns[p].move(y, x - 1)
                 elif x < j and (y, x + 1) not in eknights and (y, x + 1) not in ecastles and \
-                        (cl.neighbors((y, x + 1), eknights)[1] == 0 or cl.neighbors((y, x + 1), eknights)[1] <= len(connection.get_defenders(y, x))):
-                    pawns[p].move(y, x+1)
+                        (cl.neighbors((y, x + 1), eknights)[1] == 0 or cl.neighbors((y, x + 1), eknights)[1] <= len(connection.get_eknights(y, x))):
+                    pawns[p].move(y, x + 1)
                 else:
-                    connection.farm(y, x, player.id, player.token)
+                    pawns[p].farm()
 
 
 def path(units: list[Unit], other_units: list[Unit], eknights: list[Knight]):
@@ -128,19 +127,15 @@ def path(units: list[Unit], other_units: list[Unit], eknights: list[Knight]):
                 continue
             results.append((bestpawn, bestmove))
             other_units.append(bestpawn)
-            units_to_move = [units_to_move[i] for i in range(
-                len(units_to_move)) if units_to_move[i] is not bestpawn]
+            units_to_move = [unit for unit in units_to_move if unit is not bestpawn]
         else:
             break
-    for choice in range(len(results)):
-        units_to_move[choice].move(results[choice])
+    for choice in results:
+        choice[0].move(choice[1][0], choice[1][1])
 
 
-def explore(player : Player, otherunits=[]):
-    """ 
-    Envoie en exploration les "pawns" inactifs pour le tour
-    """
-
+def explore(player: Player, otherunits=[]):
+    """Envoie en exploration les "pawns" inactifs pour le tour."""
     eknights = player.eknights
 
     path(player.pawns, otherunits, eknights)
@@ -148,10 +143,8 @@ def explore(player : Player, otherunits=[]):
     ex.path_trou(player.pawns, otherunits, eknights)
 
 
-def explore_knight(player : Player, otherunits=[]):
-    """ 
-    Envoie en exploration les chevaliers inactifs pour le tour
-    """
+def explore_knight(player: Player, otherunits=[]):
+    """Envoie en exploration les chevaliers inactifs pour le tour."""
     eknights = player.eknights
 
     path(player.eknights, otherunits, eknights)

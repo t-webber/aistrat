@@ -1,6 +1,13 @@
 """Boîtes noirs pour les unités (château, péon, chevalier) et les piles d'or."""
 
+
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
 from apis import connection
+
+if TYPE_CHECKING:
+    from apis.players import Player
 
 
 class Coord:
@@ -20,7 +27,7 @@ class Coord:
 class GoldPile(Coord):
     """Classe pour une pile d'or."""
 
-    def __init__(self, y: int, x: int, gold: int):
+    def __init__(self, y: int, x: int, gold: int, player: Player):
         """Créez une pile d'or avec une certaine quantité d'or."""
         super().__init__(y, x)
         self.gold = gold
@@ -54,6 +61,10 @@ class GoldPile(Coord):
         # print(f"Error: key not found for gold: {key}", file=sys.stderr)
         # sys.exit(1)
 
+    def __hash__(self):
+        """Calcule le hash pour les unités."""
+        return hash((self.y, self.x, "GOLD"))
+
 
 class Unit(Coord):
     """Super Boîte noire pour les unités et les châteaux."""
@@ -75,6 +86,10 @@ class Unit(Coord):
     #         return self.x
     #     print(f"Error: key not found: {key}", file=sys.stderr)
     #     sys.exit(1)
+
+    def __hash__(self):
+        """Calculer le hash pour les unités."""
+        return hash((self.y, self.x, self.key))
 
 
 class Person(Unit):
@@ -109,6 +124,7 @@ class Pawn(Person):
             self.y, self.x, self.player.id, self.player.token)
         if res:
             self.used = True
+            self.player.gold += 1
         return res
 
     def __str__(self):

@@ -1,3 +1,5 @@
+"""Évaluation de l'état de la partie, independamment du reste du code."""
+
 import copy
 from apis import connection
 
@@ -25,7 +27,7 @@ def define_global():
 
 def inventory_zones():
     """
-    Inventorie toutes les entites connues par type et 
+    Inventorie toutes les entites connues par type et
     par zone du combat selon la répartition définie dans cuts
     """
     if cuts is None:
@@ -43,8 +45,8 @@ def inventory_zones():
     return inventory
 
 
-def myZone(entity, player):
-    """Renvoie la zone d'une entité"""
+def myZone(entity: tuple[int, int], player: str):
+    """Renvoie la zone d'une entité."""
     if player == "A":
         ref = (0, 0)
     else:
@@ -56,35 +58,37 @@ def myZone(entity, player):
     return ('UAvG')
 
 
-def dist1(pt1, pt2):
-    """Calcule la norme 1 du vecteur entre les 2 points"""
+def dist1(pt1: tuple[int, int], pt2: tuple[int, int]):
+    """Donne la norme 1 du vecteur entre les 2 points."""
     return abs(pt1[0] - pt2[0]) + abs(pt1[1] - pt2[1])
 
 
-def integer_sum(integer):
-    """Calcule la somme de 1 à integer pour avoir la surface des triangles de zone"""
+def integer_sum(integer: int):
+    """Donne la somme de 1 à integer pour avoir la surface des triangles de zone."""
     return integer * (integer + 1) // 2
 
 
-def get_diff(unit_type, zone, inventory):
-    """
-    Renvoie la différence de force dans une zone pour un type d'unité donné
-    """
+def get_diff(unit_type: str, zone: str, inventory: dict[str, dict[str, tuple[int, int]]]):
+    """Renvoie la différence de force dans une zone pour un type d'unité donné."""
     return len(inventory[zone][unit_type]) - len(inventory[zone][f"{unit_type}2"])
 
 
-def get_stats(inventory):
-    """Renvoie des statistiques militaires: 
-    le taux d'avantage avec des statistiques de manque d'information"""
+def get_stats(inventory: dict[str, dict[str, tuple[int, int]]]):
+    """
+    Statistiques militaires.
+
+    Returns:
+        - uncertainty: proportion d'incertitude par zone
+        - military: différence de force par zone
+    """
     uncertainty = [len(inventory[zones[i]]['fog']) / taille_cuts[i]
                    for i in range(len(taille_cuts))]
     military = [get_diff("M", zones[i], inventory) for i in range(len(zones))]
     return uncertainty, military
 
 
-def is_within(ally, ennemy, player):
-    """Vérifie si une unité est dans le territoire allié si le produit scalaire entre un allié 
-    et son point de départ est de signe inverse que celui entre lui et l'ennemi"""
+def is_within(ally: tuple[int, int], ennemy: tuple[int, int], player: str):
+    """Vérifie si une unité est dans le territoire allié si le produit scalaire entre un allié et son point de départ est de signe inverse que celui entre lui et l'ennemi."""
     if player == "A":
         ref = (0, 0)
     else:
@@ -95,9 +99,7 @@ def is_within(ally, ennemy, player):
 
 
 def inbound_ennemies():
-    """Cherche des unités ennemies dans des situations 
-    particulières à gérer dans notre territoire"""
-
+    """Cherche des unités ennemies dans des situations particulières à gérer dans notre territoire."""
     results = {'Pierced': [], 'Invading Peon': [], "Sieged Castle": []}
 
     player = connection.current_player()
@@ -126,7 +128,7 @@ def inbound_ennemies():
 
 
 def menacing_ennemies():
-    """Renvoie les unités proches de nos alliés"""
+    """Renvoie les unités proches de nos alliés."""
     results = {'Attackable Castle': [],
                'Dangerous Knight': [], "Killable peon": []}
     player = connection.current_player()

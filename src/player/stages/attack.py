@@ -9,7 +9,7 @@ from apis.kinds import Pawn, Knight, Castle
 import player.logic.client_logic as cl
 
 
-def prediction_combat(a, d):
+def prediction_combat(a: int, d: int):
     """
     Prédit le gaganant d'un combat
 
@@ -25,14 +25,14 @@ def prediction_combat(a, d):
     pertes_a = 0
     pertes_d = 0
     while a > 0 and d > 0:
-        pertes_a += min(a, (d + 1)//2)
-        a = a - (d + 1)//2
-        pertes_d += min(d, (a + 1)//2)
-        d = d - (a + 1)//2
+        pertes_a += min(a, (d + 1) // 2)
+        a = a - (d + 1) // 2
+        pertes_d += min(d, (a + 1) // 2)
+        d = d - (a + 1) // 2
     return (d <= 0, pertes_a <= pertes_d, pertes_a, pertes_d)
 
 
-def compte_soldats_ennemis_cases_adjacentes(player, case):
+def compte_soldats_ennemis_cases_adjacentes(player: str, case: tuple[int, int]):
     """
     compte les soldats ennemis à une distance de 1 d'une case
     """
@@ -55,7 +55,7 @@ def move_everyone(case: Coord, allies_voisins: dict[Coord, list[Knight]]):
             knights.pop()
 
 
-def prediction_attaque(case_attaquee, knights: list[Knight], eknights: list[Knight]):
+def prediction_attaque(case_attaquee: tuple[int, int], knights: list[Knight], eknights: list[Knight]):
     """
     Regarde les résultats d'un combat en prenant en compte une contre attaque sur la case au tour suivant
 
@@ -85,10 +85,13 @@ def prediction_attaque(case_attaquee, knights: list[Knight], eknights: list[Knig
         return False
 
 
-def attaque(case_attaquee, knights: list[Knight], eknights: list[Knight]):
-    allies_voisins = cl.neighbors(case_attaquee, knights)[0]
-    if prediction_attaque(case_attaquee, knights, eknights):
-        move_everyone(case_attaquee, allies_voisins)
+def attaque(case_attaquee: tuple[int, int], knights: list[Knight], eknights: list[Knight]):
+    """si l'attaque sur case_attaquee est gagnante """
+    allies_voisins, _ = cl.neighbors(case_attaquee, knights)[0]
+    allies_voisins_exploitable = allies_voisins[(1, 0)] + allies_voisins[(0, 1)] + allies_voisins[(-1, 0)] + allies_voisins[(0, -1)]
+    allies_voisins_exploitables = list(filter(lambda allie: score >= 70, scores))
+    if prediction_attaque(case_attaquee, allies_voisins_exploitable, eknights):
+        move_everyone(case_attaquee, allies_voisins_exploitable)
 
 
 def hunt(knights: list[Knight], epawns: list[Pawn], eknights: list[Knight]):

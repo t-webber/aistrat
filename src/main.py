@@ -1,9 +1,10 @@
-""" programme principal client à lancer pour jouer automatiquement """
+"""Programme principal client à lancer pour jouer automatiquement."""
 
 import sys
 import time
 from apis import connection
 from apis.players import Player
+from apis.players import Pawn
 
 
 if len(sys.argv) > 2 and sys.argv[2]:
@@ -28,10 +29,7 @@ if TWO_PLAYERS:
 
 
 def main():
-    """ 
-    fonction pour connaitre le joueur dont c'est le tour, le faire jouer et finir son tour
-    """
-
+    """Fonction pour connaitre le joueur dont c'est le tour, le faire jouer et finir son tour."""
     time.sleep(0.1)  # avoid spamming the server
     t = time.time()
     while not connection.get_data(player1.id, player1.token):
@@ -45,6 +43,7 @@ def main():
 
 
 if __name__ == "__main__":
+
     while True:
         main()
         # time.sleep(0.5)

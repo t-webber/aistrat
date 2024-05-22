@@ -1,13 +1,13 @@
 """Fichier qui implémente la class `Player`."""
 
-import sys
+import numpy as np
 from apis import connection
-from apis.kinds import Pawn, Knight, Castle, GoldPile
-from apis.consts import PLAYER_A, FOG
+from apis.kinds import Pawn, Knight, Castle, GoldPile, Coord
+from apis.consts import PLAYER_A, FOG, BEGINING_GOLD
 import player.logic.client_logic as cl
 from player.stages.castles import create_units, build_castle
 import player.stages.attack as atk
-import player.stages.defense as dfd
+# import player.stages.defense as dfd
 from player.stages import peons
 
 
@@ -22,8 +22,8 @@ class Player:
         self.turn = 0
         # units
         self.pawns: list[Pawn] = [Pawn(0, 0, self) for _ in range(3)] if self == PLAYER_A else\
-                                 [Pawn(connection.size_map()[0], connection.size_map()[
-                                       1], self) for _ in range(3)]
+                                 [Pawn(connection.size_map()[0] - 1, connection.size_map()[
+                                       1] - 1, self) for _ in range(3)]
         self.epawns: list[Pawn] = []
         self.eknights: list[Knight] = []
         self.castles: list[Knight] = []
@@ -31,9 +31,9 @@ class Player:
         self.attack: list[Knight] = []
         self.defense: list[Knight] = []
         # resources
-        self.gold: int = 0
-        self._golds: list[GoldPile] = [GoldPile(coord[0], coord[1], coord[2]) for coord in connection.get_kinds(self.id)[
+        self._golds: list[GoldPile] = [GoldPile(coord[0], coord[1], coord[2], self) for coord in connection.get_kinds(self.id)[
             connection.GOLD]]
+        self.gold: int = BEGINING_GOLD
         print(self._golds)
         self.good_gold: list[GoldPile]
         self.bad_gold: list[GoldPile]
@@ -42,6 +42,7 @@ class Player:
         self.fog: list[GoldPile] = []
         # private
         self._knights: list[Knight] = []
+        self._gold_map: list[int | GoldPile] = np.full(connection.size_map(), None)
 
     def __eq__(self, other):
         """
@@ -59,67 +60,45 @@ class Player:
         connection.get_data(self.id, self.token)
         kinds = connection.get_kinds(self.id)
 
-        if self.pawns != set(kinds[connection.PAWN]):
-            print("pawns changed", file=sys.stderr)
-            raise ValueError
+        check_set_list_coord(self.pawns, kinds[connection.PAWN])
+        check_set_list_coord(self.attack + self.defense, kinds[connection.KNIGHT])
+        check_set_list_coord(self.castles, kinds[connection.CASTLE])
 
-        if self.epawns != set(kinds[connection.EPAWN]):
-            print("epawns changed", file=sys.stderr)
-            raise ValueError
+        # golds = self.good_gold + self.bad_gold
+        # golds_items = {}
+        # for gold in golds:
+        #     y, x = gold.coord
+        #     d[y, x] =
+        # golds_item = [(item.y, item.x, item.gold) for item in golds]
+        # if set(golds_item) != set(kinds[connection.GOLD]):
+        #     print(f"gold changed {golds_item} != {kinds[connection.GOLD]}", file=sys.stderr)
+        #     raise ValueError
 
-        if self.attack.extend(self.defense) != set(kinds[connection.KNIGHT]):
-            print("knights changed", file=sys.stderr)
-            raise ValueError
+        # if self.gold != connection.get_gold()[self.id]:
+        #     print("gold changed", file=sys.stderr)
+        #     raise ValueError
 
-        if self.eknights != set(kinds[connection.EKNIGHT]):
-            print("eknights changed", file=sys.stderr)
-            raise ValueError
+    def update_ennemi_data(self):
+        """Récupère les données des ennemis."""
+        self.epawns = connection.get_kinds(connection.other(self.id))[
+            connection.PAWN]
+        self.eknights = connection.get_kinds(connection.other(self.id))[
+            connection.KNIGHT]
+        self.ecastles = connection.get_kinds(connection.other(self.id))[
+            connection.CASTLE]
 
-        if self.castles != set(kinds[connection.CASTLE]):
-            print("castles changed", file=sys.stderr)
-            raise ValueError
-
-        if self.ecastles != set(kinds[connection.ECASTLE]):
-            print("ecastles changed", file=sys.stderr)
-            raise ValueError
-
-        if self.good_gold.extend(self.bad_gold) != len(set(kinds[connection.GOLD])):
-            print("gold changed", file=sys.stderr)
-            raise ValueError
-
-        if self.fog != set(kinds[FOG]):
-            print("fog changed", file=sys.stderr)
-            raise ValueError
-
-        if self.defense != cl.defense_knights[self.id]:
-            print("defense changed", file=sys.stderr)
-            raise ValueError
-
-        if self.gold != connection.get_gold()[self.id]:
-            print("gold changed", file=sys.stderr)
-            raise ValueError
-
-        if (self.good_gold, self.bad_gold) != cl.clean_golds(self._golds, self.pawns, self.ecastles):
-            print("gold cleaning changed", file=sys.stderr)
-            raise ValueError
-
-    # def check_attack_defense(self):
-    #     """
-    #     vérifie que les chevaliers sont bien attribués à l'attaque
-    #     ou à la défense, et les attribuent dans le cas échéant
-    #     """
-    #     for d in self.defense:
-    #         if d not in self._knights:
-    #             self.defense.remove(d)
-    #         else:
-    #             self.knights.remove(d)
+    def update_fog(self):
+        """Met à jour les données de brouillard de guerre."""
+        self.fog = connection.get_kinds(self.id)[FOG]
 
     def next_turn(self):
         """Joue le prochain tour pour le joueur."""
+        print("DEBUT TURN")
+
         self.turn += 1
-        self.update()
         self.checks_turn_data()
-        # self.check_attack_defense()
+        self.update_ennemi_data()
+        self.update_fog()
 
         create_units(self)
 
@@ -134,10 +113,10 @@ class Player:
 
         atk.free_pawn(self._knights, self.eknights, self.epawns)
 
-        left_defense = dfd.defend(
-            self.pawns, self.defense, self.eknights, self.castles, self.id, self.token)
-        dfd.agressiv_defense(left_defense, self.epawns,
-                             self.id, self.token, self.eknights)
+        # left_defense = dfd.defend(
+        #     self.pawns, self.defense, self.eknights, self.castles, self.id, self.token)
+        # dfd.agressiv_defense(left_defense, self.epawns,
+        #                      self.id, self.token, self.eknights)
 
         copy_knights = self._knights.copy()
         while copy_knights:
@@ -148,6 +127,7 @@ class Player:
                                self.eknights)
             if len(copy_knights) == a:
                 break
+        self.update_gold_map()
 
         self.end_turn()
 
@@ -166,11 +146,51 @@ class Player:
             k.used = False
         for c in self.castles:
             c.used = False
+
+        self.update_golds()
+
+    def update_golds(self):
+        """Met à jour les données des mines d'or."""
+        server_golds = connection.get_kinds(self.id)[connection.GOLD]
+
+        golds = self._golds
+        self.update_gold_map()
+        self._golds = [gold for gold in golds if gold.gold]  # code de goldmon
+
+        for gold in self._golds:
+            y, x = gold.coord
+            if (y, x) in server_golds and gold.gold == server_golds[(y, x)]:
+                server_golds.pop((y, x))
+            elif (y, x) in server_golds:
+                server_golds.pop((y, x))
+                print("GOLD NOT UPDATED")
+                raise ValueError
+
+        for y, x, gold in server_golds:
+            self._golds.append(GoldPile(y, x, gold, self))
+
+        self.good_gold, self.bad_gold = cl.clean_golds(self._golds, self.pawns, self.ecastles)
+
         for g in self.good_gold:
-            g.end_turn()
+            g.update()
         for g in self.bad_gold:
-            g.end_turn()
+            g.update()
         self._knights = self.attack + self.defense
         self._golds = self.good_gold + self.bad_gold
 
         connection.end_turn(self.id, self.token)
+
+    def update_gold_map(self):
+        """Met à jour la carte des or."""
+        for coordinate in connection.get_seen_coordinates():
+            self._gold_map[coordinate] = 0
+        for gold in self._golds:
+            coords = gold.coord
+            self._gold_map[coords] = gold
+
+
+def check_set_list_coord(a: list[Coord], b: list[(int, int)]):
+    """Vérifie si deux listes sont égales."""
+    if set(item.coord for item in a) != set(b):
+        print(f"CHANGED: {a} != {b}")
+        raise ValueError

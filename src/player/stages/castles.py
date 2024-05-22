@@ -16,7 +16,7 @@ build_order = [consts.PAWN, consts.PAWN, consts.KNIGHT,
                consts.KNIGHT, consts.PAWN, consts.PAWN]
 
 
-def move_peon_to_first_location(player: Player, border, border_y, border_x):
+def move_peon_to_first_location(player: Player, border: int, border_y: int, border_x: int):
     """Construit le premier château."""
     destination = (border, border) if player == "A" else (border_y, border_x)
     d = cl.distance_to_list(destination, player.pawns)
@@ -43,7 +43,7 @@ def move_peon_to_first_location(player: Player, border, border_y, border_x):
             break
 
 
-def build_castle(player):
+def build_castle(player: Player):
     """
     Construit des châteaux.
 
@@ -67,25 +67,31 @@ def build_castle(player):
         move_peon_to_first_location(
             player, border, border_y, border_x)
 
+    print("gold = ", player.gold)
+
     # Si il y a suffisemment de châteaux ou pas assez d'argent, n'essaie rien
-    if len(player.castles) >= min(len_y, len_x) // 2 or player.gold < consts.PRICES[connection.CASTLE]:
+    if len(player.castles) >= min(len_y, len_x) // 2 or player.gold < consts.PRICES[consts.CASTLE]:
         return
 
     # construit un château au premier moment où un pion est suffisemment loin des châteaux existants
     for pawn in player.pawns:
-        y, x = pawn
+        y, x = pawn.coord
         # distance au château le plus proche
         d = cl.distance_to_list((y, x), player.castles)
 
         # si le pions est suffisamment loin de la bordure
         if border <= x <= border_x and border <= y <= border_y and d >= 3 and not cl.exists_close(pawn, player.eknights, 2):
-            connection.build(connection.CASTLE, y, x, player, player.token)
+
+            print("trying to build a castle at ", y, x)
+
+            connection.build(connection.CASTLE, y, x, player.id, player.token)
+            pawn.moved = True
             cl.find_unit(player.pawns, y, x)
             player.gold -= consts.PRICES[connection.CASTLE]
             return
 
 
-def create_units(player):
+def create_units(player: Player):
     """Création des unités par le château."""
     n = len(player.eknights) - len(player.defense) - len(player.attack)
     nb_pawn = len(player.pawns)
