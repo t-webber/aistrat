@@ -79,5 +79,10 @@
 
 ## 15/05
 
-- Tout le monde: Travail sur le rapport environnement/social
+- Tout le monde : Travail sur le rapport environnement/social
 - Jules : travail en collaboration pour la même chose, ajout de documentation pour le mdbook
+- Pierre : Mise au propre du rapport.
+
+## 21/05
+
+- Tout le monde : Travail en liveshare sur le débug de la nouvelle structure du code et la mise en forme plus propre du code (meilleure documentation au sein des fichiers par exemple).
