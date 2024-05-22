@@ -192,7 +192,7 @@ def get_moves(y: int, x: int) -> list[tuple]:
 
 
 def get_seen_coordinates():
-    """Fait la liste des cases visibles par le joueur"""
+    """Fait la liste des cases visibles par le joueur."""
     carte = get_map()
     results = []
     for (y, line) in enumerate(carte):

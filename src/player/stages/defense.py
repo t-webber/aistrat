@@ -1,3 +1,4 @@
+"""Fonction pour la gestion de la defense."""
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
@@ -11,7 +12,8 @@ if TYPE_CHECKING:
 
 def agressiv_defense(defense: list[Knight], epawns: list[Pawn], player: Player,
                      token: str, eknigths: list[Knight]):
-    """
+    """Effectue des attaque d'opportunité avec la défense.
+
     Regarde les défenseurs déjà sur place et attaque les ennemis proches en
     priorisant les péons ennemis tout en s'assurant que les péons défendus
     le seront toujours pour le reste du tour
@@ -43,8 +45,7 @@ def agressiv_defense(defense: list[Knight], epawns: list[Pawn], player: Player,
                 will_attack += i
                 if cl.prediction_combat(len(will_attack), dir_knights[direction])[0] and\
                         not (cl.prediction_combat(len(near_eknights) - dir_knights[direction], len(agressiv_defenders) - len(will_attack))[0]):
-                    (y, x), (y2, x2) = d, (d[0] +
-                                           direction[0], d[1] + direction[1])
+                    (y, x), (y2, x2) = d, (d[0] + direction[0], d[1] + direction[1])
                     for to_move in will_attack:
                         defense.remove(to_move)
                         d.move(y2, x2)
@@ -55,8 +56,7 @@ def agressiv_defense(defense: list[Knight], epawns: list[Pawn], player: Player,
 
 def move_defense(defense: list[Knight], pawns: list[Pawn], eknight: list[Knight]):
     """
-    attribue les chevaliers disponibles aux péons donnés et les bouge
-    vers ces péons
+    Attribue les chevaliers disponibles aux péons donnés et les bouge vers ces péons.
 
     Returns:
        chevalier de la défense non attribués
@@ -102,7 +102,7 @@ def move_defense(defense: list[Knight], pawns: list[Pawn], eknight: list[Knight]
 
 def defend(pawns: list[Pawn], defense: list[Knight], eknights: list[Knight], castle: list[Castle], player: str, token: str):
     """
-    Défend les péons en utilisant la strategie de défense
+    Défend les péons en utilisant la strategie de défense.
 
     attribution par Méthode hongroise priorisé en fonction de
     la distance au ennemis
@@ -140,6 +140,9 @@ def defend(pawns: list[Pawn], defense: list[Knight], eknights: list[Knight], cas
 
 
 def eknight_based_defense(defense: list[Knight], eknights: list[Knight], player: Player):
+    """Fonction en WIP."""
+    defense_id = []
+    eknight_id = []
     attributions = dict([(eknights[i], (-1, None))
                         for i in range(len(eknight_id))])
     for defender in defense_id:

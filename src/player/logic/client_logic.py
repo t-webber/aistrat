@@ -1,15 +1,14 @@
-""" fonctions globales disponibles pour toutes les strategie """
+"""Fonctions globales disponibles pour toutes les strategie."""
 
 from scipy.optimize import linear_sum_assignment
 import numpy as np
-from apis import connection
 from apis.kinds import Unit, Knight, Pawn, Castle, GoldPile, Coord
 
 defense_knights = {"A": [], "B": []}
 
 
 def move_defender(y: int, x: int, ny: int, nx: int, player_id: str):
-    """ déplace la représentation du défenseur dans la liste des défenseurs"""
+    """Déplace la représentation du défenseur dans la liste des défenseurs."""
     for i in range(len(defense_knights[player_id])):
         if defense_knights[player_id][i] == (y, x):
             defense_knights[player_id][i] = (ny, nx)
@@ -18,9 +17,12 @@ def move_defender(y: int, x: int, ny: int, nx: int, player_id: str):
 
 
 def visibility_score(carte: list[list[int]], punishment: int = 0):
-    """Permet de donner un score à une carte de visibilité
+    """
+    Permet de donner un score à une carte de visibilité.
+
     Punishment représente le nombre de points retirés par sur-visibilité qu'on préfèrera sûrement garder à 0
-    (on le veut pas trop grand pour favoriser l'exploration)"""
+    (on le veut pas trop grand pour favoriser l'exploration)
+    """
     score = 0
     for row in carte:
         for square in row:
@@ -34,7 +36,7 @@ def visibility_score(carte: list[list[int]], punishment: int = 0):
 
 def distance(x1: int, y1: int, x2: int, y2: int):
     """
-    Calcule la distance de Manhattan entre (x1, y1) et (x2, y2).
+    Effectue le calcul de la distance de Manhattan entre (x1, y1) et (x2, y2).
 
     Parametres:
         x1, y1 : les coordonées du premier point.
@@ -43,7 +45,7 @@ def distance(x1: int, y1: int, x2: int, y2: int):
     return abs(x1 - x2) + abs(y1 - y2)
 
 
-def distance_to_list(current_position: (int, int), list_units: list[Unit]):
+def distance_to_list(current_position: tuple[int, int], list_units: list[Unit]):
     """Donne la distance au château le plus proche."""
     d = float('inf')
     y_curr, x_curr = current_position
@@ -64,7 +66,7 @@ def exists_close(position: Unit, list_targets: list[Unit], sep: int) -> bool:
 
 def hongrois_distance(acteurs: list[Coord], objets: list[Coord]) -> tuple[zip, list[Coord]]:
     """
-    Calcule la distance hongroise entre  les acteurs et objets donnés.
+    Effectue le calcul de la distance hongroise entre  les acteurs et objets donnés.
 
     Parametres:
         acteurs: liste des acteurs.
@@ -122,8 +124,7 @@ def algo_hongrois(matrice_hongrois: np.ndarray[int, int]):
 
 
 def prediction_combat(a: int, d: int):
-    """
-    Prédit le gaganant d'un combat
+    """Prédit le gaganant d'un combat.
 
     Parameters:
         a (int): Force de l'attaquant.
@@ -145,7 +146,8 @@ def prediction_combat(a: int, d: int):
 
 
 def neighbors(case: tuple[int, int], knights: list[Knight]):
-    """
+    """Renvois les voisins d'une case.
+
     renvoie un couple avec :
     1 : une liste contenant les 4 listes contenant les unités sur les cases adjacentes (sens trigo, droite en premier)
     2 : renvoie le nombre de chevaliers ennemis dans les quatres case adjacentes à une case

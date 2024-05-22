@@ -12,6 +12,7 @@ zones = ["UArG", 'ArG', 'Mid', 'AvG', 'UAvG']
 
 
 def define_global():
+    """Définit les quelques variables globales utilisées par les fonctions."""
     global cuts
     global taille
     global ref_taille
@@ -26,10 +27,7 @@ def define_global():
 
 
 def inventory_zones():
-    """
-    Inventorie toutes les entites connues par type et
-    par zone du combat selon la répartition définie dans cuts
-    """
+    """Inventorie toutes les entites connues par type et par zone du combat selon la répartition définie dans cuts."""
     if cuts is None:
         define_global()
     player = connection.current_player()
@@ -88,7 +86,11 @@ def get_stats(inventory: dict[str, dict[str, tuple[int, int]]]):
 
 
 def is_within(ally: tuple[int, int], ennemy: tuple[int, int], player: str):
-    """Vérifie si une unité est dans le territoire allié si le produit scalaire entre un allié et son point de départ est de signe inverse que celui entre lui et l'ennemi."""
+    """
+    Vérifie si une unité est dans le territoire allié.
+
+    Le détermine si le produit scalaire entre un allié et son point de départ est de signe inverse que celui entre lui et l'ennemi.
+    """
     if player == "A":
         ref = (0, 0)
     else:

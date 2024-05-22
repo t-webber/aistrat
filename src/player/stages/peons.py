@@ -66,6 +66,9 @@ def farm(player: Player, golds: list[GoldPile]):
 
     # simple_gold = golds
     if golds and pawns:
+
+        print("GOLDS = ", golds)
+
         # affecation problem
         # choisis les mines d'or vers lesquelles vont se diriger les peons
         # pour en minimiser le nombre total de mouvements
@@ -75,7 +78,7 @@ def farm(player: Player, golds: list[GoldPile]):
             gold = golds[g]
             y, x = pawns[p].coord
             i, j = gold.y, gold.x
-            gold.used = True
+            print('peons', (y, x), 'envoyé sur', (i, j))
             if rd.random() > 0.5:  # pour ne pas que le peon aille toujours d'abord en haut puis à gauche
                 if x > j and (y, x - 1) not in eknights and (y, x - 1) not in ecastles and \
                         (cl.neighbors((y, x - 1), eknights)[1] == 0 or cl.neighbors((y, x - 1), eknights)[1] <= len(connection.get_eknights(y, x))):
@@ -90,7 +93,7 @@ def farm(player: Player, golds: list[GoldPile]):
                         (cl.neighbors((y + 1, x), eknights)[1] == 0 or cl.neighbors((y + 1, x), eknights)[1] <= len(connection.get_eknights(y, x))):
                     pawns[p].move(y + 1, x)
                 else:
-                    pawns[p].farm()
+                    pawns[p].farm(gold)
             else:
                 if y > i and (y - 1, x) not in eknights and (y - 1, x) not in ecastles and \
                         (cl.neighbors((y - 1, x), eknights)[1] == 0 or cl.neighbors((y - 1, x), eknights)[1] <= len(connection.get_eknights(y, x))):
@@ -105,11 +108,13 @@ def farm(player: Player, golds: list[GoldPile]):
                         (cl.neighbors((y, x + 1), eknights)[1] == 0 or cl.neighbors((y, x + 1), eknights)[1] <= len(connection.get_eknights(y, x))):
                     pawns[p].move(y, x + 1)
                 else:
-                    pawns[p].farm()
+                    pawns[p].farm(gold)
 
 
 def path(units: list[Unit], other_units: list[Unit], eknights: list[Knight]):
     """
+    Trouve un chemin utile en un mouvement pour les péons.
+
     Essaye de chercher un chemin d'exploration optimal pour les units_to_move pour révéler
     le maximum de la carte pour les péons. Prend en compte other_units pour la visibilité
     """

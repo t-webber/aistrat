@@ -60,9 +60,9 @@ class Player:
         connection.get_data(self.id, self.token)
         kinds = connection.get_kinds(self.id)
 
-        check_set_list_coord(self.pawns, kinds[connection.PAWN])
-        check_set_list_coord(self.attack + self.defense, kinds[connection.KNIGHT])
-        check_set_list_coord(self.castles, kinds[connection.CASTLE])
+        check_set_list_coord(self.pawns, kinds[connection.PAWN], "PAWN")
+        check_set_list_coord(self.attack + self.defense, kinds[connection.KNIGHT], "KNIGHT")
+        check_set_list_coord(self.castles, kinds[connection.CASTLE], "CASTLES")
 
         # golds = self.good_gold + self.bad_gold
         # golds_items = {}
@@ -101,11 +101,10 @@ class Player:
         self.update_fog()
 
         create_units(self)
-
         peons.fuite(self.pawns, self._knights, self.eknights,
                     self.defense)
-
         build_castle(self)
+
         # je farm d'abord ce que je vois
         peons.farm(self, self.good_gold)
         # j'explore ensuite dans la direction opposée au spawn
@@ -156,15 +155,26 @@ class Player:
         golds = self._golds
         self.update_gold_map()
         self._golds = [gold for gold in golds if gold.gold]  # code de goldmon
+        servgolds_without_values = [(y, x) for (y, x, _) in server_golds]
+        print("BEFORE GOLDS = ", self._golds)
 
         for gold in self._golds:
             y, x = gold.coord
-            if (y, x) in server_golds and gold.gold == server_golds[(y, x)]:
-                server_golds.pop((y, x))
-            elif (y, x) in server_golds:
-                server_golds.pop((y, x))
-                print("GOLD NOT UPDATED")
-                raise ValueError
+            v = gold.gold
+            if (y, x, v) in server_golds:
+                print("Bef = ", server_golds)
+                server_golds.remove((y, x, v))
+                servgolds_without_values.remove((y, x))
+                print("Aft = ", server_golds)
+            else:
+                try:
+                    index = servgolds_without_values.index((y, x))
+                    servgolds_without_values.pop(index)
+                    server_golds.pop(index)
+                except ValueError:
+                    pass
+
+        print("GOLDS LEFT = ", server_golds)
 
         for y, x, gold in server_golds:
             self._golds.append(GoldPile(y, x, gold, self))
@@ -189,8 +199,8 @@ class Player:
             self._gold_map[coords] = gold
 
 
-def check_set_list_coord(a: list[Coord], b: list[(int, int)]):
+def check_set_list_coord(a: list[Coord], b: list[(int, int)], type: str):
     """Vérifie si deux listes sont égales."""
     if set(item.coord for item in a) != set(b):
-        print(f"CHANGED: {a} != {b}")
+        print(f"{type} CHANGED: {a} != {b}")
         raise ValueError

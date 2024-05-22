@@ -1,3 +1,4 @@
+"""Fonctions liées au déplacement et a l'exploration."""
 import numpy as np
 from apis import connection
 import player.logic.client_logic as cl
@@ -24,8 +25,7 @@ def path_one(units_to_move: list[Pawn], other_units: list[Pawn], eknights: list[
                 continue
             ennemies = cl.neighbors(move, eknights)[1]
             # print(ennemies)
-            if score > maxscore and (ennemies == 0
-                                     or ennemies <= len(connection.get_eknights(boy.y, boy.x))):
+            if score > maxscore and (ennemies == 0 or ennemies <= len(connection.get_eknights(boy.y, boy.x))):
                 maxscore = score
                 bestpawn = boy
                 bestmove = move
@@ -43,16 +43,16 @@ def path_trou(units: list[Unit], other_units: list[Unit], eknights: list[Knight]
     trous_list = trous(visibility)
     for boy in units_to_move:
         milieu_du_trou = plus_proche_trou(trous_list, boy)
-        moves = connection.get_moves(boy[0], boy[1])
+        moves = connection.get_moves(boy.y, boy.x)
         vecteur_trou = np.array(
-            (milieu_du_trou[0] - boy[0], milieu_du_trou[1] - boy[1]))
+            (milieu_du_trou[0] - boy.y, milieu_du_trou[1] - boy.x))
         max_trou = -1
         bestmove_trou = (0, 0)
         for move in moves:
-            vector_move = np.array((move[0] - boy[0], move[1] - boy[1]))
+            vector_move = np.array((move[0] - boy.y, move[1] - boy.x))
             ennemies = cl.neighbors(move, eknights)[1]
             if np.dot(vecteur_trou, vector_move) > max_trou \
-                    and (ennemies == 0 or ennemies <= len(connection.get_eknights(boy[0], boy[1]))):
+                    and (ennemies == 0 or ennemies <= len(connection.get_eknights(boy.y, boy.x))):
                 bestmove_trou = move
         resultat.append((boy, bestmove_trou))
     for res in resultat:

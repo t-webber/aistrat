@@ -34,11 +34,11 @@ nbMoves = defaultdict(int)
 
 # set the initial gold reserves
 for i in range(NB_GOLD_SPOTS):
-    x = random.randint(0, MAP_WIDTH-1)
-    y = random.randint(0, MAP_HEIGHT-1)
+    x = random.randint(0, MAP_WIDTH - 1)
+    y = random.randint(0, MAP_HEIGHT - 1)
     n = random.randint(1, 12)
-    mapdata[y][x]['G'] += n*n
-    mapdata[MAP_HEIGHT-1-y][MAP_WIDTH-1-x]['G'] += n*n
+    mapdata[y][x]['G'] += n * n
+    mapdata[MAP_HEIGHT - 1 - y][MAP_WIDTH - 1 - x]['G'] += n * n
 
 price = {'C': 5, 'M': 10, 'B': 15}  # the price of each unit
 requires = {'C': 'B', 'M': 'B', 'B': 'C'}  # what do we need to build
@@ -72,10 +72,10 @@ def getVisibility(player):
     visible = set()
     for y in range(0, MAP_HEIGHT):
         for x in range(0, MAP_WIDTH):
-            if mapdata[y][x][player]['C']+mapdata[y][x][player]['M']+mapdata[y][x][player]['B'] > 0:
+            if mapdata[y][x][player]['C'] + mapdata[y][x][player]['M'] + mapdata[y][x][player]['B'] > 0:
                 for dx in range(-2, 3):
                     for dy in range(-2, 3):
-                        visible.add((y+dy, x+dx))
+                        visible.add((y + dy, x + dx))
     return visible
 
 
@@ -87,8 +87,8 @@ def giveAllView():
             'height': MAP_HEIGHT,
             'width': MAP_WIDTH,
             'score': score,
-            'viewA': {str(y)+"_"+str(x): 1 for (y, x) in getVisibility('A')},
-            'viewB': {str(y)+"_"+str(x): 1 for (y, x) in getVisibility('B')},
+            'viewA': {str(y) + "_" + str(x): 1 for (y, x) in getVisibility('A')},
+            'viewB': {str(y) + "_" + str(x): 1 for (y, x) in getVisibility('B')},
             'winner': winner}
     return jsonify(data)
 
@@ -108,10 +108,10 @@ def giveView(player, token):
             if (y, x) in visible:
                 mapView[y][x] = mapdata[y][x]
                 for k in ['C', 'M', 'B']:
-                    if k+"m" in mapView[y][x][curPlayer]:
-                        mapView[y][x][curPlayer].pop(k+"m")
+                    if k + "m" in mapView[y][x][curPlayer]:
+                        mapView[y][x][curPlayer].pop(k + "m")
                     if nbMoves[(y, x, curPlayer, k)] < mapView[y][x][curPlayer][k]:
-                        mapView[y][x][curPlayer][k+"m"] = True
+                        mapView[y][x][curPlayer][k + "m"] = True
 
     data = {'map': mapView,
             'gold': {player: gold[player]},
@@ -127,7 +127,7 @@ def giveView(player, token):
 def move(player, kind, y, x, ny, nx, token):
     global nbMoves
     assert (tokenOf[player] == token)
-    assert (abs(x-nx)+abs(y-ny) == 1)
+    assert (abs(x - nx) + abs(y - ny) == 1)
     assert (0 <= nx < MAP_WIDTH and 0 <= ny < MAP_HEIGHT)
     assert (0 <= x < MAP_WIDTH and 0 <= y < MAP_HEIGHT)
     assert (mapdata[y][x][player][kind] > 0)  # useless because of next line ?
@@ -174,8 +174,8 @@ def battle(y, x, k, attacker, defender):
     na = mapdata[y][x][attacker][k]
     nb = mapdata[y][x][defender][k]
     while na > 0 and nb > 0:
-        na -= ceil(nb/2)
-        nb -= ceil(na/2)
+        na -= ceil(nb / 2)
+        nb -= ceil(na / 2)
     mapdata[y][x][attacker][k] = na
     mapdata[y][x][defender][k] = nb
 
@@ -184,9 +184,9 @@ def solveBattles(attacker, defender):  # combat rules
     global score
     for y in range(0, MAP_HEIGHT):
         for x in range(0, MAP_WIDTH):
-            nbDefenderUnitsBefore = mapdata[y][x][defender]['B']*price['B'] + \
-                mapdata[y][x][defender]['M']*price['M'] + \
-                mapdata[y][x][defender]['C']*price['C']
+            nbDefenderUnitsBefore = mapdata[y][x][defender]['B'] * price['B'] + \
+                mapdata[y][x][defender]['M'] * price['M'] + \
+                mapdata[y][x][defender]['C'] * price['C']
             # solve the case of Military vs Military
             for k in ['M']:  # we could do C vs C by adding 'C' here
                 battle(y, x, k, attacker, defender)
@@ -201,10 +201,10 @@ def solveBattles(attacker, defender):  # combat rules
                 # and we cannot have buildings for two different players
                 # as recruiting requires no building
                 mapdata[y][x][p]['B'] = min(mapdata[y][x][p]['B'], 1)
-            nbDefenderUnitsAfter = mapdata[y][x][defender]['B']*price['B'] + \
-                mapdata[y][x][defender]['M']*price['M'] + \
-                mapdata[y][x][defender]['C']*price['C']
-            score[attacker] += nbDefenderUnitsBefore-nbDefenderUnitsAfter
+            nbDefenderUnitsAfter = mapdata[y][x][defender]['B'] * price['B'] + \
+                mapdata[y][x][defender]['M'] * price['M'] + \
+                mapdata[y][x][defender]['C'] * price['C']
+            score[attacker] += nbDefenderUnitsBefore - nbDefenderUnitsAfter
 
 
 @app.route('/autofarm/<player>/<token>')

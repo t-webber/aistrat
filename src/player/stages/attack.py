@@ -1,6 +1,4 @@
-"""
-Fonctions pour définir les actions d'un attaquant
-"""
+"""Fonctions pour définir les actions d'un attaquant."""
 
 import random as rd
 from apis import connection
@@ -11,7 +9,7 @@ import player.logic.client_logic as cl
 
 def prediction_combat(a: int, d: int):
     """
-    Prédit le gaganant d'un combat
+    Prédit le gaganant d'un combat.
 
     Parameters:
         a (int): Force de l'attaquant.
@@ -33,9 +31,7 @@ def prediction_combat(a: int, d: int):
 
 
 def compte_soldats_ennemis_cases_adjacentes(player: str, case: tuple[int, int]):
-    """
-    compte les soldats ennemis à une distance de 1 d'une case
-    """
+    """Compte les soldats ennemis à une distance de 1 d'une case."""
     y, x = case
     carte = connection.get_map()
     voisins = connection.get_moves(y, x)
@@ -46,9 +42,7 @@ def compte_soldats_ennemis_cases_adjacentes(player: str, case: tuple[int, int]):
 
 
 def move_everyone(case: Coord, allies_voisins: dict[Coord, list[Knight]]):
-    """
-    Bouge tous les attaquants sur la case ciblée
-    """
+    """Bouge tous les attaquants sur la case ciblée."""
     for knights in allies_voisins.values():
         while knights:
             knights[-1].move(case[0], case[1])
@@ -57,7 +51,7 @@ def move_everyone(case: Coord, allies_voisins: dict[Coord, list[Knight]]):
 
 def prediction_attaque(case_attaquee: tuple[int, int], knights: list[Knight], eknights: list[Knight]):
     """
-    Regarde les résultats d'un combat en prenant en compte une contre attaque sur la case au tour suivant
+    Regarde les résultats d'un combat en prenant en compte une contre attaque sur la case au tour suivant.
 
     Parameters:
         case_attaquee: case que l'on souhaite attaquée, ou il y a les défenseurs ennemis.
@@ -86,18 +80,17 @@ def prediction_attaque(case_attaquee: tuple[int, int], knights: list[Knight], ek
 
 
 def attaque(case_attaquee: tuple[int, int], knights: list[Knight], eknights: list[Knight]):
-    """si l'attaque sur case_attaquee est gagnante """
+    """Si l'attaque sur case_attaquee depuis toutes les cases adjacentes est gagnante alors bouge tous les chevaliers concernés en attaque."""
     allies_voisins, _ = cl.neighbors(case_attaquee, knights)[0]
     allies_voisins_exploitable = allies_voisins[(1, 0)] + allies_voisins[(0, 1)] + allies_voisins[(-1, 0)] + allies_voisins[(0, -1)]
-    allies_voisins_exploitables = list(filter(lambda allie: score >= 70, scores))
-    if prediction_attaque(case_attaquee, allies_voisins_exploitable, eknights):
+    allies_voisins_exploitable = list(filter(lambda allie: not (allie.used), allies_voisins_exploitable))
+    present_eknight = list(filter(lambda ennemy: (ennemy.y, ennemy.x) == case_attaquee, eknights))
+    if prediction_attaque(case_attaquee, allies_voisins_exploitable, present_eknight):
         move_everyone(case_attaquee, allies_voisins_exploitable)
 
 
 def hunt(knights: list[Knight], epawns: list[Pawn], eknights: list[Knight]):
-    """ 
-    chasse les péons adverses, en assignant un chevalier à un péon adverse qui va le traquer
-    """
+    """Chasse les péons adverses, en assignant un chevalier à un péon adverse qui va le traquer."""
     for k in knights:
         voisins, nb_allies = cl.neighbors(k.coord, epawns)
         voisins_ennemis, _ = cl.neighbors(k.coord, eknights)
@@ -140,9 +133,7 @@ def hunt(knights: list[Knight], epawns: list[Pawn], eknights: list[Knight]):
 
 def destroy_castle(knights: list[Knight], castles: list[Castle],
                    eknights: list[Knight]):
-    """
-    chasse les chateaux adverses, si possibilité de le détruire, le détruit
-    """
+    """Chasse les chateaux adverses, si possibilité de le détruire, le détruit."""
     if knights and castles:
         # probleme d'affectation
         # choisis les chateaux vers lesquelles vont se diriger les chevaliers
@@ -178,9 +169,7 @@ def destroy_castle(knights: list[Knight], castles: list[Castle],
 
 
 def free_pawn(knights: list[Knight], eknights: list[Knight], epawns: list[Pawn]):
-    """
-        libère les péons bloqués par les chevaliers adverses
-        """
+    """Libère les péons bloqués par les chevaliers adverses."""
     for knight in knights:
         if not knight.used:
             for epawn in epawns:

@@ -4,7 +4,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-from apis import connection
+from apis import connection, consts
 
 if TYPE_CHECKING:
     from apis.players import Player
@@ -35,6 +35,8 @@ class GoldPile(Coord):
 
     def reduce(self):
         """Farm une pile d'or."""
+        if self.used:
+            raise ValueError("Gold is already used.")
         self.gold -= 1
         self.used = True
         return self.gold
@@ -62,7 +64,7 @@ class GoldPile(Coord):
         # sys.exit(1)
 
     def __hash__(self):
-        """Calcule le hash pour les unités."""
+        """Effectue le calcul du hash pour les unités."""
         return hash((self.y, self.x, "GOLD"))
 
 
@@ -88,7 +90,7 @@ class Unit(Coord):
     #     sys.exit(1)
 
     def __hash__(self):
-        """Calculer le hash pour les unités."""
+        """Effectue le calcul0 de hash pour les unités."""
         return hash((self.y, self.x, self.key))
 
 
@@ -98,7 +100,7 @@ class Person(Unit):
     def move(self, y, x):
         """Bouge le péon, et le met en utilisé."""
         if self.used:
-            return False
+            raise ValueError("Person is already used.")
 
         res = connection.move(self.key, self.y, self.x, y,
                               x, self.player.id, self.player.token)
@@ -106,25 +108,42 @@ class Person(Unit):
             self.y = y
             self.x = x
             self.used = True
-        return res
+
+    def build(self):
+        """Build caslte."""
+        if self.used:
+            raise ValueError("Person is already used.")
+        res = connection.build(consts.CASTLE, self.y, self.x,
+                               self.player.id, self.player.token)
+
+        if res:
+            self.used = True
+            self.player.castles.append(Castle(self.y, self.x, self.player))
+            self.player.gold -= Castle.COST
 
 
 class Pawn(Person):
     """Boîte noire pour les péons."""
 
-    COST = 5
+    COST = consts.PRICES[consts.PAWN]
 
     def __init__(self, y, x, player):
         """Initialise un péon."""
-        super().__init__(y, x, "C", "C2", player)
+        super().__init__(y, x, consts.PAWN, consts.EPAWN, player)
 
-    def farm(self):
+    def farm(self, gold: GoldPile):
         """Farm une pile d'or."""
+        if self.used:
+            raise ValueError("Person is already used.")
+        if gold.used:
+            raise ValueError("Gold is already used.")
+
         res = connection.farm(
             self.y, self.x, self.player.id, self.player.token)
         if res:
             self.used = True
             self.player.gold += 1
+            gold.reduce()
         return res
 
     def __str__(self):
@@ -137,11 +156,12 @@ class Pawn(Person):
 class Knight(Person):
     """Boîte noire pour les chevaliers."""
 
-    COST = 10
+    COST = consts.PRICES[consts.KNIGHT]
 
     def __init__(self, y, x, player):
         """Initialise un chevalier."""
-        super().__init__(y, x, 'M', 'M2', player)
+        super().__init__(y, x, consts.KNIGHT, consts.EKNIGHT, player)
+        self.cible = None  # attribut pour la défense en fonction des chevaliers ennemis
 
     def __str__(self):
         """Affiche un chevalier."""
@@ -153,11 +173,11 @@ class Knight(Person):
 class Castle(Unit):
     """Boîte noire pour les châteaux."""
 
-    COST = 15
+    COST = consts.PRICES[consts.CASTLE]
 
     def __init__(self, y, x, player):
         """Initialise un château."""
-        super().__init__(y, x, 'B', 'B2', player)
+        super().__init__(y, x, consts.CASTLE, consts.ECASTLE, player)
 
     def __str__(self):
         """Affiche un château."""
