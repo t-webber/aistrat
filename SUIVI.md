@@ -85,4 +85,4 @@
 
 ## 21/05
 
-- Tout le monde : Travail en liveshare sur le débug de la nouvelle structure du code et la mise en forme plus propre du code (meilleure documentation au sein des fichiers par exemple).
+- Tout le monde : Travail en liveshare sur le débug de la nouvelle structure du code en poo et la mise en forme plus propre du code (meilleure documentation au sein des fichiers par exemple).
