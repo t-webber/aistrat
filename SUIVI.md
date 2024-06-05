@@ -74,3 +74,7 @@
 - Pierre: fonction de défense visant à entraver les déplacements ennemis (non finie)
 - Nicolas: Mise à jour du wiki sur l'exploration, la récupération de gold et client_logic. Restructuration du code des fonctions d'exploration et travail en collaboration pour la mise en place de la mémoire sur plusieurs tours
 - Rémy: <3
+
+## 05/06
+
+- Martin: fonction pour terminer les parties (pourchasser les dernières unités ennemies pour éviter d'atteindre la limite de tours)
