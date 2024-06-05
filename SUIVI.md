@@ -85,9 +85,10 @@
 
 ## 22/05
 
-- Tout le monde : Travail en liveshare sur le débug de la nouvelle structure du code en poo et la mise en forme plus propre du code (meilleure documentation au sein des fichiers par exemple).
+- Tout le monde : Travail en liveshare sur le debug de la nouvelle structure du code en poo et la mise en forme plus propre du code (meilleure documentation au sein des fichiers par exemple).
 
 ## 05/06
 
 - Martin: fonction pour terminer les parties (pourchasser les dernières unités ennemies pour éviter d'atteindre la limite de tours)
 - Nicolas, Erwann et Pierre: Théorisation et début de la programmation d'un système de heatmap pour des déplacements plus intelligents et utilisant les informations connues sur la carte
+- Tom et Jules: correction des bugs de la nouvelle structure du code, sécurisation des appels au serveurs et détection des erreurs de piles vides
