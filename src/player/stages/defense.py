@@ -146,7 +146,6 @@ def eknight_based_defense(defense: list[Knight], eknights: list[Knight], player:
     attributions = dict([(eknights[i], (-1, None))
                         for i in range(len(eknight_id))])
     for defender in defense_id:
-        print("oui")
         min = 1000000000
         cible = None
         for attacker in eknight_id:
@@ -161,9 +160,7 @@ def eknight_based_defense(defense: list[Knight], eknights: list[Knight], player:
             if dist < min and (dist < attributions[attacker][0] or attributions[attacker][0] == -1):
                 min = dist
                 cible = attacker
-                print("attrib")
         if cible is not None:
-            print("attrib def")
             old_defender = attributions[cible][1]
             attributions[cible] = (min, defender)
             if old_defender is not None:

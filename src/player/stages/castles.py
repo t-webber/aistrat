@@ -82,8 +82,6 @@ def build_castle(player: Player):
         # si le pions est suffisamment loin de la bordure
         if border <= x <= border_x and border <= y <= border_y and d >= 3 and not cl.exists_close(pawn, player.eknights, 2):
 
-            print("trying to build a castle at ", y, x, player.id, player.token)
-
             pawn.build()
             return
 
@@ -112,7 +110,7 @@ def create_units(player: Player):
                 player.defense.append(Knight(y, x, player))
                 n -= 1
         # garder un équilibre entre defense et attaque et produire plus tôt
-        elif player.gold > consts.PRICES[connection.KNIGHT] and (2 * len(player.eknights) <= len(player.defense) or len(player.knight) <= 2 / 3 * nb_pawn):
+        elif player.gold > consts.PRICES[connection.KNIGHT] and (2 * len(player.eknights) <= len(player.defense) or len(player._knights) <= 2 / 3 * nb_pawn):
             if connection.build(connection.KNIGHT, y, x, player.id, player.token):
                 player.gold -= consts.PRICES[connection.KNIGHT]
                 player.attack.append(Knight(y, x, player))

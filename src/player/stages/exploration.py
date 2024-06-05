@@ -24,7 +24,6 @@ def path_one(units_to_move: list[Pawn], other_units: list[Pawn], eknights: list[
                 stuck += 1
                 continue
             ennemies = cl.neighbors(move, eknights)[1]
-            # print(ennemies)
             if score > maxscore and (ennemies == 0 or ennemies <= len(connection.get_eknights(boy.y, boy.x))):
                 maxscore = score
                 bestpawn = boy
@@ -56,7 +55,7 @@ def path_trou(units: list[Unit], other_units: list[Unit], eknights: list[Knight]
                 bestmove_trou = move
         resultat.append((boy, bestmove_trou))
     for res in resultat:
-        res[0].move(res[1])
+        res[0].move(*res[1])
 
 
 def trous(grille: list[list[int]]):

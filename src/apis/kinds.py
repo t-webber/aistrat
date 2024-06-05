@@ -24,6 +24,10 @@ class Coord:
         return (self.y, self.x)
 
 
+class Enemy(Coord):
+    """Superclasse pour les unités ennemies."""
+
+
 class GoldPile(Coord):
     """Classe pour une pile d'or."""
 
@@ -79,7 +83,7 @@ class Unit(Coord):
         self.key = key
         self.enemi_key = enemi_key
         self.player = player
-        self.used = False
+        self.used = True
 
     # def __getitem__(self, key):
     #     if key in (0, 'y', 'Y'):
@@ -93,15 +97,14 @@ class Unit(Coord):
         """Effectue le calcul0 de hash pour les unités."""
         return hash((self.y, self.x, self.key))
 
-
 class Person(Unit):
     """Super Boîte noire pour les unités (déplacables)."""
 
     def move(self, y, x):
         """Bouge le péon, et le met en utilisé."""
+        print('pose before', self.y, self.x, 'pos after',y, x)
         if self.used:
-            raise ValueError("Person is already used.")
-
+            raise ValueError('Person is already used.')
         res = connection.move(self.key, self.y, self.x, y,
                               x, self.player.id, self.player.token)
         if res:
@@ -140,6 +143,7 @@ class Pawn(Person):
 
         res = connection.farm(
             self.y, self.x, self.player.id, self.player.token)
+        # print("farm : ", "res = ", res," pos = ",self.y, self.x)
         if res:
             self.used = True
             self.player.gold += 1

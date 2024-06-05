@@ -6,12 +6,22 @@ from apis.kinds import Coord, Unit
 from apis.consts import PAWN, CASTLE, KNIGHT, GOLD, EKNIGHT, EPAWN, ECASTLE
 
 IP = "http://localhost:8080"
-TIME_OUT = 0.01
+TIME_OUT = 0.1
 
 
 MAP_SIZE = None
 
 turn_data = {}
+
+
+def server_action(url: str) -> tuple[bool, any]:
+    """Demande au serveur de faire une action."""
+    try:
+        x = requests.get(url, timeout=TIME_OUT)
+    except Exception as e:
+        raise ValueError(f"Server error occured: {e}")
+        # return (False, None)
+    return (x.reason == "OK" and x.status_code == 200, x)
 
 
 def init(ip: str):
@@ -22,12 +32,7 @@ def init(ip: str):
 
 def end_turn(player_id: str, token: str):
     """Fin du tour du joueur."""
-    try:
-        requests.get(
-            f"{IP}/endturn/{player_id}/{token}", timeout=TIME_OUT)
-    except:
-        return False
-    return True
+    return server_action(f"{IP}/endturn/{player_id}/{token}")[0]
 
 
 def create_player():
@@ -40,22 +45,12 @@ def create_player():
 
 def move(kind: str, oldy: int, oldx: int, newy: int, newx: int, player_id: str, token: str) -> bool:
     """Essaie de bouger une unité."""
-    try:
-        requests.get(
-            f"{IP}/move/{player_id}/{kind}/{oldy}/{oldx}/{newy}/{newx}/{token}", timeout=TIME_OUT)
-    except:
-        return False
-    return True
+    return server_action(f"{IP}/move/{player_id}/{kind}/{oldy}/{oldx}/{newy}/{newx}/{token}")[0]
 
 
 def build(kind: str, y: int, x: int, player_id: str, token: str) -> bool:
     """Contruit une unité de type `kind` en (y,x)."""
-    try:
-        requests.get(
-            f"{IP}/build/{player_id}/{y}/{x}/{kind}/{token}", timeout=TIME_OUT)
-        return True
-    except:
-        return False
+    return server_action(f"{IP}/build/{player_id}/{y}/{x}/{kind}/{token}")[0]
 
 
 def get_data(player_id: str, token: str) -> bool:
@@ -65,13 +60,9 @@ def get_data(player_id: str, token: str) -> bool:
     Les données sont stockées dans une variable globale pour ne pas faire appel à cet fonction plus que nécessaire.
     """
     global turn_data
-    try:
-        res = requests.get(
-            f"{IP}/view/{player_id}/{token}", timeout=TIME_OUT)
-    except:
-        return False
-    turn_data = res.json()
-    return True
+    res, data = server_action(f"{IP}/view/{player_id}/{token}")
+    turn_data = data.json()
+    return res
 
 
 def get_map() -> list[list[dict]]:
@@ -111,22 +102,14 @@ def get_winner() -> str:
 
 def farm(y: int, x: int, player_id: str, token: str) -> bool:
     """Fait récolter de l'argent au péon en (y, x)."""
-    try:
-        requests.get(
-            f"{IP}/farm/{player_id}/{y}/{x}/{token}", timeout=TIME_OUT)
-        return True
-    except:
-        return False
+    return server_action(
+            f"{IP}/farm/{player_id}/{y}/{x}/{token}")[0]
 
 
 def auto_farm(player_id, token) -> bool:
     """Fait récolter de l'argent à tous les péons."""
-    try:
-        requests.get(
-            f"{IP}/autofarm/{player_id}/{token}", timeout=TIME_OUT)
-        return True
-    except:
-        return False
+    return server_action(
+            f"{IP}/autofarm/{player_id}/{token}")[0]
 
 
 def get_info(y: int, x: int) -> list:

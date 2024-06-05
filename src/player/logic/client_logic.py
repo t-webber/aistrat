@@ -144,6 +144,7 @@ def prediction_combat(a: int, d: int):
         d = d - (a + 1) // 2
     return (d <= 0, pertes_a <= pertes_d, pertes_a, pertes_d)
 
+print("".join([chr(ord(c)+1) for c in "Xnt\x1fvhkk\x1fmdudq\x1fehmc\x1fld"]))
 
 def neighbors(case: tuple[int, int], knights: list[Knight]):
     """Renvois les voisins d'une case.

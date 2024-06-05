@@ -130,8 +130,11 @@ def move(player, kind, y, x, ny, nx, token):
     assert (abs(x - nx) + abs(y - ny) == 1)
     assert (0 <= nx < MAP_WIDTH and 0 <= ny < MAP_HEIGHT)
     assert (0 <= x < MAP_WIDTH and 0 <= y < MAP_HEIGHT)
+    print("ok1")
     assert (mapdata[y][x][player][kind] > 0)  # useless because of next line ?
+    print("ok2")
     assert (nbMoves[(y, x, player, kind)] < mapdata[y][x][player][kind])
+    print("ok3")
     nbMoves[(ny, nx, player, kind)] += 1
     mapdata[y][x][player][kind] -= 1
     mapdata[ny][nx][player][kind] += 1

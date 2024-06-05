@@ -19,9 +19,9 @@ def fuite(pawns: list[Pawn], knights: list[Knight], eknights: list[Knight], defe
     while i < len(pawns):
         p = pawns[i]
         i += 1
-        direc_enemies, total_enemies = cl.neighbors(p, eknights)
+        direc_enemies, total_enemies = cl.neighbors((p.y,p.x), eknights)
         if total_enemies > 0:
-            direc_allies, allies_backup = cl.neighbors(p, knights)
+            direc_allies, allies_backup = cl.neighbors((p.y,p.x), knights)
             allies = 0
             allies_defense = 0
             on_case = []
@@ -64,21 +64,20 @@ def farm(player: Player, golds: list[GoldPile]):
     eknights = player.eknights
     ecastles = player.ecastles
 
+    # print("BEFORE PAWNS", pawns)
+
     # simple_gold = golds
     if golds and pawns:
-
-        print("GOLDS = ", golds)
 
         # affecation problem
         # choisis les mines d'or vers lesquelles vont se diriger les peons
         # pour en minimiser le nombre total de mouvements
         # je fais bouger les peons vers leur mine d'or
-        result_data = cl.hongrois_distance(pawns, golds)
+        result_data = cl.hongrois_distance(pawns, golds) ####
         for p, g in result_data:
             gold = golds[g]
             y, x = pawns[p].coord
             i, j = gold.y, gold.x
-            print('peons', (y, x), 'envoyé sur', (i, j))
             if rd.random() > 0.5:  # pour ne pas que le peon aille toujours d'abord en haut puis à gauche
                 if x > j and (y, x - 1) not in eknights and (y, x - 1) not in ecastles and \
                         (cl.neighbors((y, x - 1), eknights)[1] == 0 or cl.neighbors((y, x - 1), eknights)[1] <= len(connection.get_eknights(y, x))):
@@ -109,6 +108,7 @@ def farm(player: Player, golds: list[GoldPile]):
                     pawns[p].move(y, x + 1)
                 else:
                     pawns[p].farm(gold)
+    # print("AFTER PAWNS", pawns)
 
 
 def path(units: list[Unit], other_units: list[Unit], eknights: list[Knight]):
@@ -141,6 +141,8 @@ def path(units: list[Unit], other_units: list[Unit], eknights: list[Knight]):
 
 def explore(player: Player, otherunits=[]):
     """Envoie en exploration les "pawns" inactifs pour le tour."""
+
+
     eknights = player.eknights
 
     path(player.pawns, otherunits, eknights)
