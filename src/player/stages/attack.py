@@ -181,7 +181,7 @@ def free_pawn(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy]
 # def endgame(knights: list[Knight], eknights: list[Knight], epawns: list[Pawn]):
 #     knights_not_used = list(filter(lambda knight: not knight.used, knights))
 #     if eknights:
-#         while knights:
+#         while knights_not_used:
 #             vus=[]
 #             for k, ep in cl.hongrois_distance(knights_not_used, castles):
 #                 vus.append(knights_not_used[k])
@@ -208,3 +208,4 @@ def free_pawn(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy]
 #                             knights_not_used[k].move(y, x - 1)
 #                         elif x < j and cl.neighbors((y, x), eknights)[0][(0, 1)] == []:
 #                             knights_not_used[k].move(y, x + 1)
+#             knights_not_used = list(filter(lambda knight: not knight.used, knights))
