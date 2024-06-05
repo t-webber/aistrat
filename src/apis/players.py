@@ -9,7 +9,7 @@ from player.stages.castles import create_units, build_castle
 import player.stages.attack as atk
 # import player.stages.defense as dfd
 from player.stages import peons
-
+import player.stages.heatmap as hm
 
 class Player:
     """Class pour implémenter les actions d'un joueur."""
@@ -28,8 +28,7 @@ class Player:
         self.eknights: list[Knight] = []
         self.castles: list[Knight] = []
         self.ecastles: list[Castle] = []
-        self.attack: list[Knight] = []
-        self.defense: list[Knight] = []
+        self.knights: list[Knight] = []
         # resources
         self._golds: list[GoldPile] = [GoldPile(coord[0], coord[1], coord[2], self) for coord in connection.get_kinds(self.id)[
             connection.GOLD]]
@@ -101,31 +100,18 @@ class Player:
         self.update_fog()
 
         create_units(self)
-        peons.fuite(self.pawns, self._knights, self.eknights,
+        peons.fuite(self.pawns, self.knights, self.eknights,
                     self.defense)
         build_castle(self)
 
         # je farm d'abord ce que je vois
         peons.farm(self, self.good_gold)
         # j'explore ensuite dans la direction opposée au spawn
-        peons.explore(self, self._knights + self.castles)
+        peons.explore(self, self.knights + self.castles)
 
-        atk.free_pawn(self._knights, self.eknights, self.epawns)
+        hm.heatMapMove(self)
 
-        # left_defense = dfd.defend(
-        #     self.pawns, self.defense, self.eknights, self.castles, self.id, self.token)
-        # dfd.agressiv_defense(left_defense, self.epawns,
-        #                      self.id, self.token, self.eknights)
 
-        copy_knights = self._knights.copy()
-        while copy_knights:
-            a = len(copy_knights)
-            atk.hunt(copy_knights, self.epawns,
-                     self.eknights)
-            atk.destroy_castle(copy_knights, self.ecastles,
-                               self.eknights)
-            if len(copy_knights) == a:
-                break
         self.update_gold_map()
 
         self.end_turn()

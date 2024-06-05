@@ -173,3 +173,6 @@ def find_unit(units: Unit, y: int, x: int):
     for unit in units:
         if unit.y == y and unit.x == x:
             return unit
+
+def scalar(origin,point1,point2):
+    return (point1[0]-origin[0])*(point2[0]-origin[0])+(point1[1]-origin[1])*(point2[1]-origin[1])

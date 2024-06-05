@@ -3,7 +3,37 @@ import numpy as np
 from apis import connection
 import player.logic.client_logic as cl
 from apis.kinds import Pawn, Knight, Unit
+import apis.players as pl
 
+def path_simple(coordinate:tuple[int,int],destination:tuple[int,int],player: pl.Player):
+    """Cherche un bon chemin en un déplacement pour une unité"""
+    moves=connection.get_moves(coordinate[0],coordinate[1])
+    best_moves=sorted(moves,key=lambda x:cl.scalar(coordinate,x,destination))
+    for move in best_moves:
+        ennemies = cl.neighbors(move, player.eknights)[1]
+        if ennemies == 0 or ennemies <= len(connection.get_eknights(move[0], move[1])):
+            return move
+    return None
+
+def path_simple(unit,destination:tuple[int,int],player: pl.Player):
+    """Cherche un bon chemin en un déplacement pour une unité"""
+    moves=connection.get_moves(unit.y,unit.x)
+    best_moves=sorted(moves,key=lambda x:cl.scalar((unit.y,unit.x),x,destination))
+    for move in best_moves:
+        ennemies = cl.neighbors(move, player.eknights)[1]
+        if ennemies == 0 or ennemies <= len(connection.get_eknights(move[0], move[1])):
+            return move
+    return None
+
+def path_simple(coord,destination,player):
+    """Cherche un bon chemin en un déplacement pour une unité"""
+    moves=connection.get_moves(unit.y,unit.x)
+    best_moves=sorted(moves,key=lambda x:x[0]*destination[0]+x[1]*destination[1])
+    for move in best_moves:
+        ennemies = cl.neighbors(move, player.eknights)[1]
+        if ennemies == 0 or ennemies <= len(connection.get_eknights(unit.y, unit.x)):
+            return move
+    return best_moves[0]
 
 def path_one(units_to_move: list[Pawn], other_units: list[Pawn], eknights: list[Knight]):
     """Cherche le meilleur chemin pour une unité de units_to_move pour voir plus de la map."""
