@@ -90,3 +90,4 @@
 ## 05/06
 
 - Martin: fonction pour terminer les parties (pourchasser les dernières unités ennemies pour éviter d'atteindre la limite de tours)
+- Nicolas, Erwann et Pierre: Théorisation et début de la programmation d'un système de heatmap pour des déplacements plus intelligents et utilisant les informations connues sur la carte
