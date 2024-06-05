@@ -169,7 +169,7 @@ def destroy_castle(knights: list[Knight], castles: list[Castle],
 
 
 def free_pawn(knights: list[Knight], eknights: list[Knight], epawns: list[Pawn]):
-    """Libère les péons bloqués par les chevaliers adverses."""
+    """Attaque un péon adverse sans défense sur une case voisine"""
     for knight in knights:
         if not knight.used:
             for epawn in epawns:
