@@ -44,7 +44,7 @@ price = {'C': 5, 'M': 10, 'B': 15}  # the price of each unit
 requires = {'C': 'B', 'M': 'B', 'B': 'C'}  # what do we need to build
 winner = ''
 curPlayer = 'A'  # initial player
-gold = {'A': 25, 'B': 25}  # initial gold
+gold = {'A': 250, 'B': 250}  # initial gold
 
 mapdata[0][0]['A']['C'] = 3  # initial units of A
 mapdata[-1][-1]['B']['C'] = 3  # initial units of B
@@ -130,11 +130,8 @@ def move(player, kind, y, x, ny, nx, token):
     assert (abs(x - nx) + abs(y - ny) == 1)
     assert (0 <= nx < MAP_WIDTH and 0 <= ny < MAP_HEIGHT)
     assert (0 <= x < MAP_WIDTH and 0 <= y < MAP_HEIGHT)
-    print("ok1")
     assert (mapdata[y][x][player][kind] > 0)  # useless because of next line ?
-    print("ok2")
     assert (nbMoves[(y, x, player, kind)] < mapdata[y][x][player][kind])
-    print("ok3")
     nbMoves[(ny, nx, player, kind)] += 1
     mapdata[y][x][player][kind] -= 1
     mapdata[ny][nx][player][kind] += 1

@@ -174,3 +174,9 @@ def find_unit(units: Unit, y: int, x: int):
     for unit in units:
         if unit.y == y and unit.x == x:
             return unit
+
+def in_obj(object, object_list):
+    for i in object_list:
+        if i.y == object.y and i.x == object.x:
+            return True
+    return False

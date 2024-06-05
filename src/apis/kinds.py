@@ -27,6 +27,10 @@ class Coord:
 class Enemy(Coord):
     """Superclasse pour les unités ennemies."""
 
+    def __init__(self, y, x, player):
+        """Initialise une unité ennemie."""
+        super().__init__(y, x)
+        self.player = player
 
 class GoldPile(Coord):
     """Classe pour une pile d'or."""
@@ -41,6 +45,8 @@ class GoldPile(Coord):
         """Farm une pile d'or."""
         if self.used:
             raise ValueError("Gold is already used.")
+        if self.gold <= 0:
+            raise ValueError("Gold is empty.")
         self.gold -= 1
         self.used = True
         return self.gold
@@ -105,24 +111,24 @@ class Person(Unit):
         print('pose before', self.y, self.x, 'pos after',y, x)
         if self.used:
             raise ValueError('Person is already used.')
-        res = connection.move(self.key, self.y, self.x, y,
+        connection.move(self.key, self.y, self.x, y,
                               x, self.player.id, self.player.token)
-        if res:
-            self.y = y
-            self.x = x
-            self.used = True
+        
+        self.y = y
+        self.x = x
+        self.used = True
 
     def build(self):
         """Build caslte."""
         if self.used:
             raise ValueError("Person is already used.")
-        res = connection.build(consts.CASTLE, self.y, self.x,
+        connection.build(consts.CASTLE, self.y, self.x,
                                self.player.id, self.player.token)
 
-        if res:
-            self.used = True
-            self.player.castles.append(Castle(self.y, self.x, self.player))
-            self.player.gold -= Castle.COST
+        
+        self.used = True
+        self.player.castles.append(Castle(self.y, self.x, self.player))
+        self.player.gold -= Castle.COST
 
 
 class Pawn(Person):
@@ -140,15 +146,15 @@ class Pawn(Person):
             raise ValueError("Person is already used.")
         if gold.used:
             raise ValueError("Gold is already used.")
-
-        res = connection.farm(
+        if gold.gold <= 0:
+            raise ValueError("Gold is empty.")
+        print("or",gold.gold)
+        connection.farm(
             self.y, self.x, self.player.id, self.player.token)
-        # print("farm : ", "res = ", res," pos = ",self.y, self.x)
-        if res:
-            self.used = True
-            self.player.gold += 1
-            gold.reduce()
-        return res
+        
+        self.used = True
+        self.player.gold += 1
+        gold.reduce()
 
     def __str__(self):
         """Affiche un péon."""

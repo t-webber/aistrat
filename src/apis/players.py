@@ -81,11 +81,12 @@ class Player:
 
     def update_ennemi_data(self):
         """Récupère les données des ennemis."""
-        self.epawns = [Enemy(*x) for x in connection.get_kinds(connection.other(self.id))[
+        other_player = connection.other(self.id)
+        self.epawns = [Enemy(*x, other_player) for x in connection.get_kinds(connection.other(self.id))[
             connection.PAWN]]
-        self.eknights = [Enemy(*x) for x in connection.get_kinds(connection.other(self.id))[
+        self.eknights = [Enemy(*x, other_player) for x in connection.get_kinds(connection.other(self.id))[
             connection.KNIGHT]]
-        self.ecastles = [Enemy(*x) for x in connection.get_kinds(connection.other(self.id))[
+        self.ecastles = [Enemy(*x, other_player) for x in connection.get_kinds(connection.other(self.id))[
             connection.CASTLE]]
 
     def update_fog(self):
@@ -107,10 +108,10 @@ class Player:
         # print("CREATE_UNITS\t", self.pawns)
 
         create_units(self)
-        # print("PEONS FUITE\t", self.pawns)
-        peons.fuite(self.pawns, self.attack + self.defense, self.eknights,
+        print("PEONS FUITE\t", self.defense)
+        peons.fuite(self.pawns, self.attack, self.eknights,
                     self.defense)
-        # print("BUILD CASTLE\t", self.pawns)
+        # print("BUILD CASTLE\t", self.attack + self.defense)
         build_castle(self)
 
         # print("PEONS FARM\t", self.pawns)
@@ -120,7 +121,7 @@ class Player:
         # j'explore ensuite dans la direction opposée au spawn
         peons.explore(self, self._knights + self.castles)
 
-        # print("af EXPLORE\t", self.pawns)
+        print("FREE PAWNS\t", self.attack + self.defense)
         atk.free_pawn(self.attack + self.defense, self.eknights, self.epawns)
 
         # left_defense = dfd.defend(
@@ -221,8 +222,7 @@ def check_set_list_coord(a: list[Unit], b: list[(int, int)], instance: str):
         if unit in first:
             first.remove(unit)
         else:
-            print(f"{instance} CHANGED: {first} != {second}")
-            raise ValueError
+            raise ValueError(f"{instance} CHANGED: {first} != {second}")
     for coord in first:
         for unit in a:
             if unit.coord == coord:

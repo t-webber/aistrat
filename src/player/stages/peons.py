@@ -16,20 +16,25 @@ if TYPE_CHECKING:
 def fuite(pawns: list[Pawn], knights: list[Knight], eknights: list[Knight], defense: list[Knight]):
     """Les péons fuient les chevaliers ennemis s'ils sont en danger."""
     i = 0
+    knights_not_used = [k for k in knights if not k.used]
     while i < len(pawns):
         p = pawns[i]
         i += 1
         direc_enemies, total_enemies = cl.neighbors((p.y,p.x), eknights)
         if total_enemies > 0:
-            direc_allies, allies_backup = cl.neighbors((p.y,p.x), knights)
+            direc_allies, allies_backup = cl.neighbors((p.y,p.x), knights_not_used)
             allies = 0
             allies_defense = 0
             on_case = []
-            for k in knights:
+            for k in knights_not_used:
+                if k.used:
+                    continue
                 if k.y == p.y and k.x == p.x:
                     on_case.append(k)
                     allies += 1
             for k in defense:
+                if k.used:
+                    continue
                 if k.y == p.y and k.x == p.x:
                     on_case.append(k)
                     allies += 1
@@ -44,7 +49,6 @@ def fuite(pawns: list[Pawn], knights: list[Knight], eknights: list[Knight], defe
                         break
             else:
                 while cl.prediction_combat(total_enemies, allies_defense)[0] and len(on_case) > 0:
-                    on_case[-1].move(on_case[0].y + 1, on_case[0].x)
                     on_case.pop()
                     allies_defense += 1
                 # on peut réussir à gagner le combat avec les alliés et on le fait venir

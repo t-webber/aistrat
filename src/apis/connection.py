@@ -19,9 +19,11 @@ def server_action(url: str) -> tuple[bool, any]:
     try:
         x = requests.get(url, timeout=TIME_OUT)
     except Exception as e:
-        raise ValueError(f"Server error occured: {e}")
-        # return (False, None)
-    return (x.reason == "OK" and x.status_code == 200, x)
+        raise ValueError(f"Server error occured: {e}") from e
+    if x.reason != "OK" or x.status_code != 200:
+        raise ValueError("Server error occured")
+
+    return x
 
 
 def init(ip: str):
@@ -32,7 +34,7 @@ def init(ip: str):
 
 def end_turn(player_id: str, token: str):
     """Fin du tour du joueur."""
-    return server_action(f"{IP}/endturn/{player_id}/{token}")[0]
+    server_action(f"{IP}/endturn/{player_id}/{token}")
 
 
 def create_player():
@@ -45,12 +47,12 @@ def create_player():
 
 def move(kind: str, oldy: int, oldx: int, newy: int, newx: int, player_id: str, token: str) -> bool:
     """Essaie de bouger une unité."""
-    return server_action(f"{IP}/move/{player_id}/{kind}/{oldy}/{oldx}/{newy}/{newx}/{token}")[0]
+    server_action(f"{IP}/move/{player_id}/{kind}/{oldy}/{oldx}/{newy}/{newx}/{token}")
 
 
 def build(kind: str, y: int, x: int, player_id: str, token: str) -> bool:
     """Contruit une unité de type `kind` en (y,x)."""
-    return server_action(f"{IP}/build/{player_id}/{y}/{x}/{kind}/{token}")[0]
+    server_action(f"{IP}/build/{player_id}/{y}/{x}/{kind}/{token}")
 
 
 def get_data(player_id: str, token: str) -> bool:
@@ -60,9 +62,12 @@ def get_data(player_id: str, token: str) -> bool:
     Les données sont stockées dans une variable globale pour ne pas faire appel à cet fonction plus que nécessaire.
     """
     global turn_data
-    res, data = server_action(f"{IP}/view/{player_id}/{token}")
+    try:
+        data = server_action(f"{IP}/view/{player_id}/{token}")
+    except Exception as e:
+        return False
     turn_data = data.json()
-    return res
+    return True
 
 
 def get_map() -> list[list[dict]]:
@@ -75,7 +80,6 @@ def size_map() -> tuple[int, int]:
     global MAP_SIZE
     if MAP_SIZE is None:
         initial_map = get_map()
-        print(initial_map[0][0])
         MAP_SIZE = (len(initial_map), len(initial_map[0]))
     return MAP_SIZE
 
@@ -100,16 +104,16 @@ def get_winner() -> str:
     return turn_data["winner"]
 
 
-def farm(y: int, x: int, player_id: str, token: str) -> bool:
+def farm(y: int, x: int, player_id: str, token: str):
     """Fait récolter de l'argent au péon en (y, x)."""
-    return server_action(
-            f"{IP}/farm/{player_id}/{y}/{x}/{token}")[0]
+    server_action(
+            f"{IP}/farm/{player_id}/{y}/{x}/{token}")
 
 
 def auto_farm(player_id, token) -> bool:
     """Fait récolter de l'argent à tous les péons."""
-    return server_action(
-            f"{IP}/autofarm/{player_id}/{token}")[0]
+    server_action(
+            f"{IP}/autofarm/{player_id}/{token}")
 
 
 def get_info(y: int, x: int) -> list:

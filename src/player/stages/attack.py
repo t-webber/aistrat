@@ -41,9 +41,9 @@ def compte_soldats_ennemis_cases_adjacentes(player: str, case: tuple[int, int]):
     return eknight
 
 
-def move_everyone(case: Coord, allies_voisins: dict[Coord, list[Knight]]):
+def move_everyone(case: Coord, allies_voisins: list[Knight]):
     """Bouge tous les attaquants sur la case ciblée."""
-    for knights in allies_voisins.values():
+    for knights in allies_voisins:
         while knights:
             knights[-1].move(case[0], case[1])
             knights.pop()
@@ -83,7 +83,7 @@ def attaque(case_attaquee: tuple[int, int], knights: list[Knight], eknights: lis
     """Si l'attaque sur case_attaquee depuis toutes les cases adjacentes est gagnante alors bouge tous les chevaliers concernés en attaque."""
     allies_voisins = cl.neighbors(case_attaquee, knights)[0]
     allies_voisins_exploitable = allies_voisins[(1, 0)] + allies_voisins[(0, 1)] + allies_voisins[(-1, 0)] + allies_voisins[(0, -1)]
-    allies_voisins_exploitable = list(filter(lambda allie: not (allie.used), allies_voisins_exploitable))
+    allies_voisins_exploitable = list(filter(lambda ally: not (ally.used), allies_voisins_exploitable))
     present_eknight = list(filter(lambda ennemy: (ennemy.y, ennemy.x) == case_attaquee, eknights))
     if prediction_attaque(case_attaquee, allies_voisins_exploitable, present_eknight):
         move_everyone(case_attaquee, allies_voisins_exploitable)
@@ -173,7 +173,10 @@ def destroy_castle(knights: list[Knight], castles: list[Castle],
 def free_pawn(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy]):
     """Attaque les péons gratuits s'ils sont adjacent à un chevalier libre."""
     for knight in knights:
+        # print('ff',knights)
+        # print('ff',[k.used for k in knights])
+        # print('ff', knight, knight.used)
         if not knight.used:
             for epawn in epawns:
-                if cl.distance(knight.x, knight.y, epawn.x, epawn.y) == 1 and epawn not in eknights:
+                if cl.distance(knight.x, knight.y, epawn.x, epawn.y) == 1 and not cl.in_obj(epawn, eknights):
                     knight.move(epawn.y, epawn.x)

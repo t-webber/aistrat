@@ -90,6 +90,7 @@ def create_units(player: Player):
     """Création des unités par le château."""
     n = len(player.eknights) - len(player.defense) - len(player.attack)
     nb_pawn = len(player.pawns)
+    nb_knights = len(player._knights)
 
     for castle in player.castles:
         y, x = castle.coord
@@ -103,27 +104,31 @@ def create_units(player: Player):
         #     build_order.append(suivant)
         # else:
         if n > 0:
-            if player.gold > consts.PRICES[connection.KNIGHT]:
-                connection.build(connection.KNIGHT, y, x,
-                                 player.id, player.token)
-                player.gold -= consts.PRICES[connection.KNIGHT]
-                player.defense.append(Knight(y, x, player))
-                n -= 1
+            player.gold > consts.PRICES[connection.KNIGHT]
+            connection.build(connection.KNIGHT, y, x,
+                             player.id, player.token)
+            player.gold -= consts.PRICES[connection.KNIGHT]
+            player.defense.append(Knight(y, x, player))
+            print("BUILT DEFENSE 1 = ", player.defense)
+            n -= 1
         # garder un équilibre entre defense et attaque et produire plus tôt
-        elif player.gold > consts.PRICES[connection.KNIGHT] and (2 * len(player.eknights) <= len(player.defense) or len(player._knights) <= 2 / 3 * nb_pawn):
-            if connection.build(connection.KNIGHT, y, x, player.id, player.token):
-                player.gold -= consts.PRICES[connection.KNIGHT]
-                player.attack.append(Knight(y, x, player))
+        elif player.gold > consts.PRICES[connection.KNIGHT] and (2 * len(player.eknights) <= len(player.defense) or nb_knights <= 2 / 3 * nb_pawn):
+            connection.build(connection.KNIGHT, y, x, player.id, player.token)
+            player.gold -= consts.PRICES[connection.KNIGHT]
+            player.attack.append(Knight(y, x, player))
+            print("BUILT ATTACK = ", player.attack)
         # trop d'argent on achète des défenseurs
         elif player.gold > consts.PRICES[connection.KNIGHT] * 2 and len(player.castles) >= 2 and nb_pawn > 3:
-            if connection.build(connection.KNIGHT, y, x, player.id, player.token):
-                player.gold -= consts.PRICES[connection.KNIGHT]
-                player.defense.append(Knight(y, x, player))
+            connection.build(connection.KNIGHT, y, x, player.id, player.token)
+            player.gold -= consts.PRICES[connection.KNIGHT]
+            player.defense.append(Knight(y, x, player))
+            print("BUILT DEFENSE = ", player.defense)
         # Pas assez d'argent, et de l'argent est disponible sur la carte (ou du brouillard de guerre)
         elif player.gold > consts.PRICES[connection.PAWN] * 1.25 \
                 and len(player.good_gold) + len(player.bad_gold) + len(player.fog) > nb_pawn\
-                and len(player._knights) >= 2 / 3 * nb_pawn:
+                and nb_knights >= 2 / 3 * nb_pawn:
             connection.build(connection.PAWN, y, x,
                              player.id, player.token)
             player.gold -= consts.PRICES[connection.PAWN]
             player.pawns.append(Pawn(y, x, player))
+            
