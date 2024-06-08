@@ -92,3 +92,7 @@
 - Martin: fonction pour terminer les parties (pourchasser les dernières unités ennemies pour éviter d'atteindre la limite de tours)
 - Nicolas, Erwann et Pierre: Théorisation et début de la programmation d'un système de heatmap pour des déplacements plus intelligents et utilisant les informations connues sur la carte
 - Tom et Jules: correction des bugs de la nouvelle structure du code, sécurisation des appels au serveurs et détection des erreurs de piles vides
+
+## 12/06
+
+- Jules : ajout d'une estimation de l'or restant sur la carte ( qui pourrait aider pour le choix de décisions dans la prod d'unités ) + clean du code pour les deplements d'unités dans farm et attack + restructuration de la classe joueur
