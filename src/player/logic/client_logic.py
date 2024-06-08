@@ -3,6 +3,8 @@
 from scipy.optimize import linear_sum_assignment
 import numpy as np
 from apis.kinds import Unit, Knight, Pawn, Castle, GoldPile, Coord
+from apis import connection
+import random as rd
 
 defense_knights = {"A": [], "B": []}
 
@@ -178,5 +180,77 @@ def find_unit(units: Unit, y: int, x: int):
 def in_obj(object, object_list):
     for i in object_list:
         if i.y == object.y and i.x == object.x:
+            return True
+    return False
+
+
+def move_safe_random(unit: Unit, eknights: list[Knight], ecastles: list[Castle],i: int, j: int):
+    """Déplace une unité de manière aléatoire vers une case sûre."""
+    if rd.random() > 0.5:
+        if unit.x > j and (unit.y, unit.x - 1) not in eknights and (unit.y, unit.x - 1) not in ecastles and \
+                (neighbors((unit.y, unit.x - 1), eknights)[1] == 0 or neighbors((unit.y, unit.x - 1), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
+            unit.move(unit.y, unit.x - 1)
+            return True
+        elif unit.x < j and (unit.y, unit.x + 1) not in eknights and (unit.y, unit.x + 1) not in ecastles and \
+                (neighbors((unit.y, unit.x + 1), eknights)[1] == 0 or neighbors((unit.y, unit.x + 1), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
+            unit.move(unit.y, unit.x + 1)
+            return True
+        elif unit.y > i and (unit.y - 1, unit.x) not in eknights and (unit.y - 1, unit.x) not in ecastles and \
+                (neighbors((unit.y - 1, unit.x), eknights)[1] == 0 or neighbors((unit.y - 1, unit.x), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
+            unit.move(unit.y - 1, unit.x)
+            return True
+        elif unit.y < i and (unit.y + 1, unit.x) not in eknights and (unit.y + 1, unit.x) not in ecastles and \
+                (neighbors((unit.y + 1, unit.x), eknights)[1] == 0 or neighbors((unit.y + 1, unit.x), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
+            unit.move(unit.y + 1, unit.x)
+            return True
+        else:
+            return False
+    else:
+        if unit.y > i and (unit.y - 1, unit.x) not in eknights and (unit.y - 1, unit.x) not in ecastles and \
+                (neighbors((unit.y - 1, unit.x), eknights)[1] == 0 or neighbors((unit.y - 1, unit.x), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
+            unit.move(unit.y - 1, unit.x)
+            return True
+        elif unit.y < i and (unit.y + 1, unit.x) not in eknights and (unit.y + 1, unit.x) not in ecastles and \
+                (neighbors((unit.y + 1, unit.x), eknights)[1] == 0 or neighbors((unit.y + 1, unit.x), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
+            unit.move(unit.y + 1, unit.x)
+            return True
+        elif unit.x > j and (unit.y, unit.x - 1) not in eknights and (unit.y, unit.x - 1) not in ecastles and \
+                (neighbors((unit.y, unit.x - 1), eknights)[1] == 0 or neighbors((unit.y, unit.x - 1), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
+            unit.move(unit.y, unit.x - 1)
+            return True
+        elif unit.x < j and (unit.y, unit.x + 1) not in eknights and (unit.y, unit.x + 1) not in ecastles and \
+                (neighbors((unit.y, unit.x + 1), eknights)[1] == 0 or neighbors((unit.y, unit.x + 1), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
+            unit.move(unit.y, unit.x + 1)
+            return True
+        else:
+            return False
+        
+
+def move_without_suicide(unit: Unit, eknights : list[Knight], i: int, j:int):
+    if rd.random() > 0.5:  # pour ne pas que le chevalier aille toujours d'abord en haut puis à gauche
+        if unit.x > j and neighbors((unit.y, unit.x), eknights)[0][(0, -1)] == []:
+            unit.move(unit.y, unit.x - 1)
+            return True
+        elif unit.x < j and neighbors((unit.y, unit.x), eknights)[0][(0, 1)] == []:
+            unit.move(unit.y, unit.x + 1)
+            return True
+        elif unit.y > i and neighbors((unit.y, unit.x), eknights)[0][(-1, 0)] == []:
+            unit.move(unit.y - 1, unit.x)
+            return True
+        elif unit.y < i and neighbors((unit.y, unit.x), eknights)[0][(1, 0)] == []:
+            unit.move(unit.y + 1, unit.x)
+            return True
+    else:
+        if unit.y > i and neighbors((unit.y, unit.x), eknights)[0][(-1, 0)] == []:
+            unit.move(unit.y - 1, unit.x)
+            return True
+        elif unit.y < i and neighbors((unit.y, unit.x), eknights)[0][(1, 0)] == []:
+            unit.move(unit.y + 1, unit.x)
+            return True
+        elif unit.x > j and neighbors((unit.y, unit.x), eknights)[0][(0, -1)] == []:
+            unit.move(unit.y, unit.x - 1)
+            return True
+        elif unit.x < j and neighbors((unit.y, unit.x), eknights)[0][(0, 1)] == []:
+            unit.move(unit.y, unit.x + 1)
             return True
     return False

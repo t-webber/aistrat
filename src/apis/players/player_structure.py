@@ -14,7 +14,7 @@ class Player_struct:
         """Initialise un joueur."""
         self.id, self.token = connection.create_player()
         connection.get_data(self.id, self.token)
-
+        self.height, self.width = connection.size_map()
         self.turn = 0
         # units
         self.pawns: list[Pawn] = [Pawn(0, 0, self) for _ in range(3)] if self == 'A' else\
@@ -29,8 +29,11 @@ class Player_struct:
         # resources
         self._golds: list[GoldPile] = [GoldPile(coord[0], coord[1], coord[2], self) for coord in connection.get_kinds(self.id)[
             connection.GOLD]]
+        self._golds_total = connection.get_kinds(self.id)[connection.GOLD]
+        self._golds_total_without_values = [(y, x) for (y, x, _) in self._golds_total]
+        self.average_gold = sum([i**2 for i in range(13)])/12
+        self.golds_plot_not_seen = 15 - sum([self.decomposition(gold[2]) for gold in self._golds_total])
         self.gold: int = BEGINING_GOLD
-        print(self._golds)
         self.good_gold: list[GoldPile]
         self.bad_gold: list[GoldPile]
         self.good_gold, self.bad_gold = cl.clean_golds(
@@ -116,6 +119,7 @@ class Player_struct:
         self._golds = [gold for gold in golds if gold.gold]  # code de goldmon
         servgolds_without_values = [(y, x) for (y, x, _) in server_golds]
         #print("BEFORE GOLDS = ", self._golds)
+        self.update_total_gold(server_golds, servgolds_without_values)
 
         for gold in self._golds:
             y, x = gold.coord
@@ -152,6 +156,25 @@ class Player_struct:
         for gold in self._golds:
             coords = gold.coord
             self._gold_map[coords] = gold
+    
+    def update_total_gold(self, server_golds: list[(int, int, int)], server_golds_without_values: list[(int, int)]):
+        """Met à jour ce qu'on sait des golds à l'état de jeu initial."""
+        for i,(y,x) in enumerate(server_golds_without_values):
+            if (y,x) not in self._golds_total_without_values and (self.height - 1 - y,self.width - 1 - x) not in self._golds_total_without_values:
+                self._golds_total.append(server_golds[i])
+                self._golds_total_without_values.append((y,x))
+                self.golds_plot_not_seen -= self.decomposition(server_golds[i][2])
+
+    def estimation_gold(self):
+        """Estime le nombre de golds restant."""
+        return sum([gold.gold for gold in self._golds]) + max(0,self.golds_plot_not_seen)*self.average_gold
+                
+    def decomposition(self, n):
+        """renvoie 1 si n est un carré parfait et 2 sinon"""
+        if (n**0.5).is_integer():
+            return 1
+        else:
+            return 2
 
 
     def check_set_list_coord(self, a: list[Unit], b: list[(int, int)], instance: str):

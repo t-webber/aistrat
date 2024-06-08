@@ -108,7 +108,7 @@ class Person(Unit):
 
     def move(self, y, x):
         """Bouge le péon, et le met en utilisé."""
-        print('pose before', self.y, self.x, 'pos after',y, x)
+        # print('pose before', self.y, self.x, 'pos after',y, x)
         if self.used:
             raise ValueError('Person is already used.')
         connection.move(self.key, self.y, self.x, y,
@@ -148,7 +148,7 @@ class Pawn(Person):
             raise ValueError("Gold is already used.")
         if gold.gold <= 0:
             raise ValueError("Gold is empty.")
-        print("or",gold.gold)
+        # print("or",gold.gold)
         connection.farm(
             self.y, self.x, self.player.id, self.player.token)
         

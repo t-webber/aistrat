@@ -115,24 +115,7 @@ def hunt(knights: list[Knight], epawns: list[Pawn], eknights: list[Knight]):
             if abs(y - i) + abs(x - j) == 1:
                 attaque((i, j), not_used_knights, eknights)
             else:
-                if rd.random() > 0.5:  # pour ne pas que le chevalier aille toujours d'abord en haut puis à gauche
-                    if x > j and cl.neighbors((y, x), eknights)[0][(0, -1)] == []:
-                        not_used_knights[k].move(y, x - 1)
-                    elif x < j and cl.neighbors((y, x), eknights)[0][(0, 1)] == []:
-                        not_used_knights[k].move(y, x + 1)
-                    elif y > i and cl.neighbors((y, x), eknights)[0][(-1, 0)] == []:
-                        not_used_knights[k].move(y - 1, x)
-                    elif y < i and cl.neighbors((y, x), eknights)[0][(1, 0)] == []:
-                        not_used_knights[k].move(y + 1, x)
-                else:
-                    if y > i and cl.neighbors((y, x), eknights)[0][(-1, 0)] == []:
-                        not_used_knights[k].move(y - 1, x)
-                    elif y < i and cl.neighbors((y, x), eknights)[0][(1, 0)] == []:
-                        not_used_knights[k].move(y + 1, x)
-                    elif x > j and cl.neighbors((y, x), eknights)[0][(0, -1)] == []:
-                        not_used_knights[k].move(y, x - 1)
-                    elif x < j and cl.neighbors((y, x), eknights)[0][(0, 1)] == []:
-                        not_used_knights[k].move(y, x + 1)
+                cl.move_without_suicide(not_used_knights[k], eknights, i, j)
 
 
 def destroy_castle(knights: list[Knight], castles: list[Castle],
@@ -151,24 +134,7 @@ def destroy_castle(knights: list[Knight], castles: list[Castle],
             if abs(y - i) + abs(x - j) == 1:
                 attaque((i, j), knights_not_used, eknights)
             else:
-                if rd.random() > 0.5:  # pour ne pas que le chevalier aille toujours d'abord en haut puis à gauche
-                    if x > j and cl.neighbors((y, x), eknights)[0][(0, -1)] == []:
-                        knights_not_used[k].move(y, x - 1)
-                    elif x < j and cl.neighbors((y, x), eknights)[0][(0, 1)] == []:
-                        knights_not_used[k].move(y, x + 1)
-                    elif y > i and cl.neighbors((y, x), eknights)[0][(-1, 0)] == []:
-                        knights_not_used[k].move(y - 1, x)
-                    elif y < i and cl.neighbors((y, x), eknights)[0][(1, 0)] == []:
-                        knights_not_used[k].move(y + 1, x)
-                else:
-                    if y > i and cl.neighbors((y, x), eknights)[0][(-1, 0)] == []:
-                        knights_not_used[k].move(y - 1, x)
-                    elif y < i and cl.neighbors((y, x), eknights)[0][(1, 0)] == []:
-                        knights_not_used[k].move(y + 1, x)
-                    elif x > j and cl.neighbors((y, x), eknights)[0][(0, -1)] == []:
-                        knights_not_used[k].move(y, x - 1)
-                    elif x < j and cl.neighbors((y, x), eknights)[0][(0, 1)] == []:
-                        knights_not_used[k].move(y, x + 1)
+                cl.move_without_suicide(knights_not_used[k], eknights, i, j)
 
 def free_pawn(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy]):
     """Attaque les péons gratuits s'ils sont adjacent à un chevalier libre."""
@@ -193,22 +159,5 @@ def free_pawn(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy]
 #                 if abs(y - i) + abs(x - j) == 1:
 #                     attaque((i, j), knights_not_used, eknights)
 #                 else:
-#                     if rd.random() > 0.5:  # pour ne pas que le chevalier aille toujours d'abord en haut puis à gauche
-#                         if x > j and cl.neighbors((y, x), eknights)[0][(0, -1)] == []:
-#                             knights_not_used[k].move(y, x - 1)
-#                         elif x < j and cl.neighbors((y, x), eknights)[0][(0, 1)] == []:
-#                             knights_not_used[k].move(y, x + 1)
-#                         elif y > i and cl.neighbors((y, x), eknights)[0][(-1, 0)] == []:
-#                             knights_not_used[k].move(y - 1, x)
-#                         elif y < i and cl.neighbors((y, x), eknights)[0][(1, 0)] == []:
-#                             knights_not_used[k].move(y + 1, x)
-#                     else:
-#                         if y > i and cl.neighbors((y, x), eknights)[0][(-1, 0)] == []:
-#                             knights_not_used[k].move(y - 1, x)
-#                         elif y < i and cl.neighbors((y, x), eknights)[0][(1, 0)] == []:
-#                             knights_not_used[k].move(y + 1, x)
-#                         elif x > j and cl.neighbors((y, x), eknights)[0][(0, -1)] == []:
-#                             knights_not_used[k].move(y, x - 1)
-#                         elif x < j and cl.neighbors((y, x), eknights)[0][(0, 1)] == []:
-#                             knights_not_used[k].move(y, x + 1)
+#                     cl.move_without_suicide(knights_not_used[k], eknights, i, j)
 #             knights_not_used = list(filter(lambda knight: not knight.used, knights))

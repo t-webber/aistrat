@@ -82,36 +82,10 @@ def farm(player: Player, golds: list[GoldPile]):
             gold = golds[g]
             y, x = pawns[p].coord
             i, j = gold.y, gold.x
-            if rd.random() > 0.5:  # pour ne pas que le peon aille toujours d'abord en haut puis à gauche
-                if x > j and (y, x - 1) not in eknights and (y, x - 1) not in ecastles and \
-                        (cl.neighbors((y, x - 1), eknights)[1] == 0 or cl.neighbors((y, x - 1), eknights)[1] <= len(connection.get_eknights(y, x))):
-                    pawns[p].move(y, x - 1)
-                elif x < j and (y, x + 1) not in eknights and (y, x + 1) not in ecastles and \
-                        (cl.neighbors((y, x + 1), eknights)[1] == 0 or cl.neighbors((y, x + 1), eknights)[1] <= len(connection.get_eknights(y, x))):
-                    pawns[p].move(y, x + 1)
-                elif y > i and (y - 1, x) not in eknights and (y - 1, x) not in ecastles and \
-                        (cl.neighbors((y - 1, x), eknights)[1] == 0 or cl.neighbors((y - 1, x), eknights)[1] <= len(connection.get_eknights(y, x))):
-                    pawns[p].move(y - 1, x)
-                elif y < i and (y + 1, x) not in eknights and (y + 1, x) not in ecastles and \
-                        (cl.neighbors((y + 1, x), eknights)[1] == 0 or cl.neighbors((y + 1, x), eknights)[1] <= len(connection.get_eknights(y, x))):
-                    pawns[p].move(y + 1, x)
-                else:
-                    pawns[p].farm(gold)
+            if y == i and x == j:
+                pawns[p].farm(gold)
             else:
-                if y > i and (y - 1, x) not in eknights and (y - 1, x) not in ecastles and \
-                        (cl.neighbors((y - 1, x), eknights)[1] == 0 or cl.neighbors((y - 1, x), eknights)[1] <= len(connection.get_eknights(y, x))):
-                    pawns[p].move(y - 1, x)
-                elif y < i and (y + 1, x) not in eknights and (y + 1, x) not in ecastles and \
-                        (cl.neighbors((y + 1, x), eknights)[1] == 0 or cl.neighbors((y + 1, x), eknights)[1] <= len(connection.get_eknights(y, x))):
-                    pawns[p].move(y + 1, x)
-                elif x > j and (y, x - 1) not in eknights and (y, x - 1) not in ecastles and \
-                        (cl.neighbors((y, x - 1), eknights)[1] == 0 or cl.neighbors((y, x - 1), eknights)[1] <= len(connection.get_eknights(y, x))):
-                    pawns[p].move(y, x - 1)
-                elif x < j and (y, x + 1) not in eknights and (y, x + 1) not in ecastles and \
-                        (cl.neighbors((y, x + 1), eknights)[1] == 0 or cl.neighbors((y, x + 1), eknights)[1] <= len(connection.get_eknights(y, x))):
-                    pawns[p].move(y, x + 1)
-                else:
-                    pawns[p].farm(gold)
+                cl.move_safe_random(pawns[p], eknights, ecastles, i, j)
     # print("AFTER PAWNS", pawns)
 
 

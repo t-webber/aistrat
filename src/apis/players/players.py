@@ -2,10 +2,6 @@
 
 import numpy as np
 from apis.players.player_structure import Player_struct
-from apis import connection
-from apis.kinds import Pawn, Knight, GoldPile, Coord, Enemy, Unit
-from apis.consts import FOG, BEGINING_GOLD
-import player.logic.client_logic as cl
 from player.stages.castles import create_units, build_castle
 import player.stages.attack as atk
 # import player.stages.decisions as dec
@@ -28,11 +24,11 @@ class Player(Player_struct):
         self.checks_turn_data()
         self.update_ennemi_data()
         self.update_fog()
-
+        # print(self.estimation_gold())
         # print("CREATE_UNITS\t", self.pawns)
 
         create_units(self)
-        print("PEONS FUITE\t", self.defense)
+        # print("PEONS FUITE\t", self.defense)
         peons.fuite(self.pawns, self.attack, self.eknights,
                     self.defense)
         # print("BUILD CASTLE\t", self.attack + self.defense)
@@ -45,7 +41,7 @@ class Player(Player_struct):
         # j'explore ensuite dans la direction opposée au spawn
         peons.explore(self, self._knights + self.castles)
 
-        print("FREE PAWNS\t", self.attack + self.defense)
+        # print("FREE PAWNS\t", self.attack + self.defense)
         atk.free_pawn(self.attack + self.defense, self.eknights, self.epawns)
 
         # left_defense = dfd.defend(
