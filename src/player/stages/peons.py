@@ -10,7 +10,7 @@ import player.logic.client_logic as cl
 import player.stages.exploration as ex
 
 if TYPE_CHECKING:
-    from apis.players import Player
+    from apis.players.players import Player
 
 
 def fuite(pawns: list[Pawn], knights: list[Knight], eknights: list[Knight], defense: list[Knight]):

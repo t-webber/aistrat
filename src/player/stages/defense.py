@@ -7,7 +7,7 @@ import player.logic.client_logic as cl
 from apis.kinds import Pawn, Knight, Castle
 
 if TYPE_CHECKING:
-    from apis.players import Player
+    from apis.players.players import Player
 
 
 def agressiv_defense(defense: list[Knight], epawns: list[Pawn], player: Player,

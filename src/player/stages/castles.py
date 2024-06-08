@@ -9,7 +9,7 @@ from apis.kinds import Knight, Pawn
 import player.logic.client_logic as cl
 
 if TYPE_CHECKING:
-    from apis.players import Player
+    from apis.players.players import Player
 
 
 build_order = [consts.PAWN, consts.PAWN, consts.KNIGHT,

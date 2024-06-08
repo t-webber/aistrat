@@ -1,5 +1,5 @@
 from apis import connection as co
-from apis import players as pl
+from apis.players import players as pl
 from player.logic import client_logic as cl
 import numpy as np
 

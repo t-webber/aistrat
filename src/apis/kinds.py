@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from apis import connection, consts
 
 if TYPE_CHECKING:
-    from apis.players import Player
+    from apis.players.players import Player
 
 
 class Coord:
