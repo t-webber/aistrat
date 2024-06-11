@@ -1,6 +1,7 @@
 """Fichier qui implémente la class `Player`."""
 
 import numpy as np
+from apis import connection
 from apis.players.player_structure import Player_struct
 from player.stages.castles import create_units, build_castle
 import player.stages.attack as atk
@@ -22,22 +23,22 @@ class Player(Player_struct):
 
         self.turn += 1
         self.checks_turn_data()
+        self.update_golds()
         self.update_ennemi_data()
         self.update_fog()
         # print(self.estimation_gold())
-        # print("CREATE_UNITS\t", self.pawns)
+        # print("CREATE_UNITS\t")
 
         create_units(self)
-        # print("PEONS FUITE\t", self.defense)
-        peons.fuite(self.pawns, self.attack, self.eknights,
-                    self.defense)
+        # print("PEONS FUITE\t",'eknights ', self.eknights)
+        peons.fuite(self.pawns, self.defense + self.attack, self.eknights)
         # print("BUILD CASTLE\t", self.attack + self.defense)
         build_castle(self)
 
-        # print("PEONS FARM\t", self.pawns)
+        # print("PEONS FARM\t")
         # je farm d'abord ce que je vois
         peons.farm(self, self.good_gold)
-        # print("bf EXPLORE\t", self.pawns)
+        # print("EXPLORE\t", self.eknights)
         # j'explore ensuite dans la direction opposée au spawn
         peons.explore(self, self._knights + self.castles)
 
@@ -65,5 +66,6 @@ class Player(Player_struct):
                 break
 
             last_len = length
-        
         self.update_gold_map()
+
+        connection.end_turn(self.id, self.token)

@@ -32,6 +32,12 @@ class Enemy(Coord):
         super().__init__(y, x)
         self.player = player
 
+    def __str__(self):
+        """Affiche un péon."""
+        return f"({self.y}, {self.x})"
+
+    __repr__ = __str__
+
 class GoldPile(Coord):
     """Classe pour une pile d'or."""
 
@@ -108,7 +114,7 @@ class Person(Unit):
 
     def move(self, y, x):
         """Bouge le péon, et le met en utilisé."""
-        # print('pose before', self.y, self.x, 'pos after',y, x)
+        # print('pose before', self.y, self.x, 'pos after',y, x, self)
         if self.used:
             raise ValueError('Person is already used.')
         connection.move(self.key, self.y, self.x, y,
@@ -148,7 +154,7 @@ class Pawn(Person):
             raise ValueError("Gold is already used.")
         if gold.gold <= 0:
             raise ValueError("Gold is empty.")
-        # print("or",gold.gold)
+        # print("farm",self.y, self.x)
         connection.farm(
             self.y, self.x, self.player.id, self.player.token)
         

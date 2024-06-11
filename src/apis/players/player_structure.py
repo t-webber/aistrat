@@ -2,7 +2,7 @@
 
 import numpy as np
 from apis import connection
-from apis.kinds import Pawn, Knight, GoldPile, Coord, Enemy, Unit
+from apis.kinds import Pawn, Knight, Castle, GoldPile, Coord, Enemy, Unit
 from apis.consts import FOG, BEGINING_GOLD
 import player.logic.client_logic as cl
 
@@ -17,12 +17,10 @@ class Player_struct:
         self.height, self.width = connection.size_map()
         self.turn = 0
         # units
-        self.pawns: list[Pawn] = [Pawn(0, 0, self) for _ in range(3)] if self == 'A' else\
-                                 [Pawn(connection.size_map()[0] - 1, connection.size_map()[
-                                       1] - 1, self) for _ in range(3)]
+        self.pawns: list[Pawn] = [Pawn(y, x, self) for y, x in connection.get_kinds(self.id)[connection.PAWN]]
         self.epawns: list[Enemy] = []
         self.eknights: list[Enemy] = []
-        self.castles: list[Knight] = []
+        self.castles: list[Castle] = [Castle(y, x, self) for y, x in connection.get_kinds(self.id)[connection.CASTLE]]
         self.ecastles: list[Pawn] = []
         self.attack: list[Knight] = []
         self.defense: list[Knight] = []
@@ -108,12 +106,9 @@ class Player_struct:
         for c in self.castles:
             c.used = False
 
-        self.update_golds()
-
     def update_golds(self):
         """Met à jour les données des mines d'or."""
         server_golds = connection.get_kinds(self.id)[connection.GOLD]
-
         golds = self._golds
         self.update_gold_map()
         self._golds = [gold for gold in golds if gold.gold]  # code de goldmon
@@ -146,8 +141,6 @@ class Player_struct:
             g.update()
         self._knights = self.attack + self.defense
         self._golds = self.good_gold + self.bad_gold
-
-        connection.end_turn(self.id, self.token)
 
     def update_gold_map(self):
         """Met à jour la carte des or."""

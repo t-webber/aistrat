@@ -13,15 +13,16 @@ if TYPE_CHECKING:
     from apis.players.players import Player
 
 
-def fuite(pawns: list[Pawn], knights: list[Knight], eknights: list[Knight], defense: list[Knight]):
+def fuite(pawns: list[Pawn], knights: list[Knight], eknights: list[Knight]):
     """Les péons fuient les chevaliers ennemis s'ils sont en danger."""
     i = 0
     knights_not_used = [k for k in knights if not k.used]
     while i < len(pawns):
         p = pawns[i]
         i += 1
-        direc_enemies, total_enemies = cl.neighbors((p.y,p.x), eknights)
+        _, total_enemies = cl.neighbors((p.y,p.x), eknights)
         if total_enemies > 0:
+            print("Fuite")
             direc_allies, allies_backup = cl.neighbors((p.y,p.x), knights_not_used)
             allies = 0
             allies_defense = 0
@@ -32,28 +33,21 @@ def fuite(pawns: list[Pawn], knights: list[Knight], eknights: list[Knight], defe
                 if k.y == p.y and k.x == p.x:
                     on_case.append(k)
                     allies += 1
-            for k in defense:
-                if k.used:
-                    continue
-                if k.y == p.y and k.x == p.x:
-                    on_case.append(k)
-                    allies += 1
 
+            print(cl.prediction_combat(total_enemies, allies + allies_backup))
+            print(allies, allies_backup, total_enemies)
             if cl.prediction_combat(total_enemies, allies + allies_backup)[0]:
                 # si on perd le combat même avec les alliés on fuit
-                for (direc, nb) in direc_enemies.items():
-                    if nb == 0 and (p.y + direc[0], p.x + direc[1]) in connection.get_moves(p.y, p.x) and\
-                            cl.neighbors((p.y + direc[0], p.x + direc[1]), eknights)[1] == 0:
-                        p.move(p.y + direc[0], p.x + direc[1])
-                        i -= 1
-                        break
+                if cl.move_safe_random_without_purpose(p, eknights, knights):
+                    continue
             else:
                 while cl.prediction_combat(total_enemies, allies_defense)[0] and len(on_case) > 0:
+                    on_case[-1].used = True
                     on_case.pop()
                     allies_defense += 1
                 # on peut réussir à gagner le combat avec les alliés et on le fait venir
                 while cl.prediction_combat(total_enemies, allies)[0] and allies_backup > 0:
-                    for direc, list_allies in direc_allies.items():
+                    for _, list_allies in direc_allies.items():
                         if list_allies:
                             list_allies[-1].move(p.y, p.x)
                             list_allies.pop()
