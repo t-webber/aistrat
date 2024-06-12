@@ -97,3 +97,4 @@
 
 - Jules : ajout d'une estimation de l'or restant sur la carte ( qui pourrait aider pour le choix de décisions dans la prod d'unités ) + clean du code pour les deplacements d'unités dans farm et attack + restructuration de la classe joueur + orretion de fuite pour qu'il marche avec la nouvelle structure + correction d'erreur concernant l'actualisation des données d'or (le joueur B avait accès au cases d'or du joueur A car on n'actualisait pas les données dès le début).
 - Martin : réalisation de l'affiche du projet
+- Tom: résolution des bugs sur l'or et les mouvements non synchronisés + implémentation de la stratégie heatmap pour évaluer les risques et calculer les déplacements
