@@ -60,7 +60,7 @@ def heatMapDefGenBis(player : pl.Player):
     return heat_map
 
 
-def heatbattle(knights : list[Knight], eknights : list[Knight], x:int, y:int,a,b,c):
+def heatbattle(knights : list[Knight], eknights : list[Knight], x:int, y:int,A,B,C):
     """Génère la heat de combat"""
     usable_knight=[]
     usable_eknight=[]
@@ -76,8 +76,21 @@ def heatbattle(knights : list[Knight], eknights : list[Knight], x:int, y:int,a,b
             poid_ek+=(1/abs(knt.x-x)+abs(knt.y-y))
     victory,pa,pd=cl.prediction_combat(poid_k,poid_ek)
     if (not victory) : return -1000
-    return (a*pa/pd)**b - len(usable_knight)*c
+    return (A*pa/pd)**B - len(usable_knight)*C
     
+def min_max_alpha_beta(depth:int,alpha:int,beta:int, base_map:list[list[int,int]],player:int):
+    max=-1000*(player)-1
+    config=None
+    map_id=None
+    if depth>0:
+        next_move=base_map.copy()
+        while(map_id!=None):
+            val,_ = min_max_alpha_beta(depth-1,alpha,beta,next_move,1-player)
+            if val*(1-player*(-2)) > max:
+                max = val*(1-player*2)
+                config = next_move
+            next_move,map_id = next_turn(base_map,player,map_id)
+    return max,config
 
 def heatMapAttackGen(player: pl.Player):
     """Génère la Heat Map aggressive"""
@@ -100,18 +113,18 @@ def heatMapAttackGen(player: pl.Player):
 
 
 def heatMapMove(player:pl.Player):
-    attmap=heatMapAttackGen(player)
+    attmap = heatMapAttackGen(player)
     defmap = heatMapDefenseGen(player)
     max = 0
     co=(-1,-1)
     tp=None
     for i in range(co.sizemap()[0]):
         for j in range(co.sizemap()[1]):
-            if attmap[i][j]>
+            if attmap[i][j]>max:
                 max=attmap[i][j]
                 co=(i,j)
                 tp="A"
-            if attmap[i][j]>
+            if defmap[i][j]>max:
                 max=attmap[i][j]
                 co=(i,j)
                 tp="D"
@@ -119,7 +132,7 @@ def heatMapMove(player:pl.Player):
         AttackHere(player,(i,j))
     else:
         defendHere(player,(i,j))
-    attmap=heatMapAttackGen(player)
+    attmap = heatMapAttackGen(player)
     defmap = heatMapDefenseGen(player)
 
 """ 
@@ -131,12 +144,81 @@ proximité et le bouge intelligemment dans sa direction, enlève le mask knight 
 def defendHere(player:pl.Player,case:tuple[int,int]):
     nearestKnights=sorted(player.knights,lambda x:cl.distance(x,case))
     i=0
-    nearest=nearestKnights[i]
-    movement=path_simple(nearest,case,player)
+    movement=None
     while movement is None and i<nearestKnights.length():
-        i+=1
         nearest=nearestKnights[i]
-        movement=path_simple(nearest,case,player)
+        if not nearest.used:
+            movement=path_simple(nearest,case,player)
+        i+=1
     if i>=nearestKnights.length():
         return
     nearest.move(movement)
+
+def attackHere(player:pl.Player,case:tuple[int,int]):
+    pass
+    nearestKnights=sorted(player.knights,lambda x:cl.distance(x,case))
+    hired_knights=[]
+    target_manpower=
+    while i<nearestKnights.length() and len(hired_knights)<target_manpower : 
+        nearest=nearestKnights[i]
+        movement=path_simple(nearest,case,player)
+        if movement!=None and not nearest.used:
+            hired_knights.append(nearest)
+        i+=1
+    
+
+
+
+
+    if i>=nearestKnights.length():
+        return
+    nearest.move(movement)
+
+    """
+    units=[]
+    for i,j in range(len(map_zero)),len(map_zero[0]):
+        if map_zero[i][j] is not None:
+            for k in range(map_zero[i][j][player]):
+                units.add((i,j))"""
+
+def next_match(units,new_vector):
+    new_units=[]
+    for i,unit in enumerate(units):
+        match(new_vector):
+            case 1:
+                new_units.append(unit[0]-1,unit[1])
+            case 2:
+                new_units.append(unit[0]+1,unit[1])
+            case 3:
+                new_units.append(unit[0],unit[1]-1)
+            case 4:
+                new_units.append(unit[0],unit[1]+1)
+            case _: 
+                new_units.append(unit)
+    return new_units
+
+def cinq_adder(last_vector,indice,units):
+    if indice>last_vector.lenght():
+        return None
+    if last_vector[indice]+1 >= 5:
+        last_vector[indice]=0
+        return cinq_adder(last_vector,indice+1,units)
+    elif cl.distance(*next_match[units[indice]]):
+        #TODO, condition aussi, ne pas faire un move si éloignement
+        
+    else:
+        last_vector[indice]+=1
+        return last_vector
+
+def next_turn(units:list[list[int,int]],player:int,last_vector:list[int]=None):
+    if last_vector is None:
+        last_vector=[0 for i in range(len(units[player]))]
+        return units, last_vector
+    new_move=cinq_adder(last_vector,0,units)
+    if new_move is None:
+        return None,None
+    return next_match(units,new_move),new_move
+    
+    
+            
+        
