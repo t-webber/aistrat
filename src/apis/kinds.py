@@ -38,6 +38,7 @@ class Enemy(Coord):
 
     __repr__ = __str__
 
+
 class GoldPile(Coord):
     """Classe pour une pile d'or."""
 
@@ -109,6 +110,7 @@ class Unit(Coord):
         """Effectue le calcul0 de hash pour les unités."""
         return hash((self.y, self.x, self.key))
 
+
 class Person(Unit):
     """Super Boîte noire pour les unités (déplacables)."""
 
@@ -118,8 +120,8 @@ class Person(Unit):
         if self.used:
             raise ValueError('Person is already used.')
         connection.move(self.key, self.y, self.x, y,
-                              x, self.player.id, self.player.token)
-        
+                        x, self.player.id, self.player.token)
+
         self.y = y
         self.x = x
         self.used = True
@@ -129,9 +131,8 @@ class Person(Unit):
         if self.used:
             raise ValueError("Person is already used.")
         connection.build(consts.CASTLE, self.y, self.x,
-                               self.player.id, self.player.token)
+                         self.player.id, self.player.token)
 
-        
         self.used = True
         self.player.castles.append(Castle(self.y, self.x, self.player))
         self.player.gold -= Castle.COST
@@ -157,14 +158,14 @@ class Pawn(Person):
         # print("farm",self.y, self.x)
         connection.farm(
             self.y, self.x, self.player.id, self.player.token)
-        
+
         self.used = True
         self.player.gold += 1
         gold.reduce()
 
     def __str__(self):
         """Affiche un péon."""
-        return f"P({self.y}, {self.x})"
+        return f"P({self.y}, {self.x}, {int(self.used)})"
 
     __repr__ = __str__
 

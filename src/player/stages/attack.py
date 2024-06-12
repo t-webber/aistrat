@@ -1,6 +1,5 @@
 """Fonctions pour définir les actions d'un attaquant."""
 
-import random as rd
 from apis import connection
 from apis.connection import Coord
 from apis.kinds import Pawn, Knight, Castle, Enemy
@@ -103,7 +102,7 @@ def hunt(knights: list[Knight], epawns: list[Pawn], eknights: list[Knight]):
 
     not_used_knights = list(filter(lambda knight: not knight.used, knights))
     if not_used_knights and epawns:
-        
+
         # affecation problem
         # choisis les mines d'or vers lesquelles vont se diriger les peons
         # pour en minimiser le nombre total de mouvements
@@ -136,12 +135,11 @@ def destroy_castle(knights: list[Knight], castles: list[Castle],
             else:
                 cl.move_without_suicide(knights_not_used[k], eknights, i, j)
 
+
 def free_pawn(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy]):
     """Attaque les péons gratuits s'ils sont adjacent à un chevalier libre."""
+    print('knights', knights)
     for knight in knights:
-        # print('ff',knights)
-        # print('ff',[k.used for k in knights])
-        # print('ff', knight, knight.used)
         if not knight.used:
             for epawn in epawns:
                 if cl.distance(knight.x, knight.y, epawn.x, epawn.y) == 1 and not cl.in_obj(epawn, eknights):

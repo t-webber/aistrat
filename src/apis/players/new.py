@@ -5,7 +5,6 @@ from apis.players.player_structure import Player_struct
 # import player.stages.defense as dfd
 
 
-
 class Player(Player_struct):
     """Class pour implémenter les actions d'un joueur."""
 

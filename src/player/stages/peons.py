@@ -3,8 +3,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import random as rd
-from apis import connection
 from apis.kinds import Pawn, Knight, Unit, GoldPile
 import player.logic.client_logic as cl
 import player.stages.exploration as ex
@@ -20,10 +18,10 @@ def fuite(pawns: list[Pawn], knights: list[Knight], eknights: list[Knight]):
     while i < len(pawns):
         p = pawns[i]
         i += 1
-        _, total_enemies = cl.neighbors((p.y,p.x), eknights)
+        _, total_enemies = cl.neighbors((p.y, p.x), eknights)
         if total_enemies > 0:
             print("Fuite")
-            direc_allies, allies_backup = cl.neighbors((p.y,p.x), knights_not_used)
+            direc_allies, allies_backup = cl.movable_neighbors((p.y, p.x), knights_not_used)
             allies = 0
             allies_defense = 0
             on_case = []
@@ -36,7 +34,7 @@ def fuite(pawns: list[Pawn], knights: list[Knight], eknights: list[Knight]):
 
             print(cl.prediction_combat(total_enemies, allies + allies_backup))
             print(allies, allies_backup, total_enemies)
-            if cl.prediction_combat(total_enemies, allies + allies_backup)[0]:
+            if cl.prediction_combat(total_enemies, allies + allies_backup)[0] and not p.used:
                 # si on perd le combat même avec les alliés on fuit
                 if cl.move_safe_random_without_purpose(p, eknights, knights):
                     continue
@@ -71,7 +69,7 @@ def farm(player: Player, golds: list[GoldPile]):
         # choisis les mines d'or vers lesquelles vont se diriger les peons
         # pour en minimiser le nombre total de mouvements
         # je fais bouger les peons vers leur mine d'or
-        result_data = cl.hongrois_distance(pawns, golds) ####
+        result_data = cl.hongrois_distance(pawns, golds)
         for p, g in result_data:
             gold = golds[g]
             y, x = pawns[p].coord
@@ -113,7 +111,6 @@ def path(units: list[Unit], other_units: list[Unit], eknights: list[Knight]):
 
 def explore(player: Player, otherunits=[]):
     """Envoie en exploration les "pawns" inactifs pour le tour."""
-
 
     eknights = player.eknights
 
