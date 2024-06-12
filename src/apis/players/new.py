@@ -10,7 +10,6 @@ class Player(Player_struct):
 
     def next_turn(self):
         """Joue le prochain tour pour le joueur."""
-
         self.reinit_data()
 
         print("============= BEGin TURN for player", self.id, " =====================")

@@ -1,4 +1,4 @@
-# """Évaluation de l'état de la partie, independamment du reste du code."""
+"""Évaluation de l'état de la partie, independamment du reste du code."""
 
 # import copy
 # from apis import connection

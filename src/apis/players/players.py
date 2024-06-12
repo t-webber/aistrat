@@ -1,6 +1,5 @@
 """Fichier qui implémente la class `Player`."""
 
-import numpy as np
 from apis import connection
 from apis.players.player_structure import Player_struct
 from player.stages.castles import create_units, build_castle
@@ -15,7 +14,6 @@ class Player(Player_struct):
 
     def next_turn(self):
         """Joue le prochain tour pour le joueur."""
-
         self.reinit_data()
 
         print("============= BEGin TURN for player", self.id, " =====================")

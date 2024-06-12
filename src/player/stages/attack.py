@@ -42,10 +42,8 @@ def compte_soldats_ennemis_cases_adjacentes(player: str, case: tuple[int, int]):
 
 def move_everyone(case: Coord, allies_voisins: list[Knight]):
     """Bouge tous les attaquants sur la case ciblée."""
-    for knights in allies_voisins:
-        while knights:
-            knights[-1].move(case[0], case[1])
-            knights.pop()
+    for knight in allies_voisins:
+        knight.move(case[0], case[1])
 
 
 def prediction_attaque(case_attaquee: tuple[int, int], knights: list[Knight], eknights: list[Knight]):

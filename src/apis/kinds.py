@@ -155,7 +155,9 @@ class Pawn(Person):
             raise ValueError("Gold is already used.")
         if gold.gold <= 0:
             raise ValueError("Gold is empty.")
-        # print("farm",self.y, self.x)
+        golds = connection.get_kinds(self.player.id)[connection.GOLD]
+        if (gold.y, gold.x, gold.gold) not in golds:
+            raise ValueError(f"Gold {gold} not found in {golds}")
         connection.farm(
             self.y, self.x, self.player.id, self.player.token)
 
@@ -182,7 +184,7 @@ class Knight(Person):
 
     def __str__(self):
         """Affiche un chevalier."""
-        return f"K({self.y}, {self.x})"
+        return f"K({self.y}, {self.x}, {self.used})"
 
     __repr__ = __str__
 

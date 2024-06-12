@@ -194,7 +194,8 @@ def find_unit(units: Unit, y: int, x: int):
             return unit
 
 
-def in_obj(object, object_list):
+def in_obj(object: list[Unit], object_list: list[Unit]):
+    """Test if an object is in a list, being equal by coordinates."""
     for i in object_list:
         if i.y == object.y and i.x == object.x:
             return True

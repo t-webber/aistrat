@@ -2,7 +2,7 @@
 
 import numpy as np
 from apis import connection
-from apis.kinds import Pawn, Knight, Castle, GoldPile, Coord, Enemy, Unit
+from apis.kinds import Pawn, Knight, Castle, GoldPile, Enemy, Unit
 from apis.consts import FOG, BEGINING_GOLD
 import player.logic.client_logic as cl
 
@@ -167,7 +167,7 @@ class Player_struct:
         return sum([gold.gold for gold in self._golds]) + max(0, self.golds_plot_not_seen) * self.average_gold
 
     def decomposition(self, n):
-        """renvoie 1 si n est un carré parfait et 2 sinon"""
+        """Renvoie 1 si n est un carré parfait et 2 sinon."""
         if (n**0.5).is_integer():
             return 1
         else:

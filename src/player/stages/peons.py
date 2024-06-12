@@ -18,7 +18,7 @@ def fuite(pawns: list[Pawn], knights: list[Knight], eknights: list[Knight]):
     while i < len(pawns):
         p = pawns[i]
         i += 1
-        _, total_enemies = cl.neighbors((p.y, p.x), eknights)
+        _, total_enemies = cl.movable_neighbors((p.y, p.x), eknights)
         if total_enemies > 0:
             print("Fuite")
             direc_allies, allies_backup = cl.movable_neighbors((p.y, p.x), knights_not_used)
@@ -111,7 +111,6 @@ def path(units: list[Unit], other_units: list[Unit], eknights: list[Knight]):
 
 def explore(player: Player, otherunits=[]):
     """Envoie en exploration les "pawns" inactifs pour le tour."""
-
     eknights = player.eknights
 
     path(player.pawns, otherunits, eknights)
