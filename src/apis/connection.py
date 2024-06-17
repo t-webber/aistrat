@@ -4,6 +4,8 @@ import numpy as np
 import requests
 from apis.kinds import Coord, Unit
 from apis.consts import PAWN, CASTLE, KNIGHT, GOLD, EKNIGHT, EPAWN, ECASTLE
+from typing import Dict, List, Union
+
 
 IP = "http://localhost:8080"
 TIME_OUT = 0.1
@@ -11,7 +13,14 @@ TIME_OUT = 0.1
 
 MAP_SIZE = None
 
-turn_data = {}
+
+class PlayerId:
+    """'A' or 'B'."""
+
+    pass
+
+
+turn_data: Dict[str, Union[Dict[str, int], List[List[Dict[str, Union[Dict[str, int], int]]]]]] = {}
 
 
 def server_action(url: str) -> tuple[bool, any]:
@@ -64,7 +73,7 @@ def get_data(player_id: str, token: str) -> bool:
     global turn_data
     try:
         data = server_action(f"{IP}/view/{player_id}/{token}")
-    except Exception as e:
+    except Exception:
         return False
     turn_data = data.json()
     return True
@@ -89,7 +98,7 @@ def current_player() -> list:
     return turn_data["player"]
 
 
-def get_gold() -> list:
+def get_gold() -> Dict[str, int]:
     """Renvoie l'argent qu'on possède."""
     return turn_data["gold"]
 
@@ -106,14 +115,12 @@ def get_winner() -> str:
 
 def farm(y: int, x: int, player_id: str, token: str):
     """Fait récolter de l'argent au péon en (y, x)."""
-    server_action(
-            f"{IP}/farm/{player_id}/{y}/{x}/{token}")
+    server_action(f"{IP}/farm/{player_id}/{y}/{x}/{token}")
 
 
 def auto_farm(player_id, token) -> bool:
     """Fait récolter de l'argent à tous les péons."""
-    server_action(
-            f"{IP}/autofarm/{player_id}/{token}")
+    server_action(f"{IP}/autofarm/{player_id}/{token}")
 
 
 def get_info(y: int, x: int) -> list:

@@ -1,6 +1,5 @@
 """Fichier qui implémente la class `Player`."""
 
-import numpy as np
 from apis import connection
 from apis.players.player_structure import Player_struct
 from player.stages.castles import create_units, build_castle
@@ -10,13 +9,11 @@ import player.stages.attack as atk
 from player.stages import peons
 
 
-
 class Player(Player_struct):
     """Class pour implémenter les actions d'un joueur."""
 
     def next_turn(self):
         """Joue le prochain tour pour le joueur."""
-
         self.reinit_data()
 
         print("============= BEGin TURN for player", self.id, " =====================")
@@ -26,7 +23,10 @@ class Player(Player_struct):
         self.update_golds()
         self.update_ennemi_data()
         self.update_fog()
-        # print(self.estimation_gold())
+
+        serv = connection.get_gold()[self.id]
+        if serv != self.gold:
+            raise ValueError(f"wrong gold value: S({serv}) != P({self.gold})")
         # print("CREATE_UNITS\t")
 
         create_units(self)
@@ -50,7 +50,7 @@ class Player(Player_struct):
         # dfd.agressiv_defense(left_defense, self.epawns,
         #                      self.id, self.token, self.eknights)
 
-        #print(dec.inventory_zones()) #Test pour decisions
+        # print(dec.inventory_zones()) #Test pour decisions
 
         last_len = None
 

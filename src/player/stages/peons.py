@@ -3,8 +3,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import random as rd
-from apis import connection
 from apis.kinds import Pawn, Knight, Unit, GoldPile
 import player.logic.client_logic as cl
 import player.stages.exploration as ex
@@ -20,7 +18,7 @@ def fuite(pawns: list[Pawn], knights: list[Knight], eknights: list[Knight]):
     while i < len(pawns):
         p = pawns[i]
         i += 1
-        _, total_enemies = cl.neighbors((p.y,p.x), eknights)
+        _, total_enemies = cl.movable_neighbors((p.y, p.x), eknights)
         if total_enemies > 0:
             # print("Fuite")
             direc_allies, allies_backup = cl.neighbors((p.y,p.x), knights_not_used)
@@ -72,7 +70,7 @@ def farm(player: Player, golds: list[GoldPile]):
         # choisis les mines d'or vers lesquelles vont se diriger les peons
         # pour en minimiser le nombre total de mouvements
         # je fais bouger les peons vers leur mine d'or
-        result_data = cl.hongrois_distance(pawns, golds) ####
+        result_data = cl.hongrois_distance(pawns, golds)
         for p, g in result_data:
             gold = golds[g]
             y, x = pawns[p].coord
@@ -114,8 +112,6 @@ def path(units: list[Unit], other_units: list[Unit], eknights: list[Knight]):
 
 def explore(player: Player, otherunits=[]):
     """Envoie en exploration les "pawns" inactifs pour le tour."""
-
-
     eknights = player.eknights
 
     path(player.pawns, otherunits, eknights)

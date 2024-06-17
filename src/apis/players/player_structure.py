@@ -2,7 +2,7 @@
 
 import numpy as np
 from apis import connection
-from apis.kinds import Pawn, Knight, Castle, GoldPile, Coord, Enemy, Unit
+from apis.kinds import Pawn, Knight, Castle, GoldPile, Enemy, Unit
 from apis.consts import FOG, BEGINING_GOLD
 import player.logic.client_logic as cl
 
@@ -29,7 +29,7 @@ class Player_struct:
             connection.GOLD]]
         self._golds_total = connection.get_kinds(self.id)[connection.GOLD]
         self._golds_total_without_values = [(y, x) for (y, x, _) in self._golds_total]
-        self.average_gold = sum([i**2 for i in range(13)])/12
+        self.average_gold = sum([i**2 for i in range(13)]) / 12
         self.golds_plot_not_seen = 15 - sum([self.decomposition(gold[2]) for gold in self._golds_total])
         self.gold: int = BEGINING_GOLD
         self.good_gold: list[GoldPile]
@@ -89,7 +89,6 @@ class Player_struct:
         """Met à jour les données de brouillard de guerre."""
         self.fog = connection.get_kinds(self.id)[FOG]
 
-
     def reinit_data(self):
         """
         Termine le tour du joueur.
@@ -113,7 +112,7 @@ class Player_struct:
         self.update_gold_map()
         self._golds = [gold for gold in golds if gold.gold]  # code de goldmon
         servgolds_without_values = [(y, x) for (y, x, _) in server_golds]
-        #print("BEFORE GOLDS = ", self._golds)
+        # print("BEFORE GOLDS = ", self._golds)
         self.update_total_gold(server_golds, servgolds_without_values)
 
         for gold in self._golds:
@@ -137,8 +136,13 @@ class Player_struct:
 
         for g in self.good_gold:
             g.update()
+            if g.gold <= 0:
+                self.good_gold.remove(g.gold)
         for g in self.bad_gold:
             g.update()
+            if g.gold <= 0:
+                self.bad_gold.remove(g.gold)
+
         self._knights = self.attack + self.defense
         self._golds = self.good_gold + self.bad_gold
 
@@ -149,26 +153,25 @@ class Player_struct:
         for gold in self._golds:
             coords = gold.coord
             self._gold_map[coords] = gold
-    
+
     def update_total_gold(self, server_golds: list[(int, int, int)], server_golds_without_values: list[(int, int)]):
         """Met à jour ce qu'on sait des golds à l'état de jeu initial."""
-        for i,(y,x) in enumerate(server_golds_without_values):
-            if (y,x) not in self._golds_total_without_values and (self.height - 1 - y,self.width - 1 - x) not in self._golds_total_without_values:
+        for i, (y, x) in enumerate(server_golds_without_values):
+            if (y, x) not in self._golds_total_without_values and (self.height - 1 - y, self.width - 1 - x) not in self._golds_total_without_values:
                 self._golds_total.append(server_golds[i])
-                self._golds_total_without_values.append((y,x))
+                self._golds_total_without_values.append((y, x))
                 self.golds_plot_not_seen -= self.decomposition(server_golds[i][2])
 
     def estimation_gold(self):
         """Estime le nombre de golds restant."""
-        return sum([gold.gold for gold in self._golds]) + max(0,self.golds_plot_not_seen)*self.average_gold
-                
+        return sum([gold.gold for gold in self._golds]) + max(0, self.golds_plot_not_seen) * self.average_gold
+
     def decomposition(self, n):
-        """renvoie 1 si n est un carré parfait et 2 sinon"""
+        """Renvoie 1 si n est un carré parfait et 2 sinon."""
         if (n**0.5).is_integer():
             return 1
         else:
             return 2
-
 
     def check_set_list_coord(self, a: list[Unit], b: list[(int, int)], instance: str):
         """Vérifie si deux listes sont égales."""

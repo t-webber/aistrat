@@ -80,6 +80,7 @@ def getVisibility(player):
 
 
 def giveAllView():
+
     global winner
     data = {'map': mapdata,
             'gold': gold,
@@ -147,7 +148,8 @@ def build(player, y, x, kind, token):
     assert (mapdata[y][x][player][requires[kind]] > 0)
     assert (nbMoves[(y, x, player, requires[kind])]
             < mapdata[y][x][player][requires[kind]])
-    assert (gold[player] >= price[kind])
+    if (gold[player] < price[kind]):
+        print("gold = ", gold[player], "kind = ", kind, "price = ", price[kind])
     nbMoves[(y, x, player, requires[kind])] += 1
     nbMoves[(y, x, player, kind)] += 1
     mapdata[y][x][player][kind] += 1
@@ -251,4 +253,4 @@ def root():
     return app.send_static_file('index.html')
 
 
-app.run(host='0.0.0.0', port=8080, debug=False)
+app.run(host='0.0.0.0', port=8080, debug=True)

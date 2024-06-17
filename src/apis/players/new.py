@@ -5,13 +5,11 @@ from apis.players.player_structure import Player_struct
 # import player.stages.defense as dfd
 
 
-
 class Player(Player_struct):
     """Class pour implémenter les actions d'un joueur."""
 
     def next_turn(self):
         """Joue le prochain tour pour le joueur."""
-
         self.reinit_data()
 
         print("============= BEGin TURN for player", self.id, " =====================")

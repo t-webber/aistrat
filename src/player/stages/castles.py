@@ -12,8 +12,8 @@ if TYPE_CHECKING:
     from apis.players.players import Player
 
 
-build_order = [consts.PAWN, consts.PAWN, consts.KNIGHT,
-               consts.KNIGHT, consts.PAWN, consts.PAWN]
+# build_order = [consts.PAWN, consts.PAWN, consts.KNIGHT,
+#                consts.KNIGHT, consts.PAWN, consts.PAWN]
 
 
 def move_peon_to_first_location(player: Player, border: int, border_y: int, border_x: int):
@@ -26,6 +26,8 @@ def move_peon_to_first_location(player: Player, border: int, border_y: int, bord
         return
 
     for pawn in player.pawns:
+        if pawn.used:
+            continue
         # ce pions est le plus proche de la bonne localisation
         if cl.distance(pawn.y, pawn.x, destination[0], destination[1]) == d:
             if player == "A":
@@ -103,6 +105,7 @@ def create_units(player: Player):
         # else:
         #     build_order.append(suivant)
         # else:
+        print(f"G = {player.gold} (= S = {connection.get_gold()})", end=" | ")
         if n > 0:
             player.gold > consts.PRICES[connection.KNIGHT]
             connection.build(connection.KNIGHT, y, x,
@@ -131,4 +134,4 @@ def create_units(player: Player):
                              player.id, player.token)
             player.gold -= consts.PRICES[connection.PAWN]
             player.pawns.append(Pawn(y, x, player))
-            
+    print()

@@ -146,7 +146,9 @@ def prediction_combat(a: int, d: int):
         d = d - (a + 1) // 2
     return (d <= 0, pertes_a <= pertes_d, pertes_a, pertes_d)
 
-print("".join([chr(ord(c)+1) for c in "Xnt\x1fvhkk\x1fmdudq\x1fehmc\x1fld"]))
+
+print("".join([chr(ord(c) + 1) for c in "Xnt\x1fvhkk\x1fmdudq\x1fehmc\x1fld"]))
+
 
 def neighbors(case: tuple[int, int], knights: list[Knight]):
     """Renvois les voisins d'une case.
@@ -158,6 +160,20 @@ def neighbors(case: tuple[int, int], knights: list[Knight]):
     dir_case = {(0, 1): [], (1, 0): [], (0, -1): [], (-1, 0): []}
     for k in knights:
         if (k.y - case[0], k.x - case[1]) in dir_case:
+            dir_case[(k.y - case[0], k.x - case[1])].append(k)
+    return dir_case, sum(len(dir_case[d]) for d in dir_case)
+
+
+def movable_neighbors(case: tuple[int, int], knights: list[Knight]):
+    """Renvois les voisins d'une case.
+
+    renvoie un couple avec :
+    1 : une liste contenant les 4 listes contenant les unités sur les cases adjacentes (sens trigo, droite en premier)
+    2 : renvoie le nombre de chevaliers ennemis dans les quatres case adjacentes à une case
+    """
+    dir_case = {(0, 1): [], (1, 0): [], (0, -1): [], (-1, 0): []}
+    for k in knights:
+        if (k.y - case[0], k.x - case[1]) in dir_case and not k.used:
             dir_case[(k.y - case[0], k.x - case[1])].append(k)
     return dir_case, sum(len(dir_case[d]) for d in dir_case)
 
@@ -177,14 +193,16 @@ def find_unit(units: Unit, y: int, x: int):
         if unit.y == y and unit.x == x:
             return unit
 
-def in_obj(object, object_list):
+
+def in_obj(object: Unit, object_list: list[Unit]):
+    """Test if an object is in a list, being equal by coordinates."""
     for i in object_list:
         if i.y == object.y and i.x == object.x:
             return True
     return False
 
 
-def move_safe_random(unit: Unit, eknights: list[Knight], ecastles: list[Castle],i: int, j: int):
+def move_safe_random(unit: Unit, eknights: list[Knight], ecastles: list[Castle], i: int, j: int):
     """Déplace une unité de manière aléatoire vers une case sûre."""
     if rd.random() > 0.5:
         if unit.x > j and (unit.y, unit.x - 1) not in eknights and (unit.y, unit.x - 1) not in ecastles and \
@@ -224,9 +242,9 @@ def move_safe_random(unit: Unit, eknights: list[Knight], ecastles: list[Castle],
             return True
         else:
             return False
-        
 
-def move_without_suicide(unit: Unit, eknights : list[Knight], i: int, j:int):
+
+def move_without_suicide(unit: Unit, eknights: list[Knight], i: int, j: int):
     if rd.random() > 0.5:  # pour ne pas que le chevalier aille toujours d'abord en haut puis à gauche
         if unit.x > j and neighbors((unit.y, unit.x), eknights)[0][(0, -1)] == []:
             unit.move(unit.y, unit.x - 1)
@@ -254,6 +272,7 @@ def move_without_suicide(unit: Unit, eknights : list[Knight], i: int, j:int):
             unit.move(unit.y, unit.x + 1)
             return True
     return False
+
 
 def move_safe_random_without_purpose(unit: Unit, eknights: list[Knight], ecastles: list[Castle]):
     """Déplace une unité de manière aléatoire vers une case sûre."""
