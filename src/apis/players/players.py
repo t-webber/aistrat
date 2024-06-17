@@ -66,6 +66,7 @@ class Player(Player_struct):
                 break
 
             last_len = length
+        peons.explore_knight(self, self.pawns+self.castles)
         self.update_gold_map()
 
         connection.end_turn(self.id, self.token)

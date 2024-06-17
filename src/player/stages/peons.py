@@ -22,7 +22,7 @@ def fuite(pawns: list[Pawn], knights: list[Knight], eknights: list[Knight]):
         i += 1
         _, total_enemies = cl.neighbors((p.y,p.x), eknights)
         if total_enemies > 0:
-            print("Fuite")
+            # print("Fuite")
             direc_allies, allies_backup = cl.neighbors((p.y,p.x), knights_not_used)
             allies = 0
             allies_defense = 0
@@ -34,8 +34,8 @@ def fuite(pawns: list[Pawn], knights: list[Knight], eknights: list[Knight]):
                     on_case.append(k)
                     allies += 1
 
-            print(cl.prediction_combat(total_enemies, allies + allies_backup))
-            print(allies, allies_backup, total_enemies)
+            # print(cl.prediction_combat(total_enemies, allies + allies_backup))
+            # print(allies, allies_backup, total_enemies)
             if cl.prediction_combat(total_enemies, allies + allies_backup)[0]:
                 # si on perd le combat même avec les alliés on fuit
                 if cl.move_safe_random_without_purpose(p, eknights, knights):
@@ -50,6 +50,7 @@ def fuite(pawns: list[Pawn], knights: list[Knight], eknights: list[Knight]):
                     for _, list_allies in direc_allies.items():
                         if list_allies:
                             list_allies[-1].move(p.y, p.x)
+                            knights_not_used.remove(list_allies[-1])
                             list_allies.pop()
                             allies_backup -= 1
                             allies += 1
@@ -125,6 +126,6 @@ def explore(player: Player, otherunits=[]):
 def explore_knight(player: Player, otherunits=[]):
     """Envoie en exploration les chevaliers inactifs pour le tour."""
     eknights = player.eknights
-
-    path(player.eknights, otherunits, eknights)
-    ex.path_trou(player.eknights, otherunits, eknights)
+    knights = player.attack + player.defense
+    path(knights, otherunits, eknights)
+    ex.path_trou(knights, otherunits, eknights)

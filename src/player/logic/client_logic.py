@@ -257,14 +257,11 @@ def move_without_suicide(unit: Unit, eknights : list[Knight], i: int, j:int):
 
 def move_safe_random_without_purpose(unit: Unit, eknights: list[Knight], ecastles: list[Castle]):
     """Déplace une unité de manière aléatoire vers une case sûre."""
+    print("move_safe_random_without_purpose")
     for (i, j) in connection.get_moves(unit.y, unit.x) :
-        if (i, j) not in eknights and (i, j) not in ecastles and \
+        if not in_obj(Coord(i,j),eknights) and (i, j) not in ecastles and \
                 (neighbors((i, j), eknights)[1] == 0 or neighbors((i, j), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
+            print(i,j)
             unit.move(i, j)
             return True
-    if rd.random() > 0.5:
-        if (unit.y, unit.x - 1) not in eknights and (unit.y, unit.x - 1) not in ecastles and \
-                (neighbors((unit.y, unit.x - 1), eknights)[1] == 0 or neighbors((unit.y, unit.x - 1), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
-            unit.move(unit.y, unit.x - 1)
-            return True
-        return False
+    return False
