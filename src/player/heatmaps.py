@@ -1,6 +1,6 @@
 # from apis import connection
 # from apis.players import players as pl
-# from player.logic import client_logic as cl
+# from logic import client_logic as cl
 # import numpy as np
 
 # HeatDef = {"Pawn": 5, "Knight": -4, "Castle": 10, "Eknight": 8}

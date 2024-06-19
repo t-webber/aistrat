@@ -1,8 +1,8 @@
 """Fichier qui implémente la class `Player`."""
 
 from apis.players.player_structure import Player_struct
-# import player.stages.decisions as dec
-# import player.stages.defense as dfd
+# import player.decisions as dec
+# import player.defense as dfd
 
 
 class Player(Player_struct):

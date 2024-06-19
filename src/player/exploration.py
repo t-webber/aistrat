@@ -1,7 +1,7 @@
 """Fonctions liées au déplacement et a l'exploration."""
 import numpy as np
 from apis import connection
-import player.logic.client_logic as cl
+import logic.client_logic as cl
 from apis.kinds import Pawn, Knight, Unit
 
 

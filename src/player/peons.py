@@ -4,8 +4,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from apis.kinds import Pawn, Knight, Unit, GoldPile
-import player.logic.client_logic as cl
-import player.stages.exploration as ex
+import logic.client_logic as cl
+import player.exploration as ex
 
 if TYPE_CHECKING:
     from apis.players.players import Player
@@ -21,7 +21,7 @@ def fuite(pawns: list[Pawn], knights: list[Knight], eknights: list[Knight]):
         _, total_enemies = cl.neighbors((p.y, p.x), eknights)
         if total_enemies > 0:
             # print("Fuite")
-            direc_allies, allies_backup = cl.neighbors((p.y,p.x), knights_not_used)
+            direc_allies, allies_backup = cl.neighbors((p.y, p.x), knights_not_used)
             allies = 0
             allies_defense = 0
             on_case = []

@@ -4,7 +4,8 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-from apis import connection, consts
+from apis import connection
+from config import consts
 
 if TYPE_CHECKING:
     from apis.players.players import Player
@@ -203,3 +204,30 @@ class Castle(Unit):
         return f"C({self.y}, {self.x})"
 
     __repr__ = __str__
+
+    def create_defense(self):
+        """Crée un défenseur."""
+        cost = consts.PRICES[connection.KNIGHT]
+        if self.player.gold < cost:
+            raise ValueError("Not enough gold to proceed")
+        connection.build(connection.KNIGHT, self.y, self.x, self.player.id, self.player.token)
+        self.player.gold -= cost
+        self.player.defense.append(Knight(*self.coord, self.player))
+
+    def create_attack(self):
+        """Crée un défenseur."""
+        cost = consts.PRICES[connection.KNIGHT]
+        if self.player.gold < cost:
+            raise ValueError("Not enough gold to proceed")
+        connection.build(connection.KNIGHT, self.y, self.x, self.player.id, self.player.token)
+        self.player.gold -= cost
+        self.player.attack.append(Knight(*self.coord, self.player))
+
+    def create_pawn(self):
+        """Crée un défenseur."""
+        cost = consts.PRICES[connection.PAWN]
+        if self.player.gold < cost:
+            raise ValueError("Not enough gold to proceed")
+        connection.build(connection.PAWN, self.y, self.x, self.player.id, self.player.token)
+        self.player.gold -= cost
+        self.player.pawns.append(Pawn(*self.coord, self.player))

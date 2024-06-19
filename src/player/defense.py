@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import random as rd
-import player.logic.client_logic as cl
+import logic.client_logic as cl
 from apis.kinds import Pawn, Knight, Castle
 
 if TYPE_CHECKING:

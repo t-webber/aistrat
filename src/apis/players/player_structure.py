@@ -3,8 +3,8 @@
 import numpy as np
 from apis import connection
 from apis.kinds import Pawn, Knight, Castle, GoldPile, Enemy, Unit
-from apis.consts import FOG, BEGINING_GOLD
-import player.logic.client_logic as cl
+from config.consts import FOG, BEGINING_GOLD
+import logic.client_logic as cl
 
 
 class Player_struct:
@@ -46,7 +46,7 @@ class Player_struct:
         Vérifie si deux joueurs sont les mêmes.
 
         La comparaison peut aussi s'éffecteur avec le nom ('A' ou 'B').
-        Voir les constantes dans `api.consts`.
+        Voir les constantes dans `config.consts`.
         """
         if isinstance(other, Player_struct):
             return self.id == other.id
@@ -108,7 +108,7 @@ class Player_struct:
     def update_golds(self):
         """Met à jour les données des mines d'or."""
         server_golds = connection.get_kinds(self.id)[connection.GOLD]
-        golds = self._golds
+        golds = self._golds.copy()
         self.update_gold_map()
         self._golds = [gold for gold in golds if gold.gold]  # code de goldmon
         servgolds_without_values = [(y, x) for (y, x, _) in server_golds]

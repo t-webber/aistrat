@@ -2,11 +2,11 @@
 
 from apis import connection
 from apis.players.player_structure import Player_struct
-from player.stages.castles import create_units, build_castle
-import player.stages.attack as atk
-# import player.stages.decisions as dec
-# import player.stages.defense as dfd
-from player.stages import peons
+from player.castles import create_units, build_castle
+import player.attack as atk
+# import player.decisions as dec
+# import player.defense as dfd
+from player import peons
 
 
 class Player(Player_struct):
@@ -66,7 +66,7 @@ class Player(Player_struct):
                 break
 
             last_len = length
-        peons.explore_knight(self, self.pawns+self.castles)
+        peons.explore_knight(self, self.pawns + self.castles)
         self.update_gold_map()
 
         connection.end_turn(self.id, self.token)

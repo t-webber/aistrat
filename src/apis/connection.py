@@ -3,7 +3,7 @@
 import numpy as np
 import requests
 from apis.kinds import Coord, Unit
-from apis.consts import PAWN, CASTLE, KNIGHT, GOLD, EKNIGHT, EPAWN, ECASTLE
+from config.consts import PAWN, CASTLE, KNIGHT, GOLD, EKNIGHT, EPAWN, ECASTLE
 from typing import Dict, List, Union
 
 

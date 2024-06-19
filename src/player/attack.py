@@ -3,7 +3,7 @@
 from apis import connection
 from apis.connection import Coord
 from apis.kinds import Pawn, Knight, Castle, Enemy
-import player.logic.client_logic as cl
+import logic.client_logic as cl
 
 
 def prediction_combat(a: int, d: int):
@@ -141,7 +141,8 @@ def free_pawn(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy]
         if not knight.used:
             for epawn in epawns:
                 if cl.distance(knight.x, knight.y, epawn.x, epawn.y) == 1 and not cl.in_obj(epawn, eknights):
-                    knight.move(epawn.y, epawn.x)
+                    if not knight.used:
+                        knight.move(epawn.y, epawn.x)
 
 # def endgame(knights: list[Knight], eknights: list[Knight], epawns: list[Pawn]):
 #     knights_not_used = list(filter(lambda knight: not knight.used, knights))
