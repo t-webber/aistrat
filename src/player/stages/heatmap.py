@@ -79,18 +79,41 @@ def heatbattle(knights : list[Knight], eknights : list[Knight], x:int, y:int,A,B
     return (A*pa/pd)**B - len(usable_knight)*C
     
 def min_max_alpha_beta(depth:int,alpha:int,beta:int, base_map:list[list[int,int]],player:int):
-    max=-1000*(player)-1
+    extrem=player*10000
     config=None
     map_id=None
+    new_beta=beta
+    new_alpha=alpha
     if depth>0:
         next_move=base_map.copy()
         while(map_id!=None):
-            val,_ = min_max_alpha_beta(depth-1,alpha,beta,next_move,1-player)
-            if val*(1-player*(-2)) > max:
-                max = val*(1-player*2)
+            val,_ = min_max_alpha_beta(depth-1,new_alpha,new_beta,next_move,1-player)
+            if val>= extrem and not player:
+                if val >= beta:
+                    return val,next_move  
+                extrem = val
                 config = next_move
+                new_alpha=max(alpha,val)
+            if val<= extrem and player:
+                if val <= alpha:
+                    return val,next_move  
+                extrem = val
+                config = next_move
+                new_beta=min(new_beta,val)
             next_move,map_id = next_turn(base_map,player,map_id)
-    return max,config
+        return max,config
+    else:
+        return eval_config(base_map, base_map)
+    
+def eval_config(config):
+    score=0
+    for knight in config[0]:
+        if knight==[0,0]:
+            score+=15
+    score+=len(knight[0])*2
+    score-=len(knight[1])
+    return min(score,0)
+
 
 def heatMapAttackGen(player: pl.Player):
     """Génère la Heat Map aggressive"""
