@@ -98,7 +98,6 @@ class Player_struct:
         servgolds_without_values = [(y, x) for (y, x, _) in server_golds]
         # self.update_total_gold(server_golds, servgolds_without_values)
         updated_golds = []
-
         for gold in self._golds:
             y, x = gold.coord
             v = gold.gold
@@ -108,16 +107,15 @@ class Player_struct:
                 server_golds.remove((y, x, v))
                 servgolds_without_values.remove((y, x))
                 updated_golds.append(gold)
-                continue
-            if (y, x) in servgolds_without_values:
+            elif (y, x) in servgolds_without_values:
                 index = servgolds_without_values.index((y, x))
                 _, _, new_v = server_golds[index]
                 gold.gold = new_v
                 updated_golds.append(gold)
                 server_golds.remove((y, x, new_v))
                 servgolds_without_values.pop(index)
-                continue
-            updated_golds.append(gold)
+            elif gold in self.fog:
+                updated_golds.append(gold)
 
         for (y, x, v) in server_golds:
             updated_golds.append(GoldPile(y, x, v, self))
