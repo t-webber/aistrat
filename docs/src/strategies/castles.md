@@ -17,9 +17,11 @@ Cette fonctions s'occupe de la construction châteaux. On commence par prendre l
 
 - fonction: `create_units`
 
-`create_units` s'occupe de créer les unites avec nos châteaux. La construction des unités se fait selon la logique suivante :
+`create_units` s'occupe de créer les unites avec nos châteaux. La construction des unités se fait selon les étapes suivantes, sachant qu'elles s'excluent (si on a pas assez d'or pour la première condition et qu'elle est vraie, on saute toutes les autres conditions pour garder l'or nécessaire pour le tour d'après) :
 
-- si on a moins de la moitié des châteaux qu'on est censé construire, on est au début de la partie donc on ne construit pas de chevaliers, on construit des péons et on garde de l'or pour construire les châteaux
-- si le rapport $\dfrac{|\{ \text{chevaliers enemmis} \}|}{| \{ \text{ chevaliers alliés } \} |}$ est suppérieur à un certain pourcentage, on construit des chevaliers qu'on assigne à la défense.
-- si on a "beaucoup" d'or, on construit des chevaliers qu'on assigne à l'attaque.
-- sinon, on construit des péons ou on économise de l'or.
+- si nous sommes attaqués, production de défenseurs
+- si on a pas assez de châteaux
+  - si on a pas assez de péons pour construire des châteaux, on en crée
+- si il y a trop de péons ennemis sur les cases voisines, on crée des attaquants
+- si on a pas assez de péons par rapport aux piles d'or voisines, on en crée
+- sinon, on créé des attaquants
