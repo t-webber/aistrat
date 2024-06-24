@@ -120,8 +120,6 @@ class Player_struct:
         for (y, x, v) in server_golds:
             updated_golds.append(GoldPile(y, x, v, self))
 
-        updated_golds.sort()
-
         if not (set(server_golds) <= set(gold.y, gold.x, gold.gold) for gold in updated_golds):
             raise ValueError(f"gold changed {updated_golds} != {server_golds}")
 
@@ -129,12 +127,8 @@ class Player_struct:
 
         for g in self.good_gold:
             g.update()
-            if g.gold <= 0:
-                self.good_gold.remove(g.gold)
         for g in self.bad_gold:
             g.update()
-            if g.gold <= 0:
-                self.bad_gold.remove(g.gold)
 
         self._knights = self.attack + self.defense
         self._golds = self.good_gold + self.bad_gold
@@ -168,7 +162,6 @@ class Player_struct:
 
     def check_set_list_coord(self, client_units: list[Unit], server_units: list[(int, int)], instance: str):
         """Vérifie si deux listes sont égales."""
-
         client = client_units.copy()
         server = server_units.copy()
 
