@@ -51,3 +51,8 @@
 
 PLANNING : Ajouter des stratégies au planning
 IDEES : Regrouper (armées, etc ..)
+
+
+# Timeline du projet
+
+![Timeline](timeline.png)
