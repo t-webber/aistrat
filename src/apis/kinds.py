@@ -52,9 +52,9 @@ class GoldPile(Coord):
     def reduce(self):
         """Farm une pile d'or."""
         if self.used:
-            raise ValueError("Gold is already used.")
+            raise ValueError(f"Gold {self} is already used.")
         if self.gold <= 0:
-            raise ValueError("Gold is empty.")
+            raise ValueError(f"Gold {self} is empty.")
         self.gold -= 1
         self.used = True
         return self.gold
@@ -77,7 +77,7 @@ class GoldPile(Coord):
             return self.x
         if key == 2:
             return self.gold
-        raise KeyError
+        raise KeyError(f'Invalid key {key} for gold.')
         # print(f"Error: key not found for gold: {key}", file=sys.stderr)
         # sys.exit(1)
 
@@ -119,9 +119,12 @@ class Person(Unit):
         """Bouge le péon, et le met en utilisé."""
         # print('pose before', self.y, self.x, 'pos after',y, x, self)
         if self.used:
-            raise ValueError('Person is already used.')
-        connection.move(self.key, self.y, self.x, y,
-                        x, self.player.id, self.player.token)
+            raise ValueError(f'Person {self} is already used.')
+        try:
+            connection.move(self.key, self.y, self.x, y,
+                            x, self.player.id, self.player.token)
+        except ValueError as e:
+            raise ValueError(f"Tried to move {self} but not allowed: {e}") from e
 
         self.y = y
         self.x = x
@@ -130,7 +133,7 @@ class Person(Unit):
     def build(self):
         """Build caslte."""
         if self.used:
-            raise ValueError("Person is already used.")
+            raise ValueError(f"Person {self} is already used.")
         connection.build(consts.CASTLE, self.y, self.x,
                          self.player.id, self.player.token)
 
@@ -151,14 +154,14 @@ class Pawn(Person):
     def farm(self, gold: GoldPile):
         """Farm une pile d'or."""
         if self.used:
-            raise ValueError("Person is already used.")
+            raise ValueError(f"Person {self} is already used.")
         if gold.used:
-            raise ValueError("Gold is already used.")
+            raise ValueError(f"Gold {gold} is already used.")
         if gold.gold <= 0:
-            raise ValueError("Gold is empty.")
+            raise ValueError(f"Gold {gold} is empty.")
         golds = connection.get_kinds(self.player.id)[connection.GOLD]
         if (gold.y, gold.x, gold.gold) not in golds:
-            raise ValueError(f"Gold {gold} not found in {golds}")
+            raise ValueError(f"Gold {gold} not found in {golds}.\n The client golds where {self.player.good_gold + self.player.bad_gold}")
         connection.farm(
             self.y, self.x, self.player.id, self.player.token)
 
@@ -209,7 +212,7 @@ class Castle(Unit):
         """Crée un défenseur."""
         cost = consts.PRICES[connection.KNIGHT]
         if self.player.gold < cost:
-            raise ValueError("Not enough gold to proceed")
+            raise ValueError(f"Not enough gold to proceed: {self.gold}")
         connection.build(connection.KNIGHT, self.y, self.x, self.player.id, self.player.token)
         self.player.gold -= cost
         self.player.defense.append(Knight(*self.coord, self.player))
@@ -218,7 +221,7 @@ class Castle(Unit):
         """Crée un défenseur."""
         cost = consts.PRICES[connection.KNIGHT]
         if self.player.gold < cost:
-            raise ValueError("Not enough gold to proceed")
+            raise ValueError(f"Not enough gold to proceed: {self.gold}")
         connection.build(connection.KNIGHT, self.y, self.x, self.player.id, self.player.token)
         self.player.gold -= cost
         self.player.attack.append(Knight(*self.coord, self.player))
@@ -227,7 +230,7 @@ class Castle(Unit):
         """Crée un défenseur."""
         cost = consts.PRICES[connection.PAWN]
         if self.player.gold < cost:
-            raise ValueError("Not enough gold to proceed")
+            raise ValueError(f"Not enough gold to proceed: {self.gold}")
         connection.build(connection.PAWN, self.y, self.x, self.player.id, self.player.token)
         self.player.gold -= cost
         self.player.pawns.append(Pawn(*self.coord, self.player))
