@@ -90,6 +90,10 @@ class Player:
         """Met à jour les données de brouillard de guerre."""
         self.fog = connection.get_kinds(self.id)[FOG]
 
+    def print_heatmaps(self):
+        """Affiche les heatmaps pour le debug"""
+        hm.print_heatmaps(self)
+
     def next_turn(self):
         """Joue le prochain tour pour le joueur."""
         print("DEBUT TURN")
