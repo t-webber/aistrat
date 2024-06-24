@@ -8,7 +8,7 @@ from typing import Dict, List, Union
 
 
 IP = "http://localhost:8080"
-TIME_OUT = 0.4
+TIME_OUT = 0.1
 
 
 MAP_SIZE = None
@@ -225,7 +225,7 @@ def add_visible(carte, unit: Coord) -> list[int]:
 
 def get_eknights(y: int, x: int) -> list[tuple]:
     """Renvoie la liste des chevaliers présents sur une case donnée."""
-    d = get_map()[y][x][current_player()]
+    d = get_map()[y][x][other(current_player())]
     result = []
     if d[KNIGHT]:
         for _ in range(d[KNIGHT]):
