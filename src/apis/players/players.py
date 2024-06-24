@@ -1,3 +1,4 @@
+
 """Fichier qui implémente la class `Player`."""
 
 from apis import connection
