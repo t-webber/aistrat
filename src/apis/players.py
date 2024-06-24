@@ -92,7 +92,8 @@ class Player:
 
     def print_heatmaps(self):
         """Affiche les heatmaps pour le debug"""
-        hm.print_heatmaps(self)
+        print(self.pawns)
+        hm.print_heatmaps(self.pawns, self.knights, self.castles, self.eknights, self.ecastles, self.epawns, self._gold_map, self.id)
 
     def next_turn(self):
         """Joue le prochain tour pour le joueur."""
@@ -113,7 +114,7 @@ class Player:
         # j'explore ensuite dans la direction opposée au spawn
         peons.explore(self, self.knights + self.castles)
 
-        hm.heatMapMove(self)
+        # hm.heatMapMove(self)
 
 
         self.update_gold_map()

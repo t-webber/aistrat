@@ -130,8 +130,9 @@ def prediction_combat(a: int, d: int):
         a (int): Force de l'attaquant.
         d (int): Force du defenseur.
 
-    Returns: tuple (bool, int, int) où:
+    Returns: tuple (bool, bool, int, int) où:
         - bool: True si l'attaquant gagne, False sinon.
+        - bool : True si l'attaquant a moins perdu que le defenseur
         - int: nombre de pertes de l'attaquant.
         - int: nombre de pertes du défenseur.
     """
