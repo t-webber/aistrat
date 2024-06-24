@@ -101,7 +101,7 @@ def create_units(player: Player):
         elif missing_priority_castles:
             # print("--- priory 2 ---")
             # 3. Pas assez de péons pour contruire des châteaux
-            if len([gold for gold in player._golds if cl.distance(*gold.coord, *castle.coord) <= settings.DISTANCE_BETWEEN_CASTLES]) + 4 >= len(player.pawns):
+            if len([gold for gold in player._golds if cl.distance(*gold.coord, *castle.coord) <= settings.DISTANCE_BETWEEN_CASTLES]) + settings.PAWNS_OFFSET >= len(player.pawns):
                 if player.gold >= consts.PRICES[consts.PAWN]:
                     castle.create_pawn()
         # 3. Il y a des péons ennemis

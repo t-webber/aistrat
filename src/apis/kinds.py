@@ -49,6 +49,12 @@ class GoldPile(Coord):
         self.gold = gold
         self.used = False
 
+    def __gt__(self, other: GoldPile):
+        """Compare deux piles d'or."""
+        return self.y > other.y or (self.y == other.y and self.x > other.x or (self.x == other.x and self.y == other.y and self.gold > other.gold))
+
+    __ge__ = __gt__
+
     def reduce(self):
         """Farm une pile d'or."""
         if self.used:

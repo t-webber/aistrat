@@ -108,31 +108,52 @@ class Player_struct:
     def update_golds(self):
         """Met à jour les données des mines d'or."""
         server_golds = connection.get_kinds(self.id)[connection.GOLD]
-        golds = self._golds.copy()
-        self.update_gold_map()
-        self._golds = [gold for gold in golds if gold.gold]  # code de goldmon
+        # self.update_gold_map()
         servgolds_without_values = [(y, x) for (y, x, _) in server_golds]
-        # print("BEFORE GOLDS = ", self._golds)
-        self.update_total_gold(server_golds, servgolds_without_values)
+        # self.update_total_gold(server_golds, servgolds_without_values)
+        updated_golds = []
+
+        server_golds.sort()
+        self._golds.sort()
+
+        print("server = ", server_golds)
+        print("befgolds = ", self._golds)
 
         for gold in self._golds:
             y, x = gold.coord
             v = gold.gold
+            if not v:
+                print("Discard", y, x)
+                continue
             if (y, x, v) in server_golds:
+                print("Exact", y, x)
                 server_golds.remove((y, x, v))
                 servgolds_without_values.remove((y, x))
-            else:
-                try:
-                    index = servgolds_without_values.index((y, x))
-                    servgolds_without_values.pop(index)
-                    server_golds.pop(index)
-                except ValueError:
-                    pass
+                updated_golds.append(gold)
+                continue
+            if (y, x) in servgolds_without_values:
+                print("Wrong", y, x)
+                index = servgolds_without_values.index((y, x))
+                _, _, new_v = server_golds[index]
+                gold.gold = new_v
+                updated_golds.append(gold)
+                server_golds.remove((y, x, new_v))
+                servgolds_without_values.pop(index)
+                continue
+            print("Unknown", y, x)
+            updated_golds.append(gold)
 
-        for y, x, gold in server_golds:
-            self._golds.append(GoldPile(y, x, gold, self))
+        for (y, x, v) in server_golds:
+            updated_golds.append(GoldPile(y, x, v, self))
 
-        self.good_gold, self.bad_gold = cl.clean_golds(self._golds, self.pawns, self.ecastles)
+        updated_golds.sort()
+
+        print("af gold = ", updated_golds)
+
+        if not (set(server_golds) <= set(gold.y, gold.x, gold.gold) for gold in updated_golds):
+            raise ValueError(f"gold changed {updated_golds} != {server_golds}")
+
+        self.good_gold, self.bad_gold = cl.clean_golds(updated_golds, self.pawns, self.ecastles)
 
         for g in self.good_gold:
             g.update()
