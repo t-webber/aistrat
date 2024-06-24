@@ -280,7 +280,6 @@ def move_safe_random_without_purpose(unit: Unit, eknights: list[Knight], ecastle
     for (i, j) in connection.get_moves(unit.y, unit.x):
         if not in_obj(Coord(i, j), eknights) and (i, j) not in ecastles and \
                 (neighbors((i, j), eknights)[1] == 0 or neighbors((i, j), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
-            print(i, j)
             unit.move(i, j)
             return True
     return False
