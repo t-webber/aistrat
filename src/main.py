@@ -38,6 +38,7 @@ def main():
             sys.exit(1)
 
     if debug:
+        player1.update_ennemi_data()
         player1.update_gold_map()
         player1.print_heatmaps()
     else:

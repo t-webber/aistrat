@@ -15,9 +15,10 @@ attHeat={"Epawn":5,"Ecastle":30}
 def genMask(intensity: int):
     """Génère les masques pour les heatmap"""
     mask=np.zeros((2*abs(intensity)+1,2*abs(intensity)+1))
+    center=len(mask[0])//2
     for i in range(2*abs(intensity)+1):
         for j in range(2*abs(intensity)+1):
-            mask[i][j]=intensity/(cl.distance(0,0,i,j)+1)**2
+            mask[i][j]=intensity/(cl.distance(center,center,i,j)+1)**2
     return mask
 
 maskHeatDef={i: genMask(defHeat[i]) for i in defHeat}
@@ -26,11 +27,12 @@ maskHeatAtt={i: genMask(attHeat[i]) for i in attHeat}
 def addLight(map:np.array,mask,coord:tuple[int,int]):
     """Ajoute la lumière liée à une unité sur map en fonction de son masque et de sa coordonnée""" 
     center=len(mask[0])//2 #Division entière par 2 pour trouver le centre du mask
-    print(mask)
     for i in range(mask[0].size):
         for j in range(mask[0].size):
             if 0<coord[0]+i-center<len(map) and 0<coord[1]+j-center<len(map[0]):
-                map[coord[0]+i-center][coord[1]+j-center]=map[coord[0]+i-center][coord[1]+j-center]+mask[i][j]
+                print((i, j))
+                print(mask[i][j])
+                map[coord[0]+i-center][coord[1]+j-center] += mask[i][j]
 
 def moveLight(map:np.array,mask,oldcoord:tuple[int,int],newcoord:tuple[int,int]):
     """Modifie la heatmap de map en fonction de son masque et de sa nouvelle coordonnée"""
@@ -138,11 +140,6 @@ def eval_config(config):
 def heatMapAttackGen(epawns : list[Pawn], ecastles : list[Castle], id : str, knights : list[Knight], eknights : list[Knight], gold_map : list[list[int]]):
     """Génère la Heat Map aggressive"""
     heat_map=np.zeros((co.size_map()))
-    #rajout du rayonnement des péons et chateaux ennemis qui sont les cibles
-    for epawn in epawns:
-        addLight(heat_map,maskHeatAtt["Epawn"],(epawn.y,epawn.x))
-    for ecastle in ecastles:
-        addLight(heat_map,maskHeatAtt["Ecastle"],(ecastle.y,ecastle.x))
 
         #rajout de l'intéret d'aller de l'avant
     for i in range(co.size_map()[0]):
@@ -153,10 +150,17 @@ def heatMapAttackGen(epawns : list[Pawn], ecastles : list[Castle], id : str, kni
                 heat_map[i][j] += 0.3*(co.size_map[0]-j-1)
             
         #rajout de l'impact des combats    
-        gold_here = 0
-        if gold_map[i][j] is not None:
-            gold_here = gold_map[i][j]
-        heat_map[i][j] += heatbattle(knights, eknights, i, j, 2, 2, 2) + gold_here
+            gold_here = 0
+            if gold_map[i][j] is not None:
+                gold_here = 0
+            heat_map[i][j] += heatbattle(knights, eknights, i, j, 2, 2, 2) + gold_here
+
+        #rajout du rayonnement des péons et chateaux ennemis qui sont les cibles
+    for epawn in epawns:
+        addLight(heat_map,maskHeatAtt["Epawn"],(epawn[0],epawn[1]))
+    for ecastle in ecastles:
+        addLight(heat_map,maskHeatAtt["Ecastle"],(ecastle[0],ecastle[1]))
+
     return heat_map
 
 

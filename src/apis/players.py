@@ -92,6 +92,7 @@ class Player:
 
     def print_heatmaps(self):
         """Affiche les heatmaps pour le debug"""
+        print(self.pawns)
         hm.print_heatmaps(self.pawns, self.knights, self.castles, self.eknights, self.ecastles, self.epawns, self._gold_map, self.id)
 
     def next_turn(self):
