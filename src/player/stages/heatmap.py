@@ -240,7 +240,7 @@ proximité et le bouge intelligemment dans sa direction, enlève le mask knight 
 #         if movement!=None and not nearest.used:
 #             hired_knights.append(nearest)
 #         i+=1
-    
+
 
 
 
