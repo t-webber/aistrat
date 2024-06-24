@@ -92,13 +92,6 @@ def heatbattle(knights : list[Knight], eknights : list[Knight], x:int, y:int,A,B
     if (not victory) : return -1000
     return (A*pa/pd)**B - len(usable_knight)*C
 
-<<<<<<< HEAD
-config=[[[3,0],[3,0],[3,0],[3,0]],[[0,0],[0,0],[0,0],[0,0]]]
-
-=======
-instance=[[[3,0],[3,0],[3,0],[3,0],[3,0]],[[0,0],[0,0]]]
-    
->>>>>>> 6bbacfdc852ca2b2b64238210e97f2839896e334
 def min_max_alpha_beta(depth:int,alpha:int,beta:int, base_map:list[list[int,int]],player:int):
     extrem=player*10000
     config=None
@@ -110,33 +103,38 @@ def min_max_alpha_beta(depth:int,alpha:int,beta:int, base_map:list[list[int,int]
         next_move=base_map.copy()
         while(map_id!=None or cond_init ):
             val,_ = min_max_alpha_beta(depth-1,new_alpha,new_beta,next_move,1-player)
+            #print(val,extrem)
             if val>= extrem and not player:
-                if val >= beta:
-                    return val,next_move  
                 extrem = val
                 config = next_move
                 new_alpha=max(alpha,val)
-            if val<= extrem and player:
-                if val <= alpha:
+                if val >= beta:
                     return val,next_move  
+            if val<= extrem and player:
                 extrem = val
                 config = next_move
                 new_beta=min(new_beta,val)
+                if val <= alpha:
+                    return val,next_move  
+                
             next_move,map_id = next_turn(base_map,player,map_id)
             cond_init=False
         return extrem,config
     else:
-        return eval_config(base_map, base_map)
+        print(eval_config(base_map),base_map)
+        return eval_config(base_map), base_map
 
-min_max_alpha_beta(6,-100,1000,config,0)
+
 def eval_config(config):
     score=0
+    exist=False
     for knight in config[0]:
-        if knight==[0,0]:
-            score+=15
-    score+=len(knight[0])*2
-    score-=len(knight[1])
-    return min(score,0)
+        if knight==[0,0] and not exist:
+            score+=30
+            exist=True
+    score+=len(config[0])*2
+    score-=len(config[1])
+    return max(score,0)
 
 def heatMapAttackGen(player: pl.Player):
     """Génère la Heat Map aggressive"""
@@ -200,17 +198,22 @@ def defendHere(player:pl.Player,case:tuple[int,int]):
         return
     nearest.move(movement)
 
-def attackHere(player:pl.Player,case:tuple[int,int],T):
-    pass
-    nearestKnights=sorted(player.knights,lambda x:cl.distance(x,case))
+def attackHere(player:pl.Player,case:tuple[int,int]):
+    nearestKnights=sorted(player.knights,lambda x:cl.distance(x.y,x.x,case[0],case[1]))
     hired_knights=[]
-    target_manpower= T
-    while i<nearestKnights.length() and len(hired_knights)<target_manpower : 
+    true_hired_knights=[]
+    while i<nearestKnights.length() and cl.distance(nearestKnights[i].y,nearestKnights[i].x,case[0],case[1])<4: 
         nearest=nearestKnights[i]
-        movement=path_simple(nearest,case,player.eknights)
-        if movement!=None and not nearest.used:
-            hired_knights.append(nearest)
+        hired_knights.append([nearest.x,nearest.y])
         i+=1
+    nearestEKnights=sorted(player.eknights,lambda x:cl.distance(x.y,x.x,case[0],case[1]))
+    hired_Eknights=[]
+    while i<nearestEKnights.length() and cl.distance(nearestEKnights[i].y,nearestEKnights[i].x,case[0],case[1])<4: 
+        nearest=nearestEKnights[i]
+        hired_Eknights.append([nearest.x,nearest.y])
+        i+=1
+    _,next_moves=min_max_alpha_beta(6,-100,1000,[hired_knights,hired_Eknights],0)
+    for i in next_moves 
     
 
 
