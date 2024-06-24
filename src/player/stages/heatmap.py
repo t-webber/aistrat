@@ -99,8 +99,13 @@ def heatbattle(knights : list[Knight], eknights : list[Knight], x:int, y:int,A,B
         return 0
     return (A*pa/pd)**B - len(usable_knight)*C
 
+<<<<<<< HEAD
+config=[[[3,0],[3,0],[3,0],[3,0]],[[0,0],[0,0],[0,0],[0,0]]]
+
+=======
 instance=[[[3,0],[3,0],[3,0],[3,0],[3,0]],[[0,0],[0,0]]]
     
+>>>>>>> 6bbacfdc852ca2b2b64238210e97f2839896e334
 def min_max_alpha_beta(depth:int,alpha:int,beta:int, base_map:list[list[int,int]],player:int):
     extrem=player*10000
     config=None
@@ -108,8 +113,9 @@ def min_max_alpha_beta(depth:int,alpha:int,beta:int, base_map:list[list[int,int]
     new_beta=beta
     new_alpha=alpha
     if depth>0:
+        cond_init=True
         next_move=base_map.copy()
-        while(map_id!=None):
+        while(map_id!=None or cond_init ):
             val,_ = min_max_alpha_beta(depth-1,new_alpha,new_beta,next_move,1-player)
             if val>= extrem and not player:
                 if val >= beta:
@@ -124,10 +130,12 @@ def min_max_alpha_beta(depth:int,alpha:int,beta:int, base_map:list[list[int,int]
                 config = next_move
                 new_beta=min(new_beta,val)
             next_move,map_id = next_turn(base_map,player,map_id)
-        return max,config
+            cond_init=False
+        return extrem,config
     else:
         return eval_config(base_map, base_map)
-    
+
+min_max_alpha_beta(6,-100,1000,config,0)
 def eval_config(config):
     score=0
     for knight in config[0]:
