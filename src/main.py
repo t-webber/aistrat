@@ -6,6 +6,7 @@ from apis import connection
 from apis.players import Player
 
 
+
 if len(sys.argv) > 2 and sys.argv[2]:
     connection.init(sys.argv[2])
 else:
@@ -20,7 +21,7 @@ else:
 
 print(sys.argv)
 print("TWO_PLAYERS ? = ", TWO_PLAYERS)
-
+debug = True
 
 player1 = Player()
 if TWO_PLAYERS:
@@ -35,10 +36,14 @@ def main():
         if time.time() - t > 10:
             print("!!! TIMEOUT !!!")
             sys.exit(1)
-    if connection.current_player() == player1:
-        player1.next_turn()
-    elif TWO_PLAYERS:
-        player2.next_turn()
+
+    if debug:
+        player1.print_heatmaps()
+    else:
+        if connection.current_player() == player1:
+            player1.next_turn()
+        elif TWO_PLAYERS:
+            player2.next_turn()
 
 
 if __name__ == "__main__":
