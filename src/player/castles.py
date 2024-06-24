@@ -93,29 +93,25 @@ def create_units(player: Player):
     for castle in player.castles:
         # 1. Nous sommes attaqués, production de défenseurs
         if eknight_offset > 0:
-            # print("--- priory 1 ---")
             if player.gold >= consts.PRICES[consts.KNIGHT]:
                 castle.create_defense()
                 eknight_offset -= 1
         # 2. Pas assez de châteaux
         elif missing_priority_castles:
-            # print("--- priory 2 ---")
             # 3. Pas assez de péons pour contruire des châteaux
-            if len([gold for gold in player._golds if cl.distance(*gold.coord, *castle.coord) <= settings.DISTANCE_BETWEEN_CASTLES]) + settings.PAWNS_OFFSET >= len(player.pawns):
+            near_golds = [gold for gold in player._golds if cl.distance(*gold.coord, *castle.coord) <=
+                          settings.DISTANCE_BETWEEN_CASTLES]
+            if len(near_golds) + settings.PAWNS_OFFSET >= len(player.pawns):
                 if player.gold >= consts.PRICES[consts.PAWN]:
                     castle.create_pawn()
         # 3. Il y a des péons ennemis
         elif len(player.epawns) >= settings.PAWNS_KNIGHTS_RATIO * len(player.attack):
-            # print("--- priory 3 ---")
             if player.gold >= consts.PRICES[consts.KNIGHT]:
                 castle.create_attack()
         # 4. Pas assez de péons
         elif len_golds > len(player.pawns):
-            # print("--- priory 4 ---")
             if player.gold >= consts.PRICES[consts.PAWN]:
                 castle.create_pawn()
         # 5. Production d'attaquants
         elif player.gold >= consts.PRICES[consts.KNIGHT]:
-            # print("--- priory 5 ---")
             castle.create_attack()
-        # print("--- priory 6 ---")

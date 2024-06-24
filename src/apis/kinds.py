@@ -105,14 +105,6 @@ class Unit(Coord):
         self.player = player
         self.used = True
 
-    # def __getitem__(self, key):
-    #     if key in (0, 'y', 'Y'):
-    #         return self.y
-    #     if key in (1, 'x', 'X'):
-    #         return self.x
-    #     print(f"Error: key not found: {key}", file=sys.stderr)
-    #     sys.exit(1)
-
     def __hash__(self):
         """Effectue le calcul0 de hash pour les unités."""
         return hash((self.y, self.x, self.key))
@@ -123,7 +115,6 @@ class Person(Unit):
 
     def move(self, y, x):
         """Bouge le péon, et le met en utilisé."""
-        # print('pose before', self.y, self.x, 'pos after',y, x, self)
         if self.used:
             raise ValueError(f'Person {self} is already used.')
         try:
@@ -144,7 +135,7 @@ class Person(Unit):
                          self.player.id, self.player.token)
 
         self.used = True
-        self.player.castles.append(Castle(self.y, self.x, self.player))
+        self.player.castles.insert(0, Castle(self.y, self.x, self.player))
         self.player.gold -= Castle.COST
 
 

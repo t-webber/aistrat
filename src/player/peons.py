@@ -20,7 +20,6 @@ def fuite(pawns: list[Pawn], knights: list[Knight], eknights: list[Knight]):
         i += 1
         _, total_enemies = cl.neighbors((p.y, p.x), eknights)
         if total_enemies > 0:
-            # print("Fuite")
             direc_allies, allies_backup = cl.neighbors((p.y, p.x), knights_not_used)
             allies = 0
             allies_defense = 0
@@ -32,8 +31,6 @@ def fuite(pawns: list[Pawn], knights: list[Knight], eknights: list[Knight]):
                     on_case.append(k)
                     allies += 1
 
-            # print(cl.prediction_combat(total_enemies, allies + allies_backup))
-            # print(allies, allies_backup, total_enemies)
             if cl.prediction_combat(total_enemies, allies + allies_backup)[0]:
                 # si on perd le combat même avec les alliés on fuit
                 if cl.move_safe_random_without_purpose(p, eknights, knights):
@@ -61,8 +58,6 @@ def farm(player: Player, golds: list[GoldPile]):
     eknights = player.eknights
     ecastles = player.ecastles
 
-    # print("BEFORE PAWNS", pawns)
-
     # simple_gold = golds
     if golds and pawns:
 
@@ -79,7 +74,6 @@ def farm(player: Player, golds: list[GoldPile]):
                 pawns[p].farm(gold)
             else:
                 cl.move_safe_random(pawns[p], eknights, ecastles, i, j)
-    # print("AFTER PAWNS", pawns)
 
 
 def path(units: list[Unit], other_units: list[Unit], eknights: list[Knight]):
