@@ -3,7 +3,7 @@
 import numpy as np
 from apis import connection
 from apis.kinds import Pawn, Knight, Castle, GoldPile, Enemy, Unit
-from config.consts import FOG, BEGINING_GOLD
+from config.consts import FOG
 import logic.client_logic as cl
 
 
