@@ -43,7 +43,7 @@ class Player(Player_struct):
         peons.explore(self, self._knights + self.castles)
 
         # print("FREE PAWNS\t", self.attack + self.defense)
-        atk.free_pawn(self.attack + self.defense, self.eknights, self.epawns)
+        atk.free_pawn(self.attack + self.defense, self.eknights, self.epawns, self.ecastles)
 
         # left_defense = dfd.defend(
         #     self.pawns, self.defense, self.eknights, self.castles, self.id, self.token)
@@ -55,12 +55,16 @@ class Player(Player_struct):
         last_len = None
 
         while (length := [k for k in self.attack if not k.used]):
-
-            # print("HUNT ATK\t", self.pawns)
-            atk.hunt(self.attack, self.epawns,
+            if (not self.ecastles) and self.turn > 200:
+                atk.endgame(self.attack, self.eknights)
+                atk.hunt(self.attack, self.epawns,
                      self.eknights)
-            # print("DESTROY CASTLE\t", self.pawns)
-            atk.destroy_castle(self.attack, self.ecastles,
+            else:
+                # print("HUNT ATK\t", self.pawns)
+                atk.hunt(self.attack, self.epawns,
+                     self.eknights)
+                # print("DESTROY CASTLE\t", self.pawns)
+                atk.destroy_castle(self.attack, self.ecastles,
                                self.eknights)
             if last_len == length:
                 break

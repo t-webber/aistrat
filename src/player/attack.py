@@ -60,8 +60,8 @@ def prediction_attaque(case_attaquee: tuple[int, int], knights: list[Knight], ek
     """
     if not eknights:
         return True
-    allies_voisins, attaquants = cl.neighbors(case_attaquee, knights)
-    defenseurs_voisins, defenseurs_voisins_nombre = cl.neighbors(
+    _, attaquants = cl.neighbors(case_attaquee, knights)
+    _, defenseurs_voisins_nombre = cl.neighbors(
         case_attaquee, eknights)
     defenseurs = connection.get_map(
     )[case_attaquee[0]][case_attaquee[1]][eknights[0].player][connection.KNIGHT]
@@ -148,17 +148,16 @@ def free_pawn(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy]
                     if not knight.used:
                         knight.move(epawn.y, epawn.x)
 
-# def endgame(knights: list[Knight], eknights: list[Knight], epawns: list[Pawn]):
-#     knights_not_used = list(filter(lambda knight: not knight.used, knights))
-#     if eknights:
-#         while knights_not_used:
-#             vus=[]
-#             for k, ep in cl.hongrois_distance(knights_not_used, castles):
-#                 vus.append(knights_not_used[k])
-#                 y, x = knights_not_used[k].coord
-#                 i, j = eknights[ep].coord
-#                 if abs(y - i) + abs(x - j) == 1:
-#                     attaque((i, j), knights_not_used, eknights)
-#                 else:
-#                     cl.move_without_suicide(knights_not_used[k], eknights, i, j)
-#             knights_not_used = list(filter(lambda knight: not knight.used, knights))
+def endgame(knights: list[Knight], eknights: list[Knight]):
+    knights_not_used = list(filter(lambda knight: not knight.used, knights))
+    while knights_not_used and eknights:
+        vus=[]
+        for k, ep in cl.hongrois_distance(knights_not_used, eknights):
+            vus.append(knights_not_used[k])
+            y, x = knights_not_used[k].coord
+            i, j = eknights[ep].coord
+            if abs(y - i) + abs(x - j) == 1:
+                attaque((i, j), knights_not_used, eknights)
+            else:
+                cl.move_without_suicide(knights_not_used[k], eknights, i, j)
+        knights_not_used = list(filter(lambda knight: not knight.used, knights))
