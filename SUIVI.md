@@ -100,3 +100,8 @@
 - Tom: résolution des bugs sur l'or et les mouvements non synchronisés + implémentation de la stratégie heatmap pour évaluer les risques et calculer les déplacements
 - Pierre et Nicolas : Programmation des fonctions essentielles pour utiliser la Heatmap (abstraction, itération, génération)
 - Erwan : Mise a jour de la branche Blitzkrieg pour pouvoir l'utiliser avec le refactor de code, et ainsi pouvoir s'en servir pour comparer différente IA entre elles et éviter les machup miroirs.
+
+## 24/06
+
+- Jules et Nicolas : correction de l stratégie d'exploration sur la branche oop10
+- Jules : correction de multiples bugs concernant la fonction pour récupérer les chevaliers ennemis d'une case, l'update des golds, la fuite. Il n'y a maintenant que les attaquants qui explorent s'ils n'ont rien à faire
