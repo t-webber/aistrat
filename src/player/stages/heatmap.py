@@ -220,15 +220,14 @@ def next_match(units,new_vector):
                 new_units.append(unit)
     return new_units
 
+def further
+
 def cinq_adder(last_vector,indice,units):
     if indice>last_vector.lenght():
         return None
     if last_vector[indice]+1 >= 5:
         last_vector[indice]=0
         return cinq_adder(last_vector,indice+1,units)
-    elif cl.distance(*next_match[units[indice]]):
-        #TODO, condition aussi, ne pas faire un move si éloignement
-        
     else:
         last_vector[indice]+=1
         return last_vector
@@ -238,6 +237,9 @@ def next_turn(units:list[list[int,int]],player:int,last_vector:list[int]=None):
         last_vector=[0 for i in range(len(units[player]))]
         return units, last_vector
     new_move=cinq_adder(last_vector,0,units)
+    while cl.distance(*next_match[units[indice]]):
+        #TODO, condition aussi, ne pas faire un move si éloignement
+        new_move=cinq_adder(last_vector,0,units)
     if new_move is None:
         return None,None
     return next_match(units,new_move),new_move

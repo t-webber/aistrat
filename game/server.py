@@ -46,8 +46,17 @@ winner = ''
 curPlayer = 'A'  # initial player
 gold = {'A': 25, 'B': 25}  # initial gold
 
-mapdata[0][0]['A']['C'] = 3  # initial units of A
-mapdata[-1][-1]['B']['C'] = 3  # initial units of B
+
+
+
+#### RAJOUT DE DEBUG POUR TESTER DES POSSIBILITES ####
+debug = False
+if debug:
+    print("Mode débug")
+    
+else:  
+    mapdata[0][0]['A']['C'] = 3  # initial units of A
+    mapdata[-1][-1]['B']['C'] = 3  # initial units of B
 opponent = {'A': 'B', 'B': 'A'}
 #### END GAME PARAMETER ####
 
