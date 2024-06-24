@@ -13,12 +13,11 @@ def path_one(units_to_move: list[Pawn], other_units: list[Pawn], eknights: list[
     bestmove = (-1, -1)
     for boy in units_to_move:
         stuck = 0
-        moves = connection.get_moves(boy.y, boy.x)
+        moves = connection.get_moves(boy.y, boy.x) + [(boy.y,boy.x)]
         static_units = [
             other_boy for other_boy in units_to_move if other_boy != boy] + other_units
-        static_view = connection.get_visible(static_units)
         for move in moves:
-            new_map = connection.add_visible(static_view, move)
+            new_map=connection.get_visible(static_units+[move])
             score = cl.visibility_score(new_map)
             if abs(score - maxscore) <= 1:
                 stuck += 1
@@ -28,7 +27,6 @@ def path_one(units_to_move: list[Pawn], other_units: list[Pawn], eknights: list[
                 maxscore = score
                 bestpawn = boy
                 bestmove = move
-
     return bestpawn, bestmove
 
 

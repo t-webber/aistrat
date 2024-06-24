@@ -30,8 +30,8 @@ class Player_struct:
         self._golds_total = connection.get_kinds(self.id)[connection.GOLD]
         self._golds_total_without_values = [(y, x) for (y, x, _) in self._golds_total]
         self.average_gold = sum([i**2 for i in range(13)]) / 12
-        self.golds_plot_not_seen = 15 - sum([self.decomposition(gold[2]) for gold in self._golds_total])
-        self.gold: int = BEGINING_GOLD
+        self.golds_plot_not_seen = 15 - sum([self.decomposition(gold[2]) for gold in self._golds_total])    
+        self.gold: int = connection.get_gold()[self.id]
         self.good_gold: list[GoldPile]
         self.bad_gold: list[GoldPile]
         self.good_gold, self.bad_gold = cl.clean_golds(
