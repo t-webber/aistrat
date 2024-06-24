@@ -4,7 +4,7 @@ import sys
 import time
 from apis import connection
 from apis.players import Player
-
+from apis.kinds import Knight
 
 
 if len(sys.argv) > 2 and sys.argv[2]:
@@ -38,6 +38,8 @@ def main():
             sys.exit(1)
 
     if debug:
+        player1.knights.append(Knight(1, 1, player1))
+        player1.knights.append(Knight(1, 1, player1))
         player1.update_ennemi_data()
         player1.update_gold_map()
         player1.print_heatmaps()

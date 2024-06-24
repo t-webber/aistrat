@@ -10,7 +10,9 @@ import math
 
 
 defHeat={"Pawn":5,"Knight":-3,"Castle":15,"Eknight":9,"ChosenKnight":-10}
-attHeat={"Epawn":5,"Ecastle":30}
+attHeat={"Epawn":5,"Ecastle":30, "Epawn_adj" : 40, "Ecastle_adj" : 120}
+
+AVANCEMENT = 0.03
 
 def genMask(intensity: int):
     """Génère les masques pour les heatmap"""
@@ -29,9 +31,7 @@ def addLight(map:np.array,mask,coord:tuple[int,int]):
     center=len(mask[0])//2 #Division entière par 2 pour trouver le centre du mask
     for i in range(mask[0].size):
         for j in range(mask[0].size):
-            if 0<coord[0]+i-center<len(map) and 0<coord[1]+j-center<len(map[0]):
-                print((i, j))
-                print(mask[i][j])
+            if 0<=coord[0]+i-center<len(map) and 0<=coord[1]+j-center<len(map[0]):
                 map[coord[0]+i-center][coord[1]+j-center] += mask[i][j]
 
 def moveLight(map:np.array,mask,oldcoord:tuple[int,int],newcoord:tuple[int,int]):
@@ -47,7 +47,7 @@ def heatMapDefenseGen(pawns: list[Pawn], castles : list[Castle], eknights : list
     for castle in castles:
         addLight(heat_map,maskHeatDef["Castle"],(castle.y,castle.x))
     for eknight in eknights:
-        addLight(heat_map, maskHeatDef["Eknight"], (eknight.y, eknight.x))
+        addLight(heat_map, maskHeatDef["Eknight"], (eknight[0], eknight[1]))
     return heat_map
 
 # def heatMapDefGenBis(pawns: list[Pawn], castles : list[Castle], knights : list[Knight], eknights : list[Knight], player : str, gold_map : list[list[int]]):
@@ -86,26 +86,29 @@ def heatbattle(knights : list[Knight], eknights : list[Knight], x:int, y:int,A,B
     poid_k=0
     poid_ek=0
     for knt in knights:
-        if abs(knt.x-x)+abs(knt.y-y)<=3 and not knt.used:
-            usable_knight.append(knt,1/(abs(knt.x-x)+abs(knt.y-y)))
-            poid_k+=1/(abs(knt.x-x)+abs(knt.y-y))
+        if abs(knt.x-x)+abs(knt.y-y)<=2 and not knt.used:
+            usable_knight.append(knt)
+            if abs(knt.x-x)+abs(knt.y-y) == 0:
+                poid_k+= 1
+            else:
+                poid_k+=1/(abs(knt.x-x)+abs(knt.y-y))
     for knt in eknights:
-        if abs(knt.x-x)+abs(knt.y-y)<=3 and not knt.used:
-            usable_eknight.append(knt,(1/abs(knt.x-x)+abs(knt.y-y)))
-            poid_ek+=(1/abs(knt.x-x)+abs(knt.y-y))
-    victory,_,pa,pd=cl.prediction_combat(poid_k,poid_ek)
-    if (not victory) : return -1000
-    if len(eknights) == 0:
+        if abs(knt[1]-x)+abs(knt[0]-y)<=2:
+            usable_eknight.append(knt)
+            if abs(knt[1]-x)+abs(knt[0]-y) == 0:
+                poid_ek+= 1
+            else:
+                poid_ek+=1/(abs(knt[1]-x)+abs(knt[0]-y))
+
+    victory,_,pa,pd=cl.prediction_combat(int(poid_k),int(poid_ek))
+    
+    if (not victory) : return -100
+    if len(eknights) == 0 or pd == 0:
         return 0
     return (A*pa/pd)**B - len(usable_knight)*C
 
-<<<<<<< HEAD
 config=[[[3,0],[3,0],[3,0],[3,0]],[[0,0],[0,0],[0,0],[0,0]]]
 
-=======
-instance=[[[3,0],[3,0],[3,0],[3,0],[3,0]],[[0,0],[0,0]]]
-    
->>>>>>> 6bbacfdc852ca2b2b64238210e97f2839896e334
 def min_max_alpha_beta(depth:int,alpha:int,beta:int, base_map:list[list[int,int]],player:int):
     extrem=player*10000
     config=None
@@ -135,7 +138,9 @@ def min_max_alpha_beta(depth:int,alpha:int,beta:int, base_map:list[list[int,int]
     else:
         return eval_config(base_map, base_map)
 
-min_max_alpha_beta(6,-100,1000,config,0)
+# min_max_alpha_beta(6,-100,1000,config,0)
+
+
 def eval_config(config):
     score=0
     for knight in config[0]:
@@ -153,19 +158,27 @@ def heatMapAttackGen(epawns : list[Pawn], ecastles : list[Castle], id : str, kni
     for i in range(co.size_map()[0]):
         for j in range(co.size_map()[1]):
             if id == "A":
-                heat_map[i][j] += 0.3*j
+                heat_map[i][j] += AVANCEMENT*j
             else:
-                heat_map[i][j] += 0.3*(co.size_map[0]-j-1)
+                heat_map[i][j] += AVANCEMENT*(co.size_map[0]-j-1)
             
         #rajout de l'impact des combats    
             gold_here = 0
             if gold_map[i][j] is not None:
                 gold_here = 0
-            heat_map[i][j] += heatbattle(knights, eknights, i, j, 2, 2, 2) + gold_here
+            heat_map[i][j] += heatbattle(knights, eknights, j, i, 2, 2, 2) + gold_here
 
         #rajout du rayonnement des péons et chateaux ennemis qui sont les cibles
     for epawn in epawns:
-        addLight(heat_map,maskHeatAtt["Epawn"],(epawn[0],epawn[1]))
+        done = False
+        print(knights)
+        for knight in knights:
+            print(cl.distance(knight.x, knight.y, epawn[1], epawn[0]))
+            if cl.distance(knight.x, knight.y, epawn[1], epawn[0]) == 1:
+                addLight(heat_map,maskHeatAtt["Epawn_adj"],(epawn[0],epawn[1]))
+                done = True
+        if not done :
+            addLight(heat_map,maskHeatAtt["Epawn"],(epawn[0],epawn[1]))
     for ecastle in ecastles:
         addLight(heat_map,maskHeatAtt["Ecastle"],(ecastle[0],ecastle[1]))
 
