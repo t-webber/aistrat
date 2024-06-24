@@ -50,7 +50,6 @@ def path_trou(units: list[Unit], other_units: list[Unit], eknights: list[Knight]
             ennemies = cl.neighbors(move, eknights)[1]
             if np.dot(vecteur_trou, vector_move) > max_trou and not connection.get_eknights(move[0], move[1])\
                     and (ennemies == 0 or ennemies <= len(connection.get_eknights(boy.y, boy.x))):
-                print('hi',move,connection.get_eknights(move[0], move[1]))
                 bestmove_trou = move
         if bestmove_trou != (0, 0):
             resultat.append((boy, bestmove_trou))
