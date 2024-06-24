@@ -84,8 +84,6 @@ def path(units: list[Unit], other_units: list[Unit], eknights: list[Knight]):
     le maximum de la carte pour les péons. Prend en compte other_units pour la visibilité
     """
     units_to_move = [unit for unit in units if not unit.used]
-
-    results = []
     strategie = 0
     for i in range(len(units_to_move)):
         if strategie == 0:
@@ -95,19 +93,20 @@ def path(units: list[Unit], other_units: list[Unit], eknights: list[Knight]):
                 strategie = 1
                 i -= 1
                 continue
-            results.append((bestpawn, bestmove))
+            if bestmove == (bestpawn.y, bestpawn.x):
+                return # on n'a pas interet les bouger pour les peons restants
+            else:
+                bestpawn.move(bestmove[0], bestmove[1])
+            #results.append((bestpawn, bestmove))
             other_units.append(bestpawn)
-            units_to_move = [unit for unit in units_to_move if unit is not bestpawn]
+            units_to_move.remove(bestpawn)
         else:
             break
-    for choice in results:
-        choice[0].move(choice[1][0], choice[1][1])
 
 
 def explore(player: Player, otherunits=[]):
     """Envoie en exploration les "pawns" inactifs pour le tour."""
     eknights = player.eknights
-
     path(player.pawns, otherunits, eknights)
     farm(player, player.bad_gold)
     ex.path_trou(player.pawns, otherunits, eknights)
