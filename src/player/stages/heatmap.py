@@ -1,11 +1,12 @@
 from apis import connection as co
-from apis import players as pl
 from apis.kinds import Castle, Knight, Pawn
+from typing import TYPE_CHECKING
+
 from player.logic import client_logic as cl
 from player.stages.exploration import path_simple
 import numpy as np
 import matplotlib.pyplot as plt
-
+import math
 
 
 defHeat={"Pawn":5,"Knight":-3,"Castle":15,"Eknight":9,"ChosenKnight":-10}
@@ -13,61 +14,63 @@ attHeat={"Epawn":5,"Ecastle":30}
 
 def genMask(intensity: int):
     """Génère les masques pour les heatmap"""
-    mask=np.zeros((2*intensity+1,2*intensity+1))
-    for i in range(mask.size):
-        for j in range(mask.size):
-            if i != j:
-                mask[i][j]=intensity/cl.distance(0,0,i,j)**2
+    mask=np.zeros((2*abs(intensity)+1,2*abs(intensity)+1))
+    for i in range(2*abs(intensity)+1):
+        for j in range(2*abs(intensity)+1):
+            mask[i][j]=intensity/(cl.distance(0,0,i,j)+1)**2
+    return mask
 
 maskHeatDef={i: genMask(defHeat[i]) for i in defHeat}
 maskHeatAtt={i: genMask(attHeat[i]) for i in attHeat}
 
 def addLight(map:np.array,mask,coord:tuple[int,int]):
     """Ajoute la lumière liée à une unité sur map en fonction de son masque et de sa coordonnée""" 
-    center=len(mask)//2 #Division entière par 2 pour trouver le centre du mask
-    for i,j in range(mask.size()):
-        if 0<coord[0]+i-center<len(map) and 0<coord[1]+j-center<len(map[0]):
-            map[coord[0]+i-center][coord[1]+j-center]=map[coord[0]+i-center][coord[1]+j-center]+mask[i][j]
+    center=len(mask[0])//2 #Division entière par 2 pour trouver le centre du mask
+    print(mask)
+    for i in range(mask[0].size):
+        for j in range(mask[0].size):
+            if 0<coord[0]+i-center<len(map) and 0<coord[1]+j-center<len(map[0]):
+                map[coord[0]+i-center][coord[1]+j-center]=map[coord[0]+i-center][coord[1]+j-center]+mask[i][j]
 
 def moveLight(map:np.array,mask,oldcoord:tuple[int,int],newcoord:tuple[int,int]):
     """Modifie la heatmap de map en fonction de son masque et de sa nouvelle coordonnée"""
     addLight(map,mask,newcoord)
     addLight(map,-mask,oldcoord)    
 
-def heatMapDefenseGen(player: pl.Player):
+def heatMapDefenseGen(pawns: list[Pawn], castles : list[Castle], eknights : list[Knight]):
     """Génère la Heat Map défensive"""
     heat_map=np.zeros((co.size_map()))
-    for pawn in player.pawns:
+    for pawn in pawns:
         addLight(heat_map,maskHeatDef["Pawn"],(pawn.y,pawn.x))
-    for castle in player.castles:
+    for castle in castles:
         addLight(heat_map,maskHeatDef["Castle"],(castle.y,castle.x))
-    for eknight in player.eknights:
-        addLight(heat_map, maskHeatDef["eKnight"], (eknight.y, eknight.x))
+    for eknight in eknights:
+        addLight(heat_map, maskHeatDef["Eknight"], (eknight.y, eknight.x))
     return heat_map
 
-def heatMapDefGenBis(player : pl.Player):
-    """Génère la Heat Map défensive en calculant la heatmap aggressive supposée de l'advversaire"""
-    heat_map=np.zeros((co.size_map()))
-    #rajout du rayonnement des péons et chateaux alliés qui sont les cibles
-    for epawn in player.pawns:
-        addLight(heat_map,maskHeatAtt["ePawn"],(epawn.y,epawn.x))
-    for ecastle in player.castles:
-        addLight(heat_map,maskHeatAtt["eCastle"],(ecastle.y,ecastle.x))
+# def heatMapDefGenBis(pawns: list[Pawn], castles : list[Castle], knights : list[Knight], eknights : list[Knight], player : str, gold_map : list[list[int]]):
+#     """Génère la Heat Map défensive en calculant la heatmap aggressive supposée de l'advversaire"""
+#     heat_map=np.zeros((co.size_map()))
+#     #rajout du rayonnement des péons et chateaux alliés qui sont les cibles
+#     for epawn in pawns:
+#         addLight(heat_map,maskHeatAtt["ePawn"],(epawn.y,epawn.x))
+#     for ecastle in castles:
+#         addLight(heat_map,maskHeatAtt["eCastle"],(ecastle.y,ecastle.x))
 
-        #rajout de l'intéret d'aller de l'avant
-    for i,j in co.size_map():
-        if player.id == "B":
-            heat_map[i][j] += 0.3*i
-        else:
-            heat_map[i][j] += 0.3*(co.size_map[0]-i-1)
+#         #rajout de l'intéret d'aller de l'avant
+#     for i,j in co.size_map():
+#         if player.id == "B":
+#             heat_map[i][j] += 0.3*i
+#         else:
+#             heat_map[i][j] += 0.3*(co.size_map[0]-i-1)
             
-        heat_map[i][j] += heatbattle(player.eknights, player.knights, i, j, 2, 2, 2) + player._gold_map[i][j]
-    return heat_map
+#         heat_map[i][j] += heatbattle(eknights, knights, i, j, 2, 2, 2) + gold_map[i][j]
+#     return heat_map
 
 
-def print_heatmaps(player : pl.Player):
-    a = heatMapAttackGen(player)
-    b = heatMapDefenseGen(player)
+def print_heatmaps(pawns : list[Pawn], knights : list[Knight], castles : list[Castle], eknights : list[Knight], ecastles : list[Castle], epawns : list[Pawn], gold_map : list[list[int]], name : str):
+    a = heatMapAttackGen(epawns, ecastles, name, knights, eknights, gold_map)
+    b = heatMapDefenseGen(pawns, castles, eknights)
     plt.imshow(a, cmap='hot', interpolation='nearest')
     plt.show()
     plt.imshow(b, cmap='hot', interpolation='nearest')
@@ -88,8 +91,10 @@ def heatbattle(knights : list[Knight], eknights : list[Knight], x:int, y:int,A,B
         if abs(knt.x-x)+abs(knt.y-y)<=3 and not knt.used:
             usable_eknight.append(knt,(1/abs(knt.x-x)+abs(knt.y-y)))
             poid_ek+=(1/abs(knt.x-x)+abs(knt.y-y))
-    victory,pa,pd=cl.prediction_combat(poid_k,poid_ek)
+    victory,_,pa,pd=cl.prediction_combat(poid_k,poid_ek)
     if (not victory) : return -1000
+    if len(eknights) == 0:
+        return 0
     return (A*pa/pd)**B - len(usable_knight)*C
 
 instance=[[[3,0],[3,0],[3,0],[3,0],[3,0]],[[0,0],[0,0]]]
@@ -130,48 +135,52 @@ def eval_config(config):
     score-=len(knight[1])
     return min(score,0)
 
-def heatMapAttackGen(player: pl.Player):
+def heatMapAttackGen(epawns : list[Pawn], ecastles : list[Castle], id : str, knights : list[Knight], eknights : list[Knight], gold_map : list[list[int]]):
     """Génère la Heat Map aggressive"""
     heat_map=np.zeros((co.size_map()))
     #rajout du rayonnement des péons et chateaux ennemis qui sont les cibles
-    for epawn in player.epawns:
-        addLight(heat_map,maskHeatAtt["ePawn"],(epawn.y,epawn.x))
-    for ecastle in player.ecastles:
-        addLight(heat_map,maskHeatAtt["eCastle"],(ecastle.y,ecastle.x))
+    for epawn in epawns:
+        addLight(heat_map,maskHeatAtt["Epawn"],(epawn.y,epawn.x))
+    for ecastle in ecastles:
+        addLight(heat_map,maskHeatAtt["Ecastle"],(ecastle.y,ecastle.x))
 
         #rajout de l'intéret d'aller de l'avant
-    for i,j in co.size_map():
-        if player.id == "A":
-            heat_map[i][j] += 0.3*i
-        else:
-            heat_map[i][j] += 0.3*(co.size_map[0]-i-1)
+    for i in range(co.size_map()[0]):
+        for j in range(co.size_map()[1]):
+            if id == "A":
+                heat_map[i][j] += 0.3*j
+            else:
+                heat_map[i][j] += 0.3*(co.size_map[0]-j-1)
             
         #rajout de l'impact des combats    
-        heat_map[i][j] += heatbattle(player.knights, player.eknights, i, j, 2, 2, 2) + player._gold_map[i][j]
+        gold_here = 0
+        if gold_map[i][j] is not None:
+            gold_here = gold_map[i][j]
+        heat_map[i][j] += heatbattle(knights, eknights, i, j, 2, 2, 2) + gold_here
     return heat_map
 
 
-def heatMapMove(player:pl.Player):
-    while all( not knight.used for knight in player.knights):
-        attmap = heatMapAttackGen(player)
-        defmap = heatMapDefenseGen(player)
-        max = 0
-        co=(-1,-1)
-        tp=None
-        for i in range(co.sizemap()[0]):
-            for j in range(co.sizemap()[1]):
-                if attmap[i][j]>max:
-                    max=attmap[i][j]
-                    co=(i,j)
-                    tp="A"
-                if defmap[i][j]>max:
-                    max=attmap[i][j]
-                    co=(i,j)
-                    tp="D"
-        if tp=="A":
-            attackHere(player,(i,j))
-        else:
-            defendHere(player,(i,j))
+# def heatMapMove(player:pl.Player):
+#     while all( not knight.used for knight in player.knights):
+#         attmap = heatMapAttackGen(player)
+#         defmap = heatMapDefenseGen(player)
+#         max = 0
+#         co=(-1,-1)
+#         tp=None
+#         for i in range(co.sizemap()[0]):
+#             for j in range(co.sizemap()[1]):
+#                 if attmap[i][j]>max:
+#                     max=attmap[i][j]
+#                     co=(i,j)
+#                     tp="A"
+#                 if defmap[i][j]>max:
+#                     max=attmap[i][j]
+#                     co=(i,j)
+#                     tp="D"
+#         if tp=="A":
+#             attackHere(player,(i,j))
+#         else:
+#             defendHere(player,(i,j))
 
 """ 
 La fonction qui prend en argument la case sélectionnée à défendre prend un chevalier pertinent à 
@@ -179,45 +188,48 @@ proximité et le bouge intelligemment dans sa direction, enlève le mask knight 
  et rajoute le mask chosenknight à son arrivée
 """
 
-def defendHere(player:pl.Player,case:tuple[int,int]):
-    nearestKnights=sorted(player.knights,lambda x:cl.distance(x,case))
-    i=0
-    movement=None
-    while movement is None and i<nearestKnights.length():
-        nearest=nearestKnights[i]
-        if not nearest.used:
-            movement=path_simple(nearest,case,player.eknights)
-        i+=1
-    if i>=nearestKnights.length():
-        return
-    nearest.move(movement)
 
-def attackHere(player:pl.Player,case:tuple[int,int],T):
-    pass
-    nearestKnights=sorted(player.knights,lambda x:cl.distance(x,case))
-    hired_knights=[]
-    target_manpower= T
-    while i<nearestKnights.length() and len(hired_knights)<target_manpower : 
-        nearest=nearestKnights[i]
-        movement=path_simple(nearest,case,player.eknights)
-        if movement!=None and not nearest.used:
-            hired_knights.append(nearest)
-        i+=1
+### TO DO WITHOUT PLAYER ###
+
+# def defendHere(player:pl.Player,case:tuple[int,int]):
+#     nearestKnights=sorted(player.knights,lambda x:cl.distance(x,case))
+#     i=0
+#     movement=None
+#     while movement is None and i<nearestKnights.length():
+#         nearest=nearestKnights[i]
+#         if not nearest.used:
+#             movement=path_simple(nearest,case,player.eknights)
+#         i+=1
+#     if i>=nearestKnights.length():
+#         return
+#     nearest.move(movement)
+
+# def attackHere(player:pl.Player,case:tuple[int,int],T):
+#     pass
+#     nearestKnights=sorted(player.knights,lambda x:cl.distance(x,case))
+#     hired_knights=[]
+#     target_manpower= T
+#     while i<nearestKnights.length() and len(hired_knights)<target_manpower : 
+#         nearest=nearestKnights[i]
+#         movement=path_simple(nearest,case,player.eknights)
+#         if movement!=None and not nearest.used:
+#             hired_knights.append(nearest)
+#         i+=1
     
 
 
 
 
-    if i>=nearestKnights.length():
-        return
-    nearest.move(movement)
+#     if i>=nearestKnights.length():
+#         return
+#     nearest.move(movement)
 
-    """
-    units=[]
-    for i,j in range(len(map_zero)),len(map_zero[0]):
-        if map_zero[i][j] is not None:
-            for k in range(map_zero[i][j][player]):
-                units.add((i,j))"""
+#     """
+#     units=[]
+#     for i,j in range(len(map_zero)),len(map_zero[0]):
+#         if map_zero[i][j] is not None:
+#             for k in range(map_zero[i][j][player]):
+#                 units.add((i,j))"""
 
 def next_match(units,new_vector):
     new_units=[]
