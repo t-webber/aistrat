@@ -11,8 +11,6 @@ log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
 
-print("coucou")
-
 
 dirs = [(1, 0), (0, 1), (-1, 0), (0, -1)]
 players = []
@@ -26,8 +24,8 @@ tokenOf = {}
 #####  GAME PARAMETERS #####
 
 MAX_NB_ROUNDS = 2000
-MAP_WIDTH = 9
-MAP_HEIGHT = 16
+MAP_WIDTH = 16
+MAP_HEIGHT = 9
 NB_GOLD_SPOTS = 15
 
 # defines an empty map
