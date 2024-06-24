@@ -98,26 +98,27 @@ class Player_struct:
         servgolds_without_values = [(y, x) for (y, x, _) in server_golds]
         # self.update_total_gold(server_golds, servgolds_without_values)
         updated_golds = []
-
+        print(server_golds)
+        print(servgolds_without_values)
         for gold in self._golds:
             y, x = gold.coord
             v = gold.gold
             if not v:
+                print('coucou2',gold)
                 continue
             if (y, x, v) in server_golds:
                 server_golds.remove((y, x, v))
                 servgolds_without_values.remove((y, x))
                 updated_golds.append(gold)
-                continue
-            if (y, x) in servgolds_without_values:
+            elif (y, x) in servgolds_without_values:
                 index = servgolds_without_values.index((y, x))
                 _, _, new_v = server_golds[index]
                 gold.gold = new_v
                 updated_golds.append(gold)
                 server_golds.remove((y, x, new_v))
                 servgolds_without_values.pop(index)
-                continue
-            updated_golds.append(gold)
+            elif gold in self.fog:
+                updated_golds.append(gold)
 
         for (y, x, v) in server_golds:
             updated_golds.append(GoldPile(y, x, v, self))
@@ -170,9 +171,6 @@ class Player_struct:
 
     def check_set_list_coord(self, client_units: list[Unit], server_units: list[(int, int)], instance: str):
         """Vérifie si deux listes sont égales."""
-
-        print("client = ", client_units)
-        print("server = ", server_units)
 
         client = client_units.copy()
         server = server_units.copy()
