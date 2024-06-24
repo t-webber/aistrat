@@ -98,13 +98,10 @@ class Player_struct:
         servgolds_without_values = [(y, x) for (y, x, _) in server_golds]
         # self.update_total_gold(server_golds, servgolds_without_values)
         updated_golds = []
-        print(server_golds)
-        print(servgolds_without_values)
         for gold in self._golds:
             y, x = gold.coord
             v = gold.gold
             if not v:
-                print('coucou2',gold)
                 continue
             if (y, x, v) in server_golds:
                 server_golds.remove((y, x, v))
