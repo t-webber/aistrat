@@ -1,3 +1,4 @@
+
 """Fichier qui implémente la class `Player`."""
 
 from apis import connection
@@ -43,7 +44,7 @@ class Player(Player_struct):
         peons.explore(self, self._knights + self.castles)
 
         # print("FREE PAWNS\t", self.attack + self.defense)
-        atk.free_pawn(self.attack + self.defense, self.eknights, self.epawns)
+        atk.free_pawn(self.attack + self.defense, self.eknights, self.epawns, self.ecastles)
 
         # left_defense = dfd.defend(
         #     self.pawns, self.defense, self.eknights, self.castles, self.id, self.token)

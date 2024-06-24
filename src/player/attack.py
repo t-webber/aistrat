@@ -134,10 +134,14 @@ def destroy_castle(knights: list[Knight], castles: list[Castle],
                 cl.move_without_suicide(knights_not_used[k], eknights, i, j)
 
 
-def free_pawn(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy]):
-    """Attaque les péons gratuits s'ils sont adjacent à un chevalier libre."""
-    print('knights', knights)
+def free_pawn(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy], castles: list[Castle]):
+    """Attaque les péons et les chateaux gratuits s'ils sont adjacent à un chevalier libre."""
     for knight in knights:
+        if not knight.used:
+            for castle in castles:
+                if cl.distance(knight.x, knight.y, castle.x, castle.y) == 1 and not cl.in_obj(castle, eknights):
+                    if not knight.used:
+                        knight.move(castle.y, castle.x)
         if not knight.used:
             for epawn in epawns:
                 if cl.distance(knight.x, knight.y, epawn.x, epawn.y) == 1 and not cl.in_obj(epawn, eknights):
