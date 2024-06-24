@@ -13,11 +13,11 @@ def path_one(units_to_move: list[Pawn], other_units: list[Pawn], eknights: list[
     bestmove = (-1, -1)
     for boy in units_to_move:
         stuck = 0
-        moves = connection.get_moves(boy.y, boy.x) + [(boy.y,boy.x)]
+        moves = connection.get_moves(boy.y, boy.x) + [(boy.y, boy.x)]
         static_units = [
             other_boy for other_boy in units_to_move if other_boy != boy] + other_units
         for move in moves:
-            new_map=connection.get_visible(static_units+[move])
+            new_map = connection.get_visible(static_units + [move])
             score = cl.visibility_score(new_map)
             if abs(score - maxscore) <= 1:
                 stuck += 1
@@ -50,7 +50,6 @@ def path_trou(units: list[Unit], other_units: list[Unit], eknights: list[Knight]
             ennemies = cl.neighbors(move, eknights)[1]
             if np.dot(vecteur_trou, vector_move) > max_trou and not connection.get_eknights(move[0], move[1])\
                     and (ennemies == 0 or ennemies <= len(connection.get_eknights(boy.y, boy.x))):
-                print('hi',move,connection.get_eknights(move[0], move[1]))
                 bestmove_trou = move
         if bestmove_trou != (0, 0):
             resultat.append((boy, bestmove_trou))
