@@ -8,7 +8,7 @@ from typing import Dict, List, Union
 
 
 IP = "http://localhost:8080"
-TIME_OUT = 0.1
+TIME_OUT = 0.4
 
 
 MAP_SIZE = None
@@ -200,7 +200,7 @@ def get_visible(units: list[Unit]) -> list[int]:
     """Renvoie une carte avec des nombres donnant le "nombre de fois" que chaque case est visible."""
     carte = np.zeros(size_map())
     for boy in units:
-        if type(boy)!=tuple:
+        if type(boy) != tuple:
             for y in [boy.y + k for k in [-2, -1, 0, 1, 2]]:
                 for x in [boy.x + k for k in [-2, -1, 0, 1, 2]]:
                     if (0 <= (y) < len(carte)) and (0 <= (x) < len(carte[0])):
@@ -215,7 +215,7 @@ def get_visible(units: list[Unit]) -> list[int]:
 
 def add_visible(carte, unit: Coord) -> list[int]:
     """Ajoute la vision d'une unité à la carte."""
-    carte=np.copy(carte)
+    carte = np.copy(carte)
     for y in [unit[0] + k for k in [-2, -1, 0, 1, 2]]:
         for x in [unit[1] + k for k in [-2, -1, 0, 1, 2]]:
             if (0 <= (y) < len(carte)) and (0 <= (x) < len(carte[0])):

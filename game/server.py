@@ -18,9 +18,9 @@ tokenOf = {}
 #####  GAME PARAMETERS #####
 
 MAX_NB_ROUNDS = 2000
-MAP_WIDTH = 16
-MAP_HEIGHT = 9
-NB_GOLD_SPOTS = 15
+MAP_WIDTH = 6
+MAP_HEIGHT = 6
+NB_GOLD_SPOTS = 5
 
 # defines an empty map
 farmed = set()
@@ -47,6 +47,9 @@ curPlayer = 'A'  # initial player
 gold = {'A': 25, 'B': 25}  # initial gold
 
 mapdata[0][0]['A']['C'] = 3  # initial units of A
+mapdata[1][1]['A']['B'] = 1  # initial units of A
+mapdata[2][2]['B']['B'] = 1  # initial units of A
+
 mapdata[-1][-1]['B']['C'] = 3  # initial units of B
 opponent = {'A': 'B', 'B': 'A'}
 #### END GAME PARAMETER ####

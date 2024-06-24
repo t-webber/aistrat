@@ -30,7 +30,7 @@ class Player_struct:
         self._golds_total = connection.get_kinds(self.id)[connection.GOLD]
         self._golds_total_without_values = [(y, x) for (y, x, _) in self._golds_total]
         self.average_gold = sum([i**2 for i in range(13)]) / 12
-        self.golds_plot_not_seen = 15 - sum([self.decomposition(gold[2]) for gold in self._golds_total])    
+        self.golds_plot_not_seen = 15 - sum([self.decomposition(gold[2]) for gold in self._golds_total])
         self.gold: int = connection.get_gold()[self.id]
         self.good_gold: list[GoldPile]
         self.bad_gold: list[GoldPile]
@@ -168,16 +168,20 @@ class Player_struct:
         else:
             return 2
 
-    def check_set_list_coord(self, a: list[Unit], b: list[(int, int)], instance: str):
+    def check_set_list_coord(self, client_units: list[Unit], server_units: list[(int, int)], instance: str):
         """Vérifie si deux listes sont égales."""
-        first = [x.coord for x in a]
-        second = b.copy()
-        for unit in second:
-            if unit in first:
-                first.remove(unit)
+
+        print("client = ", client_units)
+        print("server = ", server_units)
+
+        client = client_units.copy()
+        server = server_units.copy()
+
+        for unit in client:
+            if unit.coord in server:
+                server.remove(unit.coord)
             else:
-                raise ValueError(f"{instance} CHANGED: {first} != {second}")
-        for coord in first:
-            for unit in a:
-                if unit.coord == coord:
-                    a.remove(unit)
+                client_units.remove(unit)
+                print(f"{instance} {unit} was killed")
+        if server:
+            raise ValueError(f"{instance} changed: server {server_units} != client {client_units}")
