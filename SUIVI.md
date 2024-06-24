@@ -90,7 +90,7 @@
 ## 05/06
 
 - Martin: fonction pour terminer les parties (pourchasser les dernières unités ennemies pour éviter d'atteindre la limite de tours)
-- Nicolas, Erwann et Pierre: Théorisation et début de la programmation d'un système de heatmap pour des déplacements plus intelligents et utilisant les informations connues sur la carte
+- Nicolas, Erwan et Pierre: Théorisation et début de la programmation d'un système de heatmap pour des déplacements plus intelligents et utilisant les informations connues sur la carte
 - Tom et Jules: correction des bugs de la nouvelle structure du code, sécurisation des appels au serveurs et détection des erreurs de piles vides
 
 ## 12/06
@@ -99,3 +99,4 @@
 - Martin : réalisation de l'affiche du projet
 - Tom: résolution des bugs sur l'or et les mouvements non synchronisés + implémentation de la stratégie heatmap pour évaluer les risques et calculer les déplacements
 - Pierre et Nicolas : Programmation des fonctions essentielles pour utiliser la Heatmap (abstraction, itération, génération)
+- Erwan : Mise a jour de la branche Blitzkrieg pour pouvoir l'utiliser avec le refactor de code, et ainsi pouvoir s'en servir pour comparer différente IA entre elles et éviter les machup miroirs.
