@@ -200,15 +200,22 @@ def get_visible(units: list[Unit]) -> list[int]:
     """Renvoie une carte avec des nombres donnant le "nombre de fois" que chaque case est visible."""
     carte = np.zeros(size_map())
     for boy in units:
-        for y in [boy.y + k for k in [-2, -1, 0, 1, 2]]:
-            for x in [boy.x + k for k in [-2, -1, 0, 1, 2]]:
-                if (0 <= (y) < len(carte)) and (0 <= (x) < len(carte[0])):
-                    carte[y][x] += 1
+        if type(boy) != tuple:
+            for y in [boy.y + k for k in [-2, -1, 0, 1, 2]]:
+                for x in [boy.x + k for k in [-2, -1, 0, 1, 2]]:
+                    if (0 <= (y) < len(carte)) and (0 <= (x) < len(carte[0])):
+                        carte[y][x] += 1
+        else:
+            for y in [boy[0] + k for k in [-2, -1, 0, 1, 2]]:
+                for x in [boy[1] + k for k in [-2, -1, 0, 1, 2]]:
+                    if (0 <= (y) < len(carte)) and (0 <= (x) < len(carte[0])):
+                        carte[y][x] += 1
     return carte
 
 
 def add_visible(carte, unit: Coord) -> list[int]:
     """Ajoute la vision d'une unité à la carte."""
+    carte = np.copy(carte)
     for y in [unit[0] + k for k in [-2, -1, 0, 1, 2]]:
         for x in [unit[1] + k for k in [-2, -1, 0, 1, 2]]:
             if (0 <= (y) < len(carte)) and (0 <= (x) < len(carte[0])):
@@ -218,7 +225,7 @@ def add_visible(carte, unit: Coord) -> list[int]:
 
 def get_eknights(y: int, x: int) -> list[tuple]:
     """Renvoie la liste des chevaliers présents sur une case donnée."""
-    d = get_map()[y][x][current_player()]
+    d = get_map()[y][x][other(current_player())]
     result = []
     if d[KNIGHT]:
         for _ in range(d[KNIGHT]):

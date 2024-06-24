@@ -31,7 +31,7 @@ class Player_struct:
         self._golds_total_without_values = [(y, x) for (y, x, _) in self._golds_total]
         self.average_gold = sum([i**2 for i in range(13)]) / 12
         self.golds_plot_not_seen = 15 - sum([self.decomposition(gold[2]) for gold in self._golds_total])
-        self.gold: int = BEGINING_GOLD
+        self.gold: int = connection.get_gold()[self.id]
         self.good_gold: list[GoldPile]
         self.bad_gold: list[GoldPile]
         self.good_gold, self.bad_gold = cl.clean_golds(
@@ -60,20 +60,6 @@ class Player_struct:
         self.check_set_list_coord(self.pawns, kinds[connection.PAWN], "PAWN")
         self.check_set_list_coord(self.attack + self.defense, kinds[connection.KNIGHT], "KNIGHT")
         self.check_set_list_coord(self.castles, kinds[connection.CASTLE], "CASTLES")
-
-        # golds = self.good_gold + self.bad_gold
-        # golds_items = {}
-        # for gold in golds:
-        #     y, x = gold.coord
-        #     d[y, x] =
-        # golds_item = [(item.y, item.x, item.gold) for item in golds]
-        # if set(golds_item) != set(kinds[connection.GOLD]):
-        #     print(f"gold changed {golds_item} != {kinds[connection.GOLD]}", file=sys.stderr)
-        #     raise ValueError
-
-        # if self.gold != connection.get_gold()[self.id]:
-        #     print("gold changed", file=sys.stderr)
-        #     raise ValueError
 
     def update_ennemi_data(self):
         """Récupère les données des ennemis."""
@@ -112,43 +98,27 @@ class Player_struct:
         servgolds_without_values = [(y, x) for (y, x, _) in server_golds]
         # self.update_total_gold(server_golds, servgolds_without_values)
         updated_golds = []
-
-        server_golds.sort()
-        self._golds.sort()
-
-        print("server = ", server_golds)
-        print("befgolds = ", self._golds)
-
         for gold in self._golds:
             y, x = gold.coord
             v = gold.gold
             if not v:
-                print("Discard", y, x)
                 continue
             if (y, x, v) in server_golds:
-                print("Exact", y, x)
                 server_golds.remove((y, x, v))
                 servgolds_without_values.remove((y, x))
                 updated_golds.append(gold)
-                continue
-            if (y, x) in servgolds_without_values:
-                print("Wrong", y, x)
+            elif (y, x) in servgolds_without_values:
                 index = servgolds_without_values.index((y, x))
                 _, _, new_v = server_golds[index]
                 gold.gold = new_v
                 updated_golds.append(gold)
                 server_golds.remove((y, x, new_v))
                 servgolds_without_values.pop(index)
-                continue
-            print("Unknown", y, x)
-            updated_golds.append(gold)
+            elif gold in self.fog:
+                updated_golds.append(gold)
 
         for (y, x, v) in server_golds:
             updated_golds.append(GoldPile(y, x, v, self))
-
-        updated_golds.sort()
-
-        print("af gold = ", updated_golds)
 
         if not (set(server_golds) <= set(gold.y, gold.x, gold.gold) for gold in updated_golds):
             raise ValueError(f"gold changed {updated_golds} != {server_golds}")
@@ -157,12 +127,8 @@ class Player_struct:
 
         for g in self.good_gold:
             g.update()
-            if g.gold <= 0:
-                self.good_gold.remove(g.gold)
         for g in self.bad_gold:
             g.update()
-            if g.gold <= 0:
-                self.bad_gold.remove(g.gold)
 
         self._knights = self.attack + self.defense
         self._golds = self.good_gold + self.bad_gold
@@ -194,16 +160,16 @@ class Player_struct:
         else:
             return 2
 
-    def check_set_list_coord(self, a: list[Unit], b: list[(int, int)], instance: str):
+    def check_set_list_coord(self, client_units: list[Unit], server_units: list[(int, int)], instance: str):
         """Vérifie si deux listes sont égales."""
-        first = [x.coord for x in a]
-        second = b.copy()
-        for unit in second:
-            if unit in first:
-                first.remove(unit)
+        client = client_units.copy()
+        server = server_units.copy()
+
+        for unit in client:
+            if unit.coord in server:
+                server.remove(unit.coord)
             else:
-                raise ValueError(f"{instance} CHANGED: {first} != {second}")
-        for coord in first:
-            for unit in a:
-                if unit.coord == coord:
-                    a.remove(unit)
+                client_units.remove(unit)
+                print(f"{instance} {unit} was killed")
+        if server:
+            raise ValueError(f"{instance} changed: server {server_units} != client {client_units}")

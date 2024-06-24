@@ -6,6 +6,12 @@ from collections import defaultdict
 from flask import send_from_directory
 import string
 
+import logging
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
+
+
+
 dirs = [(1, 0), (0, 1), (-1, 0), (0, -1)]
 players = []
 
@@ -48,6 +54,7 @@ gold = {'A': 25, 'B': 25}  # initial gold
 
 mapdata[0][0]['A']['C'] = 3  # initial units of A
 mapdata[-1][-1]['B']['C'] = 3  # initial units of B
+
 opponent = {'A': 'B', 'B': 'A'}
 #### END GAME PARAMETER ####
 

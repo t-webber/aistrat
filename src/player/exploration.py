@@ -13,22 +13,20 @@ def path_one(units_to_move: list[Pawn], other_units: list[Pawn], eknights: list[
     bestmove = (-1, -1)
     for boy in units_to_move:
         stuck = 0
-        moves = connection.get_moves(boy.y, boy.x)
+        moves = connection.get_moves(boy.y, boy.x) + [(boy.y, boy.x)]
         static_units = [
             other_boy for other_boy in units_to_move if other_boy != boy] + other_units
-        static_view = connection.get_visible(static_units)
         for move in moves:
-            new_map = connection.add_visible(static_view, move)
+            new_map = connection.get_visible(static_units + [move])
             score = cl.visibility_score(new_map)
             if abs(score - maxscore) <= 1:
                 stuck += 1
                 continue
             ennemies = cl.neighbors(move, eknights)[1]
-            if score > maxscore and (ennemies == 0 or ennemies <= len(connection.get_eknights(boy.y, boy.x))):
+            if score > maxscore and (ennemies == 0 or ennemies <= len(connection.get_eknights(boy.y, boy.x))) and connection.get_eknights(move[0], move[1]) == []:
                 maxscore = score
                 bestpawn = boy
                 bestmove = move
-
     return bestpawn, bestmove
 
 
@@ -50,7 +48,7 @@ def path_trou(units: list[Unit], other_units: list[Unit], eknights: list[Knight]
         for move in moves:
             vector_move = np.array((move[0] - boy.y, move[1] - boy.x))
             ennemies = cl.neighbors(move, eknights)[1]
-            if np.dot(vecteur_trou, vector_move) > max_trou \
+            if np.dot(vecteur_trou, vector_move) > max_trou and not connection.get_eknights(move[0], move[1])\
                     and (ennemies == 0 or ennemies <= len(connection.get_eknights(boy.y, boy.x))):
                 bestmove_trou = move
         if bestmove_trou != (0, 0):

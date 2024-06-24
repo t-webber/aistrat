@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 from apis import connection
 from config import consts, settings
 import logic.client_logic as cl
+from apis.kinds import Unit, Castle
 
 if TYPE_CHECKING:
     from apis.players.players import Player
@@ -85,6 +86,11 @@ def get_nb_castles():
     return min(len_y, len_x) // settings.CASTLES_RATIO
 
 
+def nb_units_near_castles(castle: Castle, units: list[Unit], radius: int):
+    """Renvoie le nombre d'unités dans un rayon donné autour d'un château."""
+    return len([0 for unit in units if cl.distance(*unit.coord, *castle.coord) <= radius])
+
+
 def create_units(player: Player):
     """Création des unités par le château."""
     eknight_offset = len(player.eknights) - len(player.defense)
@@ -92,30 +98,30 @@ def create_units(player: Player):
     missing_priority_castles = len(player.castles) < get_nb_castles() // settings.PRIORITISED_CASTLES_RATIO
     for castle in player.castles:
         # 1. Nous sommes attaqués, production de défenseurs
-        if eknight_offset > 0:
-            # print("--- priory 1 ---")
+        if eknight_offset > 0 or nb_units_near_castles(castle, player.eknights, 1) >= nb_units_near_castles(castle, player.defense, 0):
+            print("---priory1---")
             if player.gold >= consts.PRICES[consts.KNIGHT]:
                 castle.create_defense()
                 eknight_offset -= 1
         # 2. Pas assez de châteaux
         elif missing_priority_castles:
-            # print("--- priory 2 ---")
-            # 3. Pas assez de péons pour contruire des châteaux
-            if len([gold for gold in player._golds if cl.distance(*gold.coord, *castle.coord) <= settings.DISTANCE_BETWEEN_CASTLES]) + settings.PAWNS_OFFSET >= len(player.pawns):
+            print("---priory2---")
+            # Pas assez de péons pour contruire des châteaux
+            if nb_units_near_castles(castle, player._golds, settings.DISTANCE_BETWEEN_CASTLES) + settings.PAWNS_OFFSET >= len(player.pawns):
                 if player.gold >= consts.PRICES[consts.PAWN]:
                     castle.create_pawn()
         # 3. Il y a des péons ennemis
         elif len(player.epawns) >= settings.PAWNS_KNIGHTS_RATIO * len(player.attack):
-            # print("--- priory 3 ---")
+            print("---priory3---")
             if player.gold >= consts.PRICES[consts.KNIGHT]:
                 castle.create_attack()
         # 4. Pas assez de péons
         elif len_golds > len(player.pawns):
-            # print("--- priory 4 ---")
+            print("---priory4---")
             if player.gold >= consts.PRICES[consts.PAWN]:
                 castle.create_pawn()
         # 5. Production d'attaquants
         elif player.gold >= consts.PRICES[consts.KNIGHT]:
-            # print("--- priory 5 ---")
+            print("---priory5---")
             castle.create_attack()
-        # print("--- priory 6 ---")
+        print("---priory6---")

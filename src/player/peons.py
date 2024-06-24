@@ -20,8 +20,7 @@ def fuite(pawns: list[Pawn], knights: list[Knight], eknights: list[Knight]):
         i += 1
         _, total_enemies = cl.neighbors((p.y, p.x), eknights)
         if total_enemies > 0:
-            # print("Fuite")
-            direc_allies, allies_backup = cl.neighbors((p.y, p.x), knights_not_used)
+            direc_allies, allies_backup = cl.movable_neighbors((p.y, p.x), knights_not_used)
             allies = 0
             allies_defense = 0
             on_case = []
@@ -32,8 +31,6 @@ def fuite(pawns: list[Pawn], knights: list[Knight], eknights: list[Knight]):
                     on_case.append(k)
                     allies += 1
 
-            # print(cl.prediction_combat(total_enemies, allies + allies_backup))
-            # print(allies, allies_backup, total_enemies)
             if cl.prediction_combat(total_enemies, allies + allies_backup)[0]:
                 # si on perd le combat même avec les alliés on fuit
                 if cl.move_safe_random_without_purpose(p, eknights, knights):
@@ -41,7 +38,6 @@ def fuite(pawns: list[Pawn], knights: list[Knight], eknights: list[Knight]):
             else:
                 while cl.prediction_combat(total_enemies, allies_defense)[0] and len(on_case) > 0:
                     on_case[-1].used = True
-                    on_case.pop()
                     allies_defense += 1
                 # on peut réussir à gagner le combat avec les alliés et on le fait venir
                 while cl.prediction_combat(total_enemies, allies)[0] and allies_backup > 0:
@@ -61,8 +57,6 @@ def farm(player: Player, golds: list[GoldPile]):
     eknights = player.eknights
     ecastles = player.ecastles
 
-    # print("BEFORE PAWNS", pawns)
-
     # simple_gold = golds
     if golds and pawns:
 
@@ -79,7 +73,6 @@ def farm(player: Player, golds: list[GoldPile]):
                 pawns[p].farm(gold)
             else:
                 cl.move_safe_random(pawns[p], eknights, ecastles, i, j)
-    # print("AFTER PAWNS", pawns)
 
 
 def path(units: list[Unit], other_units: list[Unit], eknights: list[Knight]):
@@ -90,8 +83,6 @@ def path(units: list[Unit], other_units: list[Unit], eknights: list[Knight]):
     le maximum de la carte pour les péons. Prend en compte other_units pour la visibilité
     """
     units_to_move = [unit for unit in units if not unit.used]
-
-    results = []
     strategie = 0
     for i in range(len(units_to_move)):
         if strategie == 0:
@@ -101,19 +92,20 @@ def path(units: list[Unit], other_units: list[Unit], eknights: list[Knight]):
                 strategie = 1
                 i -= 1
                 continue
-            results.append((bestpawn, bestmove))
+            if bestmove == (bestpawn.y, bestpawn.x):
+                return # on n'a pas interet les bouger pour les peons restants
+            else:
+                bestpawn.move(bestmove[0], bestmove[1])
+            #results.append((bestpawn, bestmove))
             other_units.append(bestpawn)
-            units_to_move = [unit for unit in units_to_move if unit is not bestpawn]
+            units_to_move.remove(bestpawn)
         else:
             break
-    for choice in results:
-        choice[0].move(choice[1][0], choice[1][1])
 
 
 def explore(player: Player, otherunits=[]):
     """Envoie en exploration les "pawns" inactifs pour le tour."""
     eknights = player.eknights
-
     path(player.pawns, otherunits, eknights)
     farm(player, player.bad_gold)
     ex.path_trou(player.pawns, otherunits, eknights)
