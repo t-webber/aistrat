@@ -44,8 +44,10 @@ class Player(Player_struct):
 
         while (length := [k for k in self.attack if not k.used]):
 
+            # print("HUNT ATK\t", self.pawns)
             atk.hunt(self.attack, self.epawns,
                      self.eknights)
+            # print("DESTROY CASTLE\t", self.pawns)
             atk.destroy_castle(self.attack, self.ecastles,
                                self.eknights)
             if last_len == length:
