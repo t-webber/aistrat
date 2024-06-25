@@ -169,9 +169,6 @@ class Player_struct:
         client = client_units.copy()
         server = server_units.copy()
 
-        # print("C = ", client, end='\t')
-        # print("S = ", server)
-
         for unit in client:
             if unit.coord in server:
                 server.remove(unit.coord)
