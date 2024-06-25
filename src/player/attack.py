@@ -134,7 +134,7 @@ def destroy_castle(knights: list[Knight], castles: list[Castle],
             if abs(y - i) + abs(x - j) == 1:
                 attaque((i, j), knights_not_used, eknights)
             else:
-                if not knights.used:
+                if not knights_not_used[k].used:
                     cl.move_without_suicide(knights_not_used[k], eknights, i, j)
 
 
