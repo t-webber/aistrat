@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from apis import connection, consts
 from apis.kinds import Knight, Pawn
-import player.logic.client_logic as cl
+import src.logic.client_logic as cl
 
 if TYPE_CHECKING:
     from apis.players import Player
