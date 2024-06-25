@@ -114,7 +114,8 @@ def hunt(knights: list[Knight], epawns: list[Pawn], eknights: list[Knight]):
             if abs(y - i) + abs(x - j) == 1:
                 attaque((i, j), not_used_knights, eknights)
             else:
-                cl.move_without_suicide(not_used_knights[k], eknights, i, j)
+                if not not_used_knights[k].used:
+                    cl.move_without_suicide(not_used_knights[k], eknights, i, j)
 
 
 def destroy_castle(knights: list[Knight], castles: list[Castle],
@@ -133,7 +134,8 @@ def destroy_castle(knights: list[Knight], castles: list[Castle],
             if abs(y - i) + abs(x - j) == 1:
                 attaque((i, j), knights_not_used, eknights)
             else:
-                cl.move_without_suicide(knights_not_used[k], eknights, i, j)
+                if not knights.used:
+                    cl.move_without_suicide(knights_not_used[k], eknights, i, j)
 
 
 def free_pawn(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy], castles: list[Castle]):
