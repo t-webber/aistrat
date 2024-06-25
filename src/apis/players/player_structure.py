@@ -58,9 +58,14 @@ class Player_struct:
         connection.get_data(self.id, self.token)
         kinds = connection.get_kinds(self.id)
 
+        # print("MAP")
+        # print(connection.get_map())
+
         self.check_set_list_coord(self.pawns, kinds[connection.PAWN], "PAWN")
         self.check_set_list_coord(self.knights, kinds[connection.KNIGHT], "KNIGHT")
         self.check_set_list_coord(self.castles, kinds[connection.CASTLE], "CASTLES")
+
+        self.check_two_set_list_coord(self.attack, self.defense, kinds[connection.KNIGHT])
 
     def update_ennemi_data(self):
         """Récupère les données des ennemis."""
@@ -176,3 +181,25 @@ class Player_struct:
                 print(f"{instance} {unit} was killed")
         if server:
             raise ValueError(f"{instance} changed: server {server_units} != client {client_units}")
+
+    def check_two_set_list_coord(self, attack: list[Knight], defense: list[Knight], server_knights: list[(int, int)]):
+        server = server_knights.copy()
+        log_attack = attack.copy()
+        log_defense = defense.copy()
+        for unit in attack.copy():
+            if unit.coord in server:
+                server.remove(unit.coord)
+            else:
+                print(f'ATTACK {unit} was killed')
+                attack.remove(unit)
+
+        for unit in defense.copy():
+            if unit.coord in server:
+                server.remove(unit.coord)
+            else:
+                print(f'DEFENSE {unit} was killed')
+                defense.remove(unit)
+
+        if server:
+            # print(connection.get_map())
+            raise ValueError(f"KNIGHT changed: {server} left in {server_knights} != client attack {log_attack} + defense {log_defense}")

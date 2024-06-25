@@ -6,9 +6,13 @@ from apis.players.player_structure import Player_struct
 from player.castles import create_units, build_castle
 import player.attack as atk
 # import player.decisions as dec
-# import player.defense as dfd
+import player.defense as dfd
 from player import peons
 from player.heatmap import heatMapMove, print_heatmaps
+import sys
+from debug import log_func, pause
+
+
 
 class Player(Player_struct):
     """Class pour implémenter les actions d'un joueur."""
@@ -20,31 +24,37 @@ class Player(Player_struct):
         print("============= Begin Turn for player", self.id, " =====================")
 
         self.turn += 1
+
         self.checks_turn_data()
         self.update_golds()
         self.update_ennemi_data()
         self.update_fog()
 
-        
-        # if self.turn%10 == 0:
-        #     print_heatmaps(self.pawns, self.knights, self.castles, self.eknights, self.ecastles, self.epawns, self._gold_map, self.id)
+        pause(self.id)
 
-        
         serv = connection.get_gold()[self.id]
         if serv != self.gold:
             raise ValueError(f"wrong gold value: S({serv}) != P({self.gold})")
-
+        
+        print('golds', self.good_gold, self.bad_gold)
         create_units(self)
+        log_func("fuite")
         peons.fuite(self.pawns, self.knights, self.eknights)
+        log_func("castle")
         build_castle(self)
-
+        peons.free_gold(self.pawns, self.bad_gold)
+        peons.free_gold(self.pawns, self.good_gold)
         # je farm d'abord ce que je vois
+        log_func("farm")
         peons.farm(self, self.good_gold)
         # j'explore ensuite dans la direction opposée au spawn
         peons.explore(self, self.knights + self.castles)
 
         heatMapMove(self.pawns, self.knights, self.castles, self.epawns, self.eknights, self.ecastles, self._gold_map, self.id)
-        
+
+
+
+
         self.update_gold_map()
 
         connection.end_turn(self.id, self.token)

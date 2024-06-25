@@ -7,7 +7,7 @@ from apis.players.players import Player
 from apis.kinds import Knight, Pawn
 
 
-if len(sys.argv) > 2 and sys.argv[2]:
+if len(sys.argv) > 2 and sys.argv[2] and sys.argv[2] != "debug":
     connection.init(sys.argv[2])
 else:
     connection.init("http://localhost:8080")

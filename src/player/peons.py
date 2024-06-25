@@ -18,6 +18,8 @@ def fuite(pawns: list[Pawn], knights: list[Knight], eknights: list[Knight]):
     while i < len(pawns):
         p = pawns[i]
         i += 1
+        if p.used:
+            continue
         _, total_enemies = cl.neighbors((p.y, p.x), eknights)
         if total_enemies > 0:
             direc_allies, allies_backup = cl.movable_neighbors((p.y, p.x), knights_not_used)
@@ -51,22 +53,33 @@ def fuite(pawns: list[Pawn], knights: list[Knight], eknights: list[Knight]):
                             break
 
 
+def free_gold(pawns: list[Pawn], golds: list[GoldPile]):
+    """Si le péon est sur une pile d'or, il la récolte."""
+    for pawn in pawns:
+        if pawn.used:
+            continue
+        for gold in golds:
+            if gold.coord == pawn.coord and not gold.used:
+                pawn.farm(gold)
+                break
+
+
 def farm(player: Player, golds: list[GoldPile]):
     """Récolte l'or quand c'est possible, sinon ce déplace vers la pile disponible la plus proche."""
     pawns = [unit for unit in player.pawns if not unit.used]
     eknights = player.eknights
     ecastles = player.ecastles
+    available_golds = [gold for gold in golds if not gold.used]
 
     # simple_gold = golds
-    if golds and pawns:
-
+    if available_golds and pawns:
         # affecation problem
         # choisis les mines d'or vers lesquelles vont se diriger les peons
         # pour en minimiser le nombre total de mouvements
         # je fais bouger les peons vers leur mine d'or
-        result_data = cl.hongrois_distance(pawns, golds)
+        result_data = cl.hongrois_distance(pawns, available_golds)
         for p, g in result_data:
-            gold = golds[g]
+            gold = available_golds[g]
             y, x = pawns[p].coord
             i, j = gold.y, gold.x
             if y == i and x == j:
@@ -82,21 +95,25 @@ def path(units: list[Unit], other_units: list[Unit], eknights: list[Knight]):
     Essaye de chercher un chemin d'exploration optimal pour les units_to_move pour révéler
     le maximum de la carte pour les péons. Prend en compte other_units pour la visibilité
     """
-    units_to_move = [unit for unit in units if not unit.used]
+    units_to_move = []
+    for unit in units:
+        if not unit.used:
+            units_to_move.append(unit)
+        else:
+            other_units.append(unit)
     strategie = 0
-    for i in range(len(units_to_move)):
+    for _ in range(len(units_to_move)):
         if strategie == 0:
             bestpawn, bestmove = ex.path_one(
                 units_to_move, other_units, eknights)
             if bestpawn == (-1, -1):
                 strategie = 1
-                i -= 1
                 continue
             if bestmove == (bestpawn.y, bestpawn.x):
-                return # on n'a pas interet les bouger pour les peons restants
+                return  # on n'a pas interet les bouger pour les peons restants
             else:
                 bestpawn.move(bestmove[0], bestmove[1])
-            #results.append((bestpawn, bestmove))
+            # results.append((bestpawn, bestmove))
             other_units.append(bestpawn)
             units_to_move.remove(bestpawn)
         else:
@@ -107,7 +124,8 @@ def explore(player: Player, otherunits=[]):
     """Envoie en exploration les "pawns" inactifs pour le tour."""
     eknights = player.eknights
     path(player.pawns, otherunits, eknights)
-    farm(player, player.bad_gold)
+    bad_gold_not_used = [gold for gold in player.bad_gold if not gold.used]
+    farm(player, bad_gold_not_used)
     ex.path_trou(player.pawns, otherunits, eknights)
 
 

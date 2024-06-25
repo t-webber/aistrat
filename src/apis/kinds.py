@@ -2,6 +2,7 @@
 
 
 from __future__ import annotations
+import sys
 from typing import TYPE_CHECKING
 
 from apis import connection
@@ -116,12 +117,15 @@ class Person(Unit):
     def move(self, y, x):
         """Bouge le péon, et le met en utilisé."""
         if self.used:
-            raise ValueError(f'Person {self} is already used.')
+            raise ValueError(f'Person {self} is already used. Trying to move to {y, x} but not allowed.')
         try:
             connection.move(self.key, self.y, self.x, y,
                             x, self.player.id, self.player.token)
         except ValueError as e:
-            raise ValueError(f"Tried to move {self} but not allowed: {e}") from e
+            raise ValueError(f"Tried to move {self} to {y, x} but not allowed: {e}") from e
+
+        if len(sys.argv) > 2 and sys.argv[2] == "debug":
+            print(f"* Moved {self} to {y, x}")
 
         self.y = y
         self.x = x
@@ -161,7 +165,8 @@ class Pawn(Person):
             raise ValueError(f"Gold {gold} not found in {golds}.\n The client golds where {self.player.good_gold + self.player.bad_gold}")
         connection.farm(
             self.y, self.x, self.player.id, self.player.token)
-
+        if len(sys.argv) > 2 and sys.argv[2] == "debug":
+            print(f"* Farmed {self} on {gold}")
         self.used = True
         self.player.gold += 1
         gold.reduce()
@@ -182,6 +187,7 @@ class Knight(Person):
         """Initialise un chevalier."""
         super().__init__(y, x, consts.KNIGHT, consts.EKNIGHT, player)
         self.cible = None  # attribut pour la défense en fonction des chevaliers ennemis
+        self.target = None  # cible d'attaque
 
     def __str__(self):
         """Affiche un chevalier."""
@@ -209,7 +215,7 @@ class Castle(Unit):
         """Crée un défenseur."""
         cost = consts.PRICES[connection.KNIGHT]
         if self.player.gold < cost:
-            raise ValueError(f"Not enough gold to proceed: {self.gold}")
+            raise ValueError(f"Not enough gold to proceed: {self.player.gold}")
         connection.build(connection.KNIGHT, self.y, self.x, self.player.id, self.player.token)
         self.player.gold -= cost
         self.player.defense.append(Knight(*self.coord, self.player))
@@ -219,7 +225,7 @@ class Castle(Unit):
         """Crée un défenseur."""
         cost = consts.PRICES[connection.KNIGHT]
         if self.player.gold < cost:
-            raise ValueError(f"Not enough gold to proceed: {self.gold}")
+            raise ValueError(f"Not enough gold to proceed: {self.player.gold}")
         connection.build(connection.KNIGHT, self.y, self.x, self.player.id, self.player.token)
         self.player.gold -= cost
         self.player.attack.append(Knight(*self.coord, self.player))
@@ -230,7 +236,7 @@ class Castle(Unit):
         """Crée un défenseur."""
         cost = consts.PRICES[connection.PAWN]
         if self.player.gold < cost:
-            raise ValueError(f"Not enough gold to proceed: {self.gold}")
+            raise ValueError(f"Not enough gold to proceed: {self.player.gold}")
         connection.build(connection.PAWN, self.y, self.x, self.player.id, self.player.token)
         self.player.gold -= cost
         self.player.pawns.append(Pawn(*self.coord, self.player))
