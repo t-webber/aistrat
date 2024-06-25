@@ -18,7 +18,7 @@ class Player(Player_struct):
         """Joue le prochain tour pour le joueur."""
         self.reinit_data()
 
-        print("============= Begin Turn for player", self.id, " =====================")
+        print(f"============= Begin {self.turn} turn for player {self.id} =====================")
 
         self.turn += 1
 
@@ -27,7 +27,7 @@ class Player(Player_struct):
         self.update_ennemi_data()
         self.update_fog()
 
-        if self == "A" and sys.argv[2] == "debug":
+        if self == "A" and len(sys.argv) >= 3 and sys.argv[2] == "debug":
             input("Press enter to continue...")
 
         serv = connection.get_gold()[self.id]
@@ -43,10 +43,10 @@ class Player(Player_struct):
         peons.farm(self, self.good_gold)
         # j'explore ensuite dans la direction opposée au spawn
         peons.explore(self, self._knights + self.castles)
-        # atk.free_pawn(self.attack + self.defense, self.eknights, self.epawns, self.ecastles)
+        atk.free_pawn(self.attack + self.defense, self.eknights, self.epawns, self.ecastles)
         dfd.defend(self.pawns, self.defense, self.eknights, self.castles)
         # left_defense = dfd.eknight_based_defense ( defense, eknights, castles, token)
-        dfd.agressiv_defense(self.defense, self.epawns, self.eknights, self.ecastles)
+        # dfd.agressiv_defense(self.defense, self.epawns, self.eknights, self.ecastles)
         last_len = None
 
         while (length := [k for k in self.attack if not k.used]):

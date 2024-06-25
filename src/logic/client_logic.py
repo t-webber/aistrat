@@ -58,7 +58,7 @@ def distance_to_list(current_position: tuple[int, int], list_units: list[Unit]):
         if d_temp < d:
             d = d_temp
             args = unit
-    return d,args
+    return d, args
 
 
 def exists_close(position: Unit, list_targets: list[Unit], sep: int) -> bool:
@@ -94,7 +94,7 @@ def clean_golds(golds: list[GoldPile], pawns: list[Pawn], ecastles: list[Castle]
 
     Returns: list of gold piles after removing the close piles.
     """
-    threshold_bad = 16
+    threshold_bad = 15
     distance_overlook = 1
     to_be_removed = [0 for _ in range(len(golds))]
     for num, pile in enumerate(golds):
@@ -206,38 +206,38 @@ def in_obj(object: Coord, object_list: list[Coord]):
 def move_safe_random(unit: Unit, eknights: list[Knight], ecastles: list[Castle], i: int, j: int):
     """Déplace une unité de manière aléatoire vers une case sûre."""
     if rd.random() > 0.5:
-        if unit.x > j and not in_obj(Coord(unit.y, unit.x - 1),eknights) and (unit.y, unit.x - 1) not in ecastles and \
+        if unit.x > j and not in_obj(Coord(unit.y, unit.x - 1), eknights) and (unit.y, unit.x - 1) not in ecastles and \
                 (neighbors((unit.y, unit.x - 1), eknights)[1] == 0 or neighbors((unit.y, unit.x - 1), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
             unit.move(unit.y, unit.x - 1)
             return True
-        elif unit.x < j and not in_obj(Coord(unit.y, unit.x + 1),eknights) and (unit.y, unit.x + 1) not in ecastles and \
+        elif unit.x < j and not in_obj(Coord(unit.y, unit.x + 1), eknights) and (unit.y, unit.x + 1) not in ecastles and \
                 (neighbors((unit.y, unit.x + 1), eknights)[1] == 0 or neighbors((unit.y, unit.x + 1), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
             unit.move(unit.y, unit.x + 1)
             return True
-        elif unit.y > i and not in_obj(Coord(unit.y - 1, unit.x),eknights) and (unit.y - 1, unit.x) not in ecastles and \
+        elif unit.y > i and not in_obj(Coord(unit.y - 1, unit.x), eknights) and (unit.y - 1, unit.x) not in ecastles and \
                 (neighbors((unit.y - 1, unit.x), eknights)[1] == 0 or neighbors((unit.y - 1, unit.x), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
             unit.move(unit.y - 1, unit.x)
             return True
-        elif unit.y < i and not in_obj(Coord(unit.y + 1, unit.x),eknights) and (unit.y + 1, unit.x) not in ecastles and \
+        elif unit.y < i and not in_obj(Coord(unit.y + 1, unit.x), eknights) and (unit.y + 1, unit.x) not in ecastles and \
                 (neighbors((unit.y + 1, unit.x), eknights)[1] == 0 or neighbors((unit.y + 1, unit.x), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
             unit.move(unit.y + 1, unit.x)
             return True
         else:
             return False
     else:
-        if unit.y > i and not in_obj(Coord(unit.y - 1, unit.x),eknights) and (unit.y - 1, unit.x) not in ecastles and \
+        if unit.y > i and not in_obj(Coord(unit.y - 1, unit.x), eknights) and (unit.y - 1, unit.x) not in ecastles and \
                 (neighbors((unit.y - 1, unit.x), eknights)[1] == 0 or neighbors((unit.y - 1, unit.x), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
             unit.move(unit.y - 1, unit.x)
             return True
-        elif unit.y < i and not in_obj(Coord(unit.y + 1, unit.x),eknights) and (unit.y + 1, unit.x) not in ecastles and \
+        elif unit.y < i and not in_obj(Coord(unit.y + 1, unit.x), eknights) and (unit.y + 1, unit.x) not in ecastles and \
                 (neighbors((unit.y + 1, unit.x), eknights)[1] == 0 or neighbors((unit.y + 1, unit.x), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
             unit.move(unit.y + 1, unit.x)
             return True
-        elif unit.x > j and not in_obj(Coord(unit.y, unit.x - 1),eknights) and (unit.y, unit.x - 1) not in ecastles and \
+        elif unit.x > j and not in_obj(Coord(unit.y, unit.x - 1), eknights) and (unit.y, unit.x - 1) not in ecastles and \
                 (neighbors((unit.y, unit.x - 1), eknights)[1] == 0 or neighbors((unit.y, unit.x - 1), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
             unit.move(unit.y, unit.x - 1)
             return True
-        elif unit.x < j and not in_obj(Coord(unit.y, unit.x + 1),eknights) and (unit.y, unit.x + 1) not in ecastles and \
+        elif unit.x < j and not in_obj(Coord(unit.y, unit.x + 1), eknights) and (unit.y, unit.x + 1) not in ecastles and \
                 (neighbors((unit.y, unit.x + 1), eknights)[1] == 0 or neighbors((unit.y, unit.x + 1), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
             unit.move(unit.y, unit.x + 1)
             return True

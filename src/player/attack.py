@@ -98,7 +98,7 @@ def hunt(knights: list[Knight], epawns: list[Pawn], eknights: list[Knight]):
         #         if neighbor and not voisins_ennemis[]:
         #             k.move(k.y + i[0], k.x + i[1])
 
-    print(knights)
+    # print(knights)
 
     not_used_knights = [k for k in knights if not k.used]
     if not_used_knights and epawns:
@@ -113,8 +113,7 @@ def hunt(knights: list[Knight], epawns: list[Pawn], eknights: list[Knight]):
             i, j = epawns[ep].coord
             if abs(y - i) + abs(x - j) == 1:
                 attaque((i, j), not_used_knights, eknights)
-            else:
-                print("clmws = ", k)
+            elif not not_used_knights[k].used:
                 cl.move_without_suicide(not_used_knights[k], eknights, i, j)
 
 
