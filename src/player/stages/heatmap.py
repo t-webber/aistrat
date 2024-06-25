@@ -107,51 +107,6 @@ def heatbattle(knights : list[Knight], eknights : list[Knight], x:int, y:int,A,B
         return 0
     return (A*pa/pd)**B - len(usable_knight)*C
 
-instance=[[[3,0],[3,0],[3,0],[3,0],[3,0]],[[0,0],[0,0]]]
-    
-def min_max_alpha_beta(depth:int,alpha:int,beta:int, base_map:list[list[int,int]],player:int):
-    extrem=player*10000
-    config=None
-    map_id=None
-    new_beta=beta
-    new_alpha=alpha
-    if depth>0:
-        cond_init=True
-        next_move=base_map.copy()
-        while(map_id!=None or cond_init ):
-            val,_ = min_max_alpha_beta(depth-1,new_alpha,new_beta,next_move,1-player)
-            #print(val,extrem)
-            if val>= extrem and not player:
-                extrem = val
-                config = next_move
-                new_alpha=max(alpha,val)
-                if val >= beta:
-                    return val,next_move  
-            if val<= extrem and player:
-                extrem = val
-                config = next_move
-                new_beta=min(new_beta,val)
-                if val <= alpha:
-                    return val,next_move  
-                
-            next_move,map_id = next_turn(base_map,player,map_id)
-            cond_init=False
-        return extrem,config
-    else:
-        print(eval_config(base_map),base_map)
-        return eval_config(base_map), base_map
-
-
-def eval_config(config):
-    score=0
-    exist=False
-    for knight in config[0]:
-        if knight==[0,0] and not exist:
-            score+=30
-            exist=True
-    score+=len(config[0])*2
-    score-=len(config[1])
-    return max(score,0)
 
 def heatMapAttackGen(epawns : list[Pawn], ecastles : list[Castle], id : str, knights : list[Knight], eknights : list[Knight], gold_map : list[list[int]]):
     """Génère la Heat Map aggressive"""
@@ -263,52 +218,3 @@ def attackHere(player:pl.Player,case:tuple[int,int]):
 #         if map_zero[i][j] is not None:
 #             for k in range(map_zero[i][j][player]):
 #                 units.add((i,j))"""
-
-def next_match(units,new_vector):
-    new_units=[]
-    for i,unit in enumerate(units):
-        match(new_vector):
-            case 1:
-                new_units.append(unit[0]-1,unit[1])
-            case 2:
-                new_units.append(unit[0]+1,unit[1])
-            case 3:
-                new_units.append(unit[0],unit[1]-1)
-            case 4:
-                new_units.append(unit[0],unit[1]+1)
-            case _: 
-                new_units.append(unit)
-    return new_units
-
-def good_move(last_vector:list[int],new_move:list[int],units:list[list[int,int]]):
-    origin=next_match(units,last_vector)
-    new=next_match(units,new_move)
-    for move,ind in iter(new_move): #On vérifie pour chaque unité déplacée
-        if move!=last_vector[ind]:
-            if cl.distance(*new[ind],0,0)>=cl.distance(*origin[ind],0,0):
-                return False
-    return True
-
-def cinq_adder(last_vector,indice,units):
-    if indice>last_vector.lenght():
-        return None
-    if last_vector[indice]+1 >= 5:
-        last_vector[indice]=0
-        return cinq_adder(last_vector,indice+1,units)
-    else:
-        last_vector[indice]+=1
-        return last_vector
-
-def next_turn(units:list[list[int,int]],player:int,last_vector:list[int]=None):
-    if last_vector is None:
-        last_vector=[0 for i in range(len(units[player]))]
-        return units, last_vector
-    new_move=cinq_adder(last_vector,0,units)
-    while (new_move is not None) and (not good_move(last_vector,new_move,units)):
-        new_move=cinq_adder(last_vector,0,units)
-    if new_move is None:
-        return None,None
-    return next_match(units,new_move),new_move
-    
-    
-            
