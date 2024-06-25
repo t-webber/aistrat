@@ -26,8 +26,8 @@ tokenOf = {}
 #####  GAME PARAMETERS #####
 
 MAX_NB_ROUNDS = 2000
-MAP_WIDTH = 10
-MAP_HEIGHT = 10
+MAP_WIDTH = 16
+MAP_HEIGHT = 9
 NB_GOLD_SPOTS = 15
 
 # defines an empty map
@@ -49,13 +49,22 @@ for i in range(NB_GOLD_SPOTS):
     mapdata[MAP_HEIGHT - 1 - y][MAP_WIDTH - 1 - x]['G'] += n * n
 
 price = {'C': 5, 'M': 10, 'B': 15}  # the price of each unit
+PAWN = 'C'
+KNIGHT = 'M'
+CASTLE = 'B'
 requires = {'C': 'B', 'M': 'B', 'B': 'C'}  # what do we need to build
 winner = ''
 curPlayer = 'A'  # initial player
 gold = {'A': 25, 'B': 25}  # initial gold
 
-mapdata[0][0]['A']['C'] = 3  # initial units of A
-mapdata[-1][-1]['B']['C'] = 3  # initial units of B
+mapdata[0][0]['A'][PAWN] = 3
+mapdata[-1][-1]['B'][PAWN] = 3
+mapdata[1][1]['G'] = 2
+mapdata[0][1]['G'] = 2
+mapdata[1][0]['G'] = 2
+mapdata[0][2]['G'] = 100
+mapdata[2][0]['G'] = 100
+
 
 opponent = {'A': 'B', 'B': 'A'}
 #### END GAME PARAMETER ####
@@ -108,8 +117,7 @@ def giveView(player, token):
     global winner
     if player == "all" or winner != "":
         return giveAllView()
-    if not (tokenOf[player] == token):
-        raise ValueError
+    assert (tokenOf[player] == token)
     mapView = [[{} for x in range(MAP_WIDTH)] for y in range(MAP_HEIGHT)]
     visible = getVisibility(player)
     if len(visible) == 0:
@@ -137,18 +145,12 @@ def giveView(player, token):
 @app.route('/move/<player>/<kind>/<int:y>/<int:x>/<int:ny>/<int:nx>/<token>')
 def move(player, kind, y, x, ny, nx, token):
     global nbMoves
-    if not (tokenOf[player] == token):
-        raise ValueError
-    if not (abs(x - nx) + abs(y - ny) == 1):
-        raise ValueError
-    if not (0 <= nx < MAP_WIDTH and 0 <= ny < MAP_HEIGHT):
-        raise ValueError
-    if not (0 <= x < MAP_WIDTH and 0 <= y < MAP_HEIGHT):
-        raise ValueError
-    if not (mapdata[y][x][player][kind] > 0):  # useless because of next line ?:
-        raise ValueError
-    if not (nbMoves[(y, x, player, kind)] < mapdata[y][x][player][kind]):
-        raise ValueError
+    assert (tokenOf[player] == token)
+    assert (abs(x - nx) + abs(y - ny) == 1)
+    assert (0 <= nx < MAP_WIDTH and 0 <= ny < MAP_HEIGHT)
+    assert (0 <= x < MAP_WIDTH and 0 <= y < MAP_HEIGHT)
+    assert (mapdata[y][x][player][kind] > 0)  # useless because of next line ?
+    assert (nbMoves[(y, x, player, kind)] < mapdata[y][x][player][kind])
     nbMoves[(ny, nx, player, kind)] += 1
     mapdata[y][x][player][kind] -= 1
     mapdata[ny][nx][player][kind] += 1
@@ -157,20 +159,13 @@ def move(player, kind, y, x, ny, nx, token):
 
 @app.route('/build/<player>/<int:y>/<int:x>/<kind>/<token>')
 def build(player, y, x, kind, token):
-    if not (tokenOf[player] == token):
-        raise ValueError
-    if not (0 <= x < MAP_WIDTH and 0 <= y < MAP_HEIGHT):
-        raise ValueError
-    if not (kind in price):
-        raise ValueError
-    if not (mapdata[y][x][opponent[player]]['B'] == 0):
-        raise ValueError
-    if not (mapdata[y][x][player][requires[kind]] > 0):
-        raise ValueError
-    if not (nbMoves[(y, x, player, requires[kind])] < mapdata[y][x][player][requires[kind]]):
-        raise ValueError
-    if (gold[player] < price[kind]):
-        print("gold = ", gold[player], "kind = ", kind, "price = ", price[kind])
+    assert (tokenOf[player] == token)
+    assert (0 <= x < MAP_WIDTH and 0 <= y < MAP_HEIGHT)
+    assert (kind in price)
+    assert (mapdata[y][x][opponent[player]]['B'] == 0)
+    assert (mapdata[y][x][player][requires[kind]] > 0)
+    assert (nbMoves[(y, x, player, requires[kind])] < mapdata[y][x][player][requires[kind]])
+    assert (gold[player] >= price[kind])
     nbMoves[(y, x, player, requires[kind])] += 1
     nbMoves[(y, x, player, kind)] += 1
     mapdata[y][x][player][kind] += 1
@@ -180,16 +175,11 @@ def build(player, y, x, kind, token):
 
 @app.route('/farm/<player>/<int:y>/<int:x>/<token>')
 def farm(player, y, x, token):
-    if not (tokenOf[player] == token):
-        raise ValueError
-    if not (0 <= x < MAP_WIDTH and 0 <= y < MAP_HEIGHT):
-        raise ValueError
-    if not (nbMoves[(y, x, player, 'C')] < mapdata[y][x][player]['C']):
-        raise ValueError
-    if not (mapdata[y][x]['G'] > 0):
-        raise ValueError
-    if not ((y, x) not in farmed):
-        raise ValueError
+    assert (tokenOf[player] == token)
+    assert (0 <= x < MAP_WIDTH and 0 <= y < MAP_HEIGHT)
+    assert (nbMoves[(y, x, player, 'C')] < mapdata[y][x][player]['C'])
+    assert (mapdata[y][x]['G'] > 0)
+    assert ((y, x) not in farmed)
     nbMoves[(y, x, player, 'C')] += 1
     mapdata[y][x]['G'] -= 1
     farmed.add((y, x))
@@ -237,8 +227,7 @@ def solveBattles(attacker, defender):  # combat rules
 
 @app.route('/autofarm/<player>/<token>')
 def autofarm(player, token):
-    if not (tokenOf[player] == token):
-        raise ValueError
+    assert (tokenOf[player] == token)
     for y in range(MAP_HEIGHT):
         for x in range(MAP_WIDTH):
             try:
@@ -256,10 +245,8 @@ def changeturn(player, token):
     global farmed
     global winner
     global tokenOf
-    if not (tokenOf[player] == token):
-        raise ValueError
-    if not (player == curPlayer):
-        raise ValueError
+    assert (tokenOf[player] == token)
+    assert (player == curPlayer)
     solveBattles(player, opponent[player])
     curPlayer = opponent[player]
     nbMoves = defaultdict(int)

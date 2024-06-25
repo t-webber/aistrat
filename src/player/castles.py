@@ -103,7 +103,7 @@ def create_units(player: Player):
     missing_priority_castles = len(player.castles) < get_nb_castles() // settings.PRIORITISED_CASTLES_RATIO
     for castle in player.castles:
         # 1. Nous sommes attaqués, production de défenseurs
-        if nb_units_near_castles(castle, player.eknights, 6) >= nb_units_near_castles(castle, player.defense, 6) > 0 or nb_units_near_castles(castle, player.eknights, 1) >= nb_units_near_castles(castle, player.defense, 0):
+        if nb_units_near_castles(castle, player.eknights, 6) > nb_units_near_castles(castle, player.defense, 6) or nb_units_near_castles(castle, player.eknights, 1) > nb_units_near_castles(castle, player.defense, 0):
             print("---priory1---")
             if player.gold >= consts.PRICES[consts.KNIGHT]:
                 castle.create_defense()
