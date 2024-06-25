@@ -3,15 +3,36 @@
 import numpy as np
 import requests
 from apis.kinds import Coord, Unit
-from apis.consts import PAWN, CASTLE, KNIGHT, GOLD, EKNIGHT, EPAWN, ECASTLE
+from config.consts import PAWN, CASTLE, KNIGHT, GOLD, EKNIGHT, EPAWN, ECASTLE
+from typing import Dict, List, Union
+
 
 IP = "http://localhost:8080"
-TIME_OUT = 0.01
+TIME_OUT = 0.2
 
 
 MAP_SIZE = None
 
-turn_data = {}
+
+class PlayerId:
+    """'A' or 'B'."""
+
+    pass
+
+
+turn_data: Dict[str, Union[Dict[str, int], List[List[Dict[str, Union[Dict[str, int], int]]]]]] = {}
+
+
+def server_action(url: str) -> tuple[bool, any]:
+    """Demande au serveur de faire une action."""
+    try:
+        x = requests.get(url, timeout=TIME_OUT)
+    except Exception as e:
+        raise ValueError(f"Server error occured: {e}") from e
+    if x.reason != "OK" or x.status_code != 200:
+        raise ValueError("Server error occured")
+
+    return x
 
 
 def init(ip: str):
@@ -22,12 +43,7 @@ def init(ip: str):
 
 def end_turn(player_id: str, token: str):
     """Fin du tour du joueur."""
-    try:
-        requests.get(
-            f"{IP}/endturn/{player_id}/{token}", timeout=TIME_OUT)
-    except:
-        return False
-    return True
+    server_action(f"{IP}/endturn/{player_id}/{token}")
 
 
 def create_player():
@@ -40,22 +56,12 @@ def create_player():
 
 def move(kind: str, oldy: int, oldx: int, newy: int, newx: int, player_id: str, token: str) -> bool:
     """Essaie de bouger une unité."""
-    try:
-        requests.get(
-            f"{IP}/move/{player_id}/{kind}/{oldy}/{oldx}/{newy}/{newx}/{token}", timeout=TIME_OUT)
-    except:
-        return False
-    return True
+    server_action(f"{IP}/move/{player_id}/{kind}/{oldy}/{oldx}/{newy}/{newx}/{token}")
 
 
 def build(kind: str, y: int, x: int, player_id: str, token: str) -> bool:
     """Contruit une unité de type `kind` en (y,x)."""
-    try:
-        requests.get(
-            f"{IP}/build/{player_id}/{y}/{x}/{kind}/{token}", timeout=TIME_OUT)
-        return True
-    except:
-        return False
+    server_action(f"{IP}/build/{player_id}/{y}/{x}/{kind}/{token}")
 
 
 def get_data(player_id: str, token: str) -> bool:
@@ -66,11 +72,10 @@ def get_data(player_id: str, token: str) -> bool:
     """
     global turn_data
     try:
-        res = requests.get(
-            f"{IP}/view/{player_id}/{token}", timeout=TIME_OUT)
-    except:
+        data = server_action(f"{IP}/view/{player_id}/{token}")
+    except Exception:
         return False
-    turn_data = res.json()
+    turn_data = data.json()
     return True
 
 
@@ -84,7 +89,6 @@ def size_map() -> tuple[int, int]:
     global MAP_SIZE
     if MAP_SIZE is None:
         initial_map = get_map()
-        print(initial_map[0][0])
         MAP_SIZE = (len(initial_map), len(initial_map[0]))
     return MAP_SIZE
 
@@ -94,7 +98,7 @@ def current_player() -> list:
     return turn_data["player"]
 
 
-def get_gold() -> list:
+def get_gold() -> Dict[str, int]:
     """Renvoie l'argent qu'on possède."""
     return turn_data["gold"]
 
@@ -109,24 +113,14 @@ def get_winner() -> str:
     return turn_data["winner"]
 
 
-def farm(y: int, x: int, player_id: str, token: str) -> bool:
+def farm(y: int, x: int, player_id: str, token: str):
     """Fait récolter de l'argent au péon en (y, x)."""
-    try:
-        requests.get(
-            f"{IP}/farm/{player_id}/{y}/{x}/{token}", timeout=TIME_OUT)
-        return True
-    except:
-        return False
+    server_action(f"{IP}/farm/{player_id}/{y}/{x}/{token}")
 
 
 def auto_farm(player_id, token) -> bool:
     """Fait récolter de l'argent à tous les péons."""
-    try:
-        requests.get(
-            f"{IP}/autofarm/{player_id}/{token}", timeout=TIME_OUT)
-        return True
-    except:
-        return False
+    server_action(f"{IP}/autofarm/{player_id}/{token}")
 
 
 def get_info(y: int, x: int) -> list:
@@ -206,15 +200,22 @@ def get_visible(units: list[Unit]) -> list[int]:
     """Renvoie une carte avec des nombres donnant le "nombre de fois" que chaque case est visible."""
     carte = np.zeros(size_map())
     for boy in units:
-        for y in [boy.y + k for k in [-2, -1, 0, 1, 2]]:
-            for x in [boy.x + k for k in [-2, -1, 0, 1, 2]]:
-                if (0 <= (y) < len(carte)) and (0 <= (x) < len(carte[0])):
-                    carte[y][x] += 1
+        if type(boy) != tuple:
+            for y in [boy.y + k for k in [-2, -1, 0, 1, 2]]:
+                for x in [boy.x + k for k in [-2, -1, 0, 1, 2]]:
+                    if (0 <= (y) < len(carte)) and (0 <= (x) < len(carte[0])):
+                        carte[y][x] += 1
+        else:
+            for y in [boy[0] + k for k in [-2, -1, 0, 1, 2]]:
+                for x in [boy[1] + k for k in [-2, -1, 0, 1, 2]]:
+                    if (0 <= (y) < len(carte)) and (0 <= (x) < len(carte[0])):
+                        carte[y][x] += 1
     return carte
 
 
 def add_visible(carte, unit: Coord) -> list[int]:
     """Ajoute la vision d'une unité à la carte."""
+    carte = np.copy(carte)
     for y in [unit[0] + k for k in [-2, -1, 0, 1, 2]]:
         for x in [unit[1] + k for k in [-2, -1, 0, 1, 2]]:
             if (0 <= (y) < len(carte)) and (0 <= (x) < len(carte[0])):
@@ -224,7 +225,7 @@ def add_visible(carte, unit: Coord) -> list[int]:
 
 def get_eknights(y: int, x: int) -> list[tuple]:
     """Renvoie la liste des chevaliers présents sur une case donnée."""
-    d = get_map()[y][x][current_player()]
+    d = get_map()[y][x][other(current_player())]
     result = []
     if d[KNIGHT]:
         for _ in range(d[KNIGHT]):

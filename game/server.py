@@ -6,6 +6,14 @@ from collections import defaultdict
 from flask import send_from_directory
 import string
 
+import logging
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
+
+
+print(" http://localhost:8080/ ")
+
+
 dirs = [(1, 0), (0, 1), (-1, 0), (0, -1)]
 players = []
 
@@ -18,8 +26,8 @@ tokenOf = {}
 #####  GAME PARAMETERS #####
 
 MAX_NB_ROUNDS = 2000
-MAP_WIDTH = 16
-MAP_HEIGHT = 9
+MAP_WIDTH = 10
+MAP_HEIGHT = 10
 NB_GOLD_SPOTS = 15
 
 # defines an empty map
@@ -94,6 +102,7 @@ def getVisibility(player):
 
 
 def giveAllView():
+
     global winner
     data = {'map': mapdata,
             'gold': gold,
@@ -112,7 +121,8 @@ def giveView(player, token):
     global winner
     if player == "all" or winner != "":
         return giveAllView()
-    assert (tokenOf[player] == token)
+    if not (tokenOf[player] == token):
+        raise ValueError
     mapView = [[{} for x in range(MAP_WIDTH)] for y in range(MAP_HEIGHT)]
     visible = getVisibility(player)
     if len(visible) == 0:
@@ -140,12 +150,18 @@ def giveView(player, token):
 @app.route('/move/<player>/<kind>/<int:y>/<int:x>/<int:ny>/<int:nx>/<token>')
 def move(player, kind, y, x, ny, nx, token):
     global nbMoves
-    assert (tokenOf[player] == token)
-    assert (abs(x - nx) + abs(y - ny) == 1)
-    assert (0 <= nx < MAP_WIDTH and 0 <= ny < MAP_HEIGHT)
-    assert (0 <= x < MAP_WIDTH and 0 <= y < MAP_HEIGHT)
-    assert (mapdata[y][x][player][kind] > 0)  # useless because of next line ?
-    assert (nbMoves[(y, x, player, kind)] < mapdata[y][x][player][kind])
+    if not (tokenOf[player] == token):
+        raise ValueError
+    if not (abs(x - nx) + abs(y - ny) == 1):
+        raise ValueError
+    if not (0 <= nx < MAP_WIDTH and 0 <= ny < MAP_HEIGHT):
+        raise ValueError
+    if not (0 <= x < MAP_WIDTH and 0 <= y < MAP_HEIGHT):
+        raise ValueError
+    if not (mapdata[y][x][player][kind] > 0):  # useless because of next line ?:
+        raise ValueError
+    if not (nbMoves[(y, x, player, kind)] < mapdata[y][x][player][kind]):
+        raise ValueError
     nbMoves[(ny, nx, player, kind)] += 1
     mapdata[y][x][player][kind] -= 1
     mapdata[ny][nx][player][kind] += 1
@@ -154,14 +170,20 @@ def move(player, kind, y, x, ny, nx, token):
 
 @app.route('/build/<player>/<int:y>/<int:x>/<kind>/<token>')
 def build(player, y, x, kind, token):
-    assert (tokenOf[player] == token)
-    assert (0 <= x < MAP_WIDTH and 0 <= y < MAP_HEIGHT)
-    assert (kind in price)
-    assert (mapdata[y][x][opponent[player]]['B'] == 0)
-    assert (mapdata[y][x][player][requires[kind]] > 0)
-    assert (nbMoves[(y, x, player, requires[kind])]
-            < mapdata[y][x][player][requires[kind]])
-    assert (gold[player] >= price[kind])
+    if not (tokenOf[player] == token):
+        raise ValueError
+    if not (0 <= x < MAP_WIDTH and 0 <= y < MAP_HEIGHT):
+        raise ValueError
+    if not (kind in price):
+        raise ValueError
+    if not (mapdata[y][x][opponent[player]]['B'] == 0):
+        raise ValueError
+    if not (mapdata[y][x][player][requires[kind]] > 0):
+        raise ValueError
+    if not (nbMoves[(y, x, player, requires[kind])] < mapdata[y][x][player][requires[kind]]):
+        raise ValueError
+    if (gold[player] < price[kind]):
+        print("gold = ", gold[player], "kind = ", kind, "price = ", price[kind])
     nbMoves[(y, x, player, requires[kind])] += 1
     nbMoves[(y, x, player, kind)] += 1
     mapdata[y][x][player][kind] += 1
@@ -171,11 +193,16 @@ def build(player, y, x, kind, token):
 
 @app.route('/farm/<player>/<int:y>/<int:x>/<token>')
 def farm(player, y, x, token):
-    assert (tokenOf[player] == token)
-    assert (0 <= x < MAP_WIDTH and 0 <= y < MAP_HEIGHT)
-    assert (nbMoves[(y, x, player, 'C')] < mapdata[y][x][player]['C'])
-    assert (mapdata[y][x]['G'] > 0)
-    assert ((y, x) not in farmed)
+    if not (tokenOf[player] == token):
+        raise ValueError
+    if not (0 <= x < MAP_WIDTH and 0 <= y < MAP_HEIGHT):
+        raise ValueError
+    if not (nbMoves[(y, x, player, 'C')] < mapdata[y][x][player]['C']):
+        raise ValueError
+    if not (mapdata[y][x]['G'] > 0):
+        raise ValueError
+    if not ((y, x) not in farmed):
+        raise ValueError
     nbMoves[(y, x, player, 'C')] += 1
     mapdata[y][x]['G'] -= 1
     farmed.add((y, x))
@@ -223,7 +250,8 @@ def solveBattles(attacker, defender):  # combat rules
 
 @app.route('/autofarm/<player>/<token>')
 def autofarm(player, token):
-    assert (tokenOf[player] == token)
+    if not (tokenOf[player] == token):
+        raise ValueError
     for y in range(MAP_HEIGHT):
         for x in range(MAP_WIDTH):
             try:
@@ -241,8 +269,10 @@ def changeturn(player, token):
     global farmed
     global winner
     global tokenOf
-    assert (tokenOf[player] == token)
-    assert (player == curPlayer)
+    if not (tokenOf[player] == token):
+        raise ValueError
+    if not (player == curPlayer):
+        raise ValueError
     solveBattles(player, opponent[player])
     curPlayer = opponent[player]
     nbMoves = defaultdict(int)
@@ -265,4 +295,4 @@ def root():
     return app.send_static_file('index.html')
 
 
-app.run(host='0.0.0.0', port=8080, debug=False)
+app.run(host='0.0.0.0', port=8080, debug=True)

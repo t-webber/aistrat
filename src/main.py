@@ -12,7 +12,7 @@ if len(sys.argv) > 2 and sys.argv[2]:
 else:
     connection.init("http://localhost:8080")
 
-print("IP = ", connection.IP)
+# print("IP = ", connection.IP)
 
 if len(sys.argv) > 1:
     TWO_PLAYERS = sys.argv[1] == '2'
@@ -59,4 +59,3 @@ if __name__ == "__main__":
 
     while True:
         main()
-        # time.sleep(0.5)

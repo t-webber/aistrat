@@ -3,11 +3,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import random as rd
-import player.logic.client_logic as cl
+import logic.client_logic as cl
 from apis.kinds import Pawn, Knight, Castle
 
 if TYPE_CHECKING:
-    from apis.players import Player
+    from apis.players.players import Player
 
 
 def agressiv_defense(defense: list[Knight], epawns: list[Pawn], player: Player,
@@ -146,7 +146,6 @@ def eknight_based_defense(defense: list[Knight], eknights: list[Knight], player:
     attributions = dict([(eknights[i], (-1, None))
                         for i in range(len(eknight_id))])
     for defender in defense_id:
-        print("oui")
         min = 1000000000
         cible = None
         for attacker in eknight_id:
@@ -161,9 +160,7 @@ def eknight_based_defense(defense: list[Knight], eknights: list[Knight], player:
             if dist < min and (dist < attributions[attacker][0] or attributions[attacker][0] == -1):
                 min = dist
                 cible = attacker
-                print("attrib")
         if cible is not None:
-            print("attrib def")
             old_defender = attributions[cible][1]
             attributions[cible] = (min, defender)
             if old_defender is not None:

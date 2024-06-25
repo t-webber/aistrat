@@ -1,7 +1,4 @@
-"""Define constants to have linting."""
-
-PLAYER_A = "A"
-PLAYER_B = "B"
+"""Define constants to have linting. These are the constants defined by the game."""
 
 PAWN = "C"
 CASTLE = "B"
@@ -13,6 +10,3 @@ FOG = "fog"
 ECASTLE = "B2"
 
 PRICES = {PAWN: 5, CASTLE: 15, KNIGHT: 10}
-
-
-BEGINING_GOLD = 25
