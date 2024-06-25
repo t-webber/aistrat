@@ -38,10 +38,10 @@ class Player(Player_struct):
         build_castle(self)
 
         peons.free_gold(self.pawns, self.bad_gold)
-        available_good_golds = peons.free_gold(self.pawns, self.good_gold)
+        peons.free_gold(self.pawns, self.good_gold)
 
         # je farm d'abord ce que je vois
-        peons.farm(self, available_good_golds)
+        peons.farm(self, self.good_gold)
         # j'explore ensuite dans la direction opposée au spawn
         peons.explore(self, self._knights + self.castles)
 

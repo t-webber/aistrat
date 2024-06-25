@@ -1,3 +1,4 @@
+import os
 import sys
 from math import ceil
 from flask import Flask
@@ -107,6 +108,7 @@ def giveAllView():
 
 @app.route('/view/<player>/<token>')
 def giveView(player, token):
+
     global winner
     if player == "all" or winner != "":
         return giveAllView()
@@ -238,6 +240,8 @@ def changeturn(player, token):
     global farmed
     global winner
     global tokenOf
+    print(f"======================= {player} ==================================")
+    print(mapdata)
     assert (tokenOf[player] == token)
     assert (player == curPlayer)
     solveBattles(player, opponent[player])

@@ -196,4 +196,5 @@ class Player_struct:
                 defense.remove(unit)
 
         if server:
-            raise ValueError(f"KNIGHT changed: server {server_knights} != client attack {attack} + defense {defense}")
+            # print(connection.get_map())
+            raise ValueError(f"KNIGHT changed: {server} left in {server_knights} != client attack {attack} + defense {defense}")

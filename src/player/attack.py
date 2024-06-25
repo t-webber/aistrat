@@ -140,12 +140,12 @@ def free_pawn(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy]
     for knight in knights:
         if not knight.used:
             for castle in castles:
-                if cl.distance(knight.x, knight.y, castle.x, castle.y) == 1 and prediction_attaque((castle.x, castle.y), knights, eknights):
+                if cl.distance(knight.x, knight.y, castle.x, castle.y) == 1 and prediction_attaque((castle.y, castle.x), knights, eknights):
                     if not knight.used:
                         knight.move(castle.y, castle.x)
         if not knight.used:
             for epawn in epawns:
-                if cl.distance(knight.x, knight.y, epawn.x, epawn.y) == 1 and prediction_attaque((epawn.x, epawn.y), knights, eknights):
+                if cl.distance(knight.x, knight.y, epawn.x, epawn.y) == 1 and prediction_attaque((epawn.y, epawn.x), knights, eknights):
                     if not knight.used:
                         knight.move(epawn.y, epawn.x)
 
