@@ -57,8 +57,8 @@ class Player_struct:
         connection.get_data(self.id, self.token)
         kinds = connection.get_kinds(self.id)
 
-        print("MAP")
-        print(connection.get_map())
+        # print("MAP")
+        # print(connection.get_map())
 
         self.check_set_list_coord(self.pawns, kinds[connection.PAWN], "PAWN")
         self.check_set_list_coord(self.castles, kinds[connection.CASTLE], "CASTLES")
