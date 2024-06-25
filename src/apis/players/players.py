@@ -13,7 +13,6 @@ import sys
 from debug import log_func, pause
 
 
-
 class Player(Player_struct):
     """Class pour implémenter les actions d'un joueur."""
 
@@ -21,7 +20,7 @@ class Player(Player_struct):
         """Joue le prochain tour pour le joueur."""
         self.reinit_data()
 
-        print("============= Begin Turn for player", self.id, " =====================")
+        print(f"============= Begin {self.turn} turn for player {self.id} =====================")
 
         self.turn += 1
 
@@ -30,13 +29,14 @@ class Player(Player_struct):
         self.update_ennemi_data()
         self.update_fog()
 
-        pause(self.id)
+        if self == "A" and len(sys.argv) >= 3 and sys.argv[2] == "debug":
+            input("Press enter to continue...")
 
         serv = connection.get_gold()[self.id]
         if serv != self.gold:
             raise ValueError(f"wrong gold value: S({serv}) != P({self.gold})")
-        
-        print('golds', self.good_gold, self.bad_gold)
+
+        # print('golds', self.good_gold, self.bad_gold)
         create_units(self)
         log_func("fuite")
         peons.fuite(self.pawns, self.knights, self.eknights)
