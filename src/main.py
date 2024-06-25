@@ -3,7 +3,7 @@
 import sys
 import time
 from apis import connection
-from apis.players import Player
+from apis.players.players import Player
 from apis.kinds import Knight, Pawn
 
 

@@ -8,6 +8,7 @@ import player.attack as atk
 # import player.decisions as dec
 # import player.defense as dfd
 from player import peons
+from player.heatmap import heatMapMove
 
 
 class Player(Player_struct):
@@ -30,30 +31,16 @@ class Player(Player_struct):
             raise ValueError(f"wrong gold value: S({serv}) != P({self.gold})")
 
         create_units(self)
-        peons.fuite(self.pawns, self.defense + self.attack, self.eknights)
+        peons.fuite(self.pawns, self.knights, self.eknights)
         build_castle(self)
 
         # je farm d'abord ce que je vois
         peons.farm(self, self.good_gold)
         # j'explore ensuite dans la direction opposée au spawn
-        peons.explore(self, self._knights + self.castles)
+        peons.explore(self, self.knights + self.castles)
 
-        atk.free_pawn(self.attack + self.defense, self.eknights, self.epawns, self.ecastles)
-
-        last_len = None
-
-        while (length := [k for k in self.attack if not k.used]):
-
-            # print("HUNT ATK\t", self.pawns)
-            atk.hunt(self.attack, self.epawns,
-                     self.eknights)
-            # print("DESTROY CASTLE\t", self.pawns)
-            atk.destroy_castle(self.attack, self.ecastles,
-                               self.eknights)
-            if last_len == length:
-                break
-
-            last_len = length
+        heatMapMove(self.pawns, self.knights, self.castles, self.epawns, self.eknights, self.ecastles, self._gold_map, self.id)
+        
         peons.explore_knight(self, self.pawns + self.castles)
         self.update_gold_map()
 

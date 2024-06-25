@@ -213,6 +213,7 @@ class Castle(Unit):
         connection.build(connection.KNIGHT, self.y, self.x, self.player.id, self.player.token)
         self.player.gold -= cost
         self.player.defense.append(Knight(*self.coord, self.player))
+        self.player.knights.append(Knight(*self.coord, self.player))
 
     def create_attack(self):
         """Crée un défenseur."""
@@ -222,6 +223,8 @@ class Castle(Unit):
         connection.build(connection.KNIGHT, self.y, self.x, self.player.id, self.player.token)
         self.player.gold -= cost
         self.player.attack.append(Knight(*self.coord, self.player))
+        self.player.knights.append(Knight(*self.coord, self.player))
+
 
     def create_pawn(self):
         """Crée un défenseur."""

@@ -46,7 +46,6 @@ def distance(x1: int, y1: int, x2: int, y2: int):
     """
     return abs(x1 - x2) + abs(y1 - y2)
 
-
 def distance_to_list(current_position: tuple[int, int], list_units: list[Unit]):
     """Donne la distance au château le plus proche."""
     d = float('inf')
@@ -283,3 +282,11 @@ def move_safe_random_without_purpose(unit: Unit, eknights: list[Knight], ecastle
             unit.move(i, j)
             return True
     return False
+
+def scalar(origin,move,destination):
+    '''
+    Fait le produit scalaire entre un vecteur de déplacement et le vecteur vers la destination
+    '''
+    vect0=(destination[0]-origin[0],destination[1]-origin[1])
+    vect1=(move[0]- origin[0],move[1]-origin[1])
+    return vect0[0]*vect1[0]+vect0[1]+vect1[1]

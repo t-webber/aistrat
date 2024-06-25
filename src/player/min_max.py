@@ -1,4 +1,5 @@
 import copy 
+import logic.client_logic as cl
 
 config=[[[1,0],[1,0],[1,0],[1,0]],[[1,1],[0,0]]]
 
@@ -14,7 +15,11 @@ def min_max_alpha_beta_result(base_map:list[list[int,int]]):
     
 
 def min_max_alpha_beta(depth:int,alpha:int,beta:int, base_map:list[list[int,int]],player:int):
-    #print(depth,"d\n")
+    '''
+    algorithme min-max avec elaguage alpha beta, au quel sont ajoutees les contraintes suivantes:
+        o impossible de s'eloigner de la case ciblee (consideree en 0,0)
+        o possibilite de sortir de 0,0
+        o possibilite de s'eloigner du centre si cela permet d'attaquer '''
     extrem=player*10000
     map_id_max=None
     map_id=None
@@ -24,12 +29,10 @@ def min_max_alpha_beta(depth:int,alpha:int,beta:int, base_map:list[list[int,int]
         cond_init=True
         next_move=copy.deepcopy(base_map)
         while(map_id!=None or cond_init ):
-            #print("next",next_move)
             if player==0 and [0,0] in next_move[0]:
                 val=eval_config(next_move)+depth
             else:
                 val,_ = min_max_alpha_beta(depth-1,new_alpha,new_beta,next_move,1-player)
-            #print(val,extrem)
             if val> extrem and not player:
                 extrem = val
                 if map_id is not None:
@@ -38,8 +41,6 @@ def min_max_alpha_beta(depth:int,alpha:int,beta:int, base_map:list[list[int,int]
                 if val >= beta:
                     return val,map_id_max
             if val< extrem and player:
-                #print("ancien",config,extrem)
-                #print("nouveau",next_move,val)
                 extrem = val
                 if map_id is not None:
                     map_id_max = map_id.copy()
@@ -48,7 +49,6 @@ def min_max_alpha_beta(depth:int,alpha:int,beta:int, base_map:list[list[int,int]
                     return val,(map_id_max,config)  
                 
             next_move,map_id = next_turn(base_map,player,map_id)
-            #print(next_move)
             if map_id is not None:
                 fight_resolver(next_move,player)
             cond_init=False
@@ -103,8 +103,8 @@ def good_move(last_vector:list[int],new_move:list[int],units:list[list[int,int]]
     new=next_match(units,new_move)
     for ind in range(len(new_move)): #On vérifie pour chaque unité déplacée
         if new[ind]!=origin[ind]:
-            if (distance(new[ind][0],new[ind][1],0,0)>distance(origin[ind][0],origin[ind][1],0,0) and not new[ind] in baddies) \
-                    and not (origin[ind][0]==0 and origin[ind][1]==0): #############/!\ remettre les cl.
+            if (cl.distance(new[ind][0],new[ind][1],0,0)>cl.distance(origin[ind][0],origin[ind][1],0,0) and not new[ind] in baddies) \
+                    and not (origin[ind][0]==0 and origin[ind][1]==0):
                 #Si on se rapproche du centre ou 
                 #print("Check pas passé : \n",baddies,new[ind])
                 return False
@@ -167,7 +167,7 @@ def fight_resolver(all_units,player):
                 for index2,other_ally in enumerate(allies):
                     if index!=index2 and ally==other_ally:
                         force+=1
-                removing=prediction_combat(force,sum) #On va chercher l'issue du combat
+                removing=cl.prediction_combat(force,sum) #On va chercher l'issue du combat
                 i=0
                 while i<removing[2]: #On marque removing[2] alliés morts sur la case de ally comme morts (lui le premier)
                     if allies[index]==ally: 
@@ -182,38 +182,5 @@ def fight_resolver(all_units,player):
                         i+=1
                     index+=1
                 #Complexité au pire O(n^2*m) avec n nombres d'alliés, m nombre d'ennemis
-
-def prediction_combat(a: int, d: int):
-    """Prédit le gaganant d'un combat.
-
-    Parameters:
-        a (int): Force de l'attaquant.
-        d (int): Force du defenseur.
-
-    Returns: tuple (bool, int, int) où:
-        - bool: True si l'attaquant gagne, False sinon.
-        - int: nombre de pertes de l'attaquant.
-        - int: nombre de pertes du défenseur.
-    """
-    pertes_a = 0
-    pertes_d = 0
-    while a > 0 and d > 0:
-        pertes_a += min(a, (d + 1) // 2)
-        a = a - (d + 1) // 2
-        pertes_d += min(d, (a + 1) // 2)
-        d = d - (a + 1) // 2
-    return (d <= 0, pertes_a <= pertes_d, pertes_a, pertes_d)
-    
-#print(min_max_alpha_beta(6,-100,1000,config,0))   
-
-def distance(x1: int, y1: int, x2: int, y2: int):
-    """
-    Effectue le calcul de la distance de Manhattan entre (x1, y1) et (x2, y2).
-
-    Parametres:
-        x1, y1 : les coordonées du premier point.
-        x2, y2 : Les coordonées du second point.
-    """
-    return abs(x1 - x2) + abs(y1 - y2)
 
 print(min_max_alpha_beta(6,-100,1000,config,0))      

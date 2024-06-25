@@ -24,6 +24,8 @@ class Player_struct:
         self.ecastles: list[Pawn] = []
         self.attack: list[Knight] = [Knight(y, x, self) for y, x in connection.get_kinds(self.id)[connection.KNIGHT]]
         self.defense: list[Knight] = []
+        self.knights: list[Knight] = []
+
         # resources
         self._golds: list[GoldPile] = [GoldPile(coord[0], coord[1], coord[2], self) for coord in connection.get_kinds(self.id)[
             connection.GOLD]]
@@ -38,7 +40,6 @@ class Player_struct:
             self._golds, self.pawns, self.ecastles)
         self.fog: list[GoldPile] = []
         # private
-        self._knights: list[Knight] = []
         self._gold_map: list[int | GoldPile] = np.full(connection.size_map(), None)
 
     def __eq__(self, other):
@@ -58,7 +59,7 @@ class Player_struct:
         kinds = connection.get_kinds(self.id)
 
         self.check_set_list_coord(self.pawns, kinds[connection.PAWN], "PAWN")
-        self.check_set_list_coord(self.attack + self.defense, kinds[connection.KNIGHT], "KNIGHT")
+        self.check_set_list_coord(self.knights, kinds[connection.KNIGHT], "KNIGHT")
         self.check_set_list_coord(self.castles, kinds[connection.CASTLE], "CASTLES")
 
     def update_ennemi_data(self):
@@ -90,6 +91,8 @@ class Player_struct:
             k.used = False
         for c in self.castles:
             c.used = False
+        for k in self.knights:
+            k.used = False
 
     def update_golds(self):
         """Met à jour les données des mines d'or."""

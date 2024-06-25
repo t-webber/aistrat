@@ -1,13 +1,13 @@
-from apis import connection as co
+from apis import connection as con
 from apis.kinds import Castle, Knight, Pawn
 from typing import TYPE_CHECKING
 
-from player.logic import client_logic as cl
-from player.stages.exploration import path_simple
+import logic.client_logic as cl
+from player.exploration import path_simple
 import numpy as np
 import matplotlib.pyplot as plt
 import math
-from player.stages.min_max import min_max_alpha_beta_result
+from player.min_max import min_max_alpha_beta_result
 
 defHeat={"Pawn":5,"Knight":-3,"Castle":15,"Eknight":9,"ChosenKnight":-10}
 attHeat={"Epawn":5,"Ecastle":30, "Epawn_adj" : 40, "Ecastle_adj" : 120}
@@ -41,13 +41,13 @@ def moveLight(map:np.array,mask,oldcoord:tuple[int,int],newcoord:tuple[int,int])
 
 def heatMapDefenseGen(pawns: list[Pawn], castles : list[Castle], eknights : list[Knight], knights : list[Knight]):
     """Génère la Heat Map défensive"""
-    heat_map=np.zeros((co.size_map()))
+    heat_map=np.zeros((con.size_map()))
     for pawn in pawns:
         addLight(heat_map,maskHeatDef["Pawn"],(pawn.y,pawn.x))
     for castle in castles:
         addLight(heat_map,maskHeatDef["Castle"],(castle.y,castle.x))
     for eknight in eknights:
-        addLight(heat_map, maskHeatDef["Eknight"], (eknight[0], eknight[1]))
+        addLight(heat_map, maskHeatDef["Eknight"], (eknight.y, eknight.x))
     for knight in knights:
         if knight.used:
             addLight(heat_map, maskHeatDef["ChosenKnight"], (knight.y, knight.x))
@@ -88,12 +88,12 @@ def heatbattle(knights : list[Knight], eknights : list[Knight], x:int, y:int,A,B
             else:
                 poid_k+=1/(abs(knt.x-x)+abs(knt.y-y))
     for knt in eknights:
-        if abs(knt[1]-x)+abs(knt[0]-y)<=2:
+        if abs(knt.x-x)+abs(knt.y-y)<=2:
             usable_eknight.append(knt)
-            if abs(knt[1]-x)+abs(knt[0]-y) == 0:
+            if abs(knt.x-x)+abs(knt.y-y) == 0:
                 poid_ek+= 1
             else:
-                poid_ek+=1/(abs(knt[1]-x)+abs(knt[0]-y))
+                poid_ek+=1/(abs(knt.x-x)+abs(knt.y-y))
 
     victory,_,pa,pd=cl.prediction_combat(int(poid_k),int(poid_ek))
     
@@ -105,15 +105,14 @@ def heatbattle(knights : list[Knight], eknights : list[Knight], x:int, y:int,A,B
 
 def heatMapAttackGen(epawns : list[Pawn], ecastles : list[Castle], id : str, knights : list[Knight], eknights : list[Knight], gold_map : list[list[int]]):
     """Génère la Heat Map aggressive"""
-    heat_map=np.zeros((co.size_map()))
-
+    heat_map=np.zeros(con.size_map())
         #rajout de l'intéret d'aller de l'avant
-    for i in range(co.size_map()[0]):
-        for j in range(co.size_map()[1]):
+    for i in range(con.size_map()[0]):
+        for j in range(con.size_map()[1]):
             if id == "A":
                 heat_map[i][j] += AVANCEMENT*j
             else:
-                heat_map[i][j] += AVANCEMENT*(co.size_map[0]-j-1)
+                heat_map[i][j] += AVANCEMENT*(con.size_map()[0]-j-1)
             
         #rajout de l'impact des combats    
                 ### TO DO : GESTION DE LA GOLD MAP
@@ -127,14 +126,14 @@ def heatMapAttackGen(epawns : list[Pawn], ecastles : list[Castle], id : str, kni
         done = False
         print(knights)
         for knight in knights:
-            print(cl.distance(knight.x, knight.y, epawn[1], epawn[0]))
-            if cl.distance(knight.x, knight.y, epawn[1], epawn[0]) == 1:
-                addLight(heat_map,maskHeatAtt["Epawn_adj"],(epawn[0],epawn[1]))
+            print(cl.distance(knight.x, knight.y, epawn.x, epawn.y))
+            if cl.distance(knight.x, knight.y, epawn.x, epawn.y) == 1:
+                addLight(heat_map,maskHeatAtt["Epawn_adj"],(epawn.x,epawn[1]))
                 done = True
         if not done :
-            addLight(heat_map,maskHeatAtt["Epawn"],(epawn[0],epawn[1]))
+            addLight(heat_map,maskHeatAtt["Epawn"],(epawn.y,epawn.x))
     for ecastle in ecastles:
-        addLight(heat_map,maskHeatAtt["Ecastle"],(ecastle[0],ecastle[1]))
+        addLight(heat_map,maskHeatAtt["Ecastle"],(ecastle.y,ecastle.x))
 
     return heat_map
 
@@ -151,14 +150,17 @@ def print_heatmaps(pawns : list[Pawn], knights : list[Knight], castles : list[Ca
 
 
 def heatMapMove(pawns :list[Pawn], knights : list[Knight], castles : list[Castle], epawns : list[Pawn], eknights : list[Knight], ecastles : list[Castle], gold_map : list[list[int]], id : str):
-    while all( not knight.used for knight in knights):
+    
+    while any( [not knight.used for knight in knights]) and (len(knights) != 0):
+        print("A")
         attmap = heatMapAttackGen(epawns, ecastles, id, knights, eknights, gold_map)
         defmap = heatMapDefenseGen(pawns, castles, eknights, knights)
+
         max = 0
         co=(-1,-1)
         tp=None
-        for i in range(co.sizemap()[0]):
-            for j in range(co.sizemap()[1]):
+        for i in range(con.size_map()[0]):
+            for j in range(con.size_map()[1]):
                 if attmap[i][j]>max:
                     max=attmap[i][j]
                     co=(i,j)
@@ -168,9 +170,9 @@ def heatMapMove(pawns :list[Pawn], knights : list[Knight], castles : list[Castle
                     co=(i,j)
                     tp="D"
         if tp=="A":
-            attackHere(knights, eknights,(i,j))
+            attackHere(knights, eknights,co)
         else:
-            defendHere(knights, eknights,(i,j))
+            defendHere(knights, eknights,co)
 
 """ 
 La fonction qui prend en argument la case sélectionnée à défendre prend un chevalier pertinent à 
@@ -182,40 +184,50 @@ proximité et le bouge intelligemment dans sa direction, enlève le mask knight 
 ### TO DO ###
 
 def defendHere(knights : list[Knight], eknights : list[Knight],case:tuple[int,int]):
-    nearestKnights=sorted(knights,lambda x:cl.distance(x,case))
+    print("Def")
+    nearestKnights=sorted(knights,key = lambda x:cl.distance(*x.coord,*case))
     i=0
     movement=None
-    while movement is None and i<nearestKnights.length():
+    while movement is None and i<len(nearestKnights):
         nearest=nearestKnights[i]
         if not nearest.used:
             movement=path_simple(nearest,case,eknights)
         i+=1
-    if i>=nearestKnights.length():
+    if movement is None:
         return
     if (nearest.y != case[0] or nearest.x != case[1]):
-        nearest.move(movement)
+        nearest.move(movement[0], movement[1])
     else:
         nearest.used = True
 
 
 def attackHere(knights : list[Knight], eknights : list[Knight],case:tuple[int,int]):
-    nearestKnights=sorted([knight for knight in knights if not knight.used], lambda x:cl.distance(x.y,x.x,case[0],case[1]))
+    print("Att")
+    if len(eknights) == 0:
+        for knight in knights:
+            movement = path_simple(knight, case, eknights)
+            if (movement[0] != knight.y or movement[1] != knight.x):
+                knight.move(movement[0], movement[1])
+            else:
+                knight.used = True
+        return
+    nearestKnights=sorted([knight for knight in knights if not knight.used],key = lambda x:cl.distance(x.y,x.x,case[0],case[1]))
     hired_knights=[]
     i = 0
-    while i<nearestKnights.length() and cl.distance(nearestKnights[i].y,nearestKnights[i].x,case[0],case[1])<4: 
+    while i<len(nearestKnights) and cl.distance(nearestKnights[i].y,nearestKnights[i].x,case[0],case[1])<4: 
         nearest=nearestKnights[i]
         hired_knights.append([nearest.x - case[1],nearest.y - case[0]])
         i+=1
-    nearestEKnights=sorted(eknights,lambda x:cl.distance(x.y,x.x,case[0],case[1]))
+    nearestEKnights=sorted(eknights,key = lambda x:cl.distance(x.y,x.x,case[0],case[1]))
     hired_Eknights=[]
     i = 0
-    while i<nearestEKnights.length() and cl.distance(nearestEKnights[i][0],nearestEKnights[i][1],case[0],case[1])<4: 
+    while i<len(nearestEKnights) and cl.distance(nearestEKnights[i].x,nearestEKnights[i][1],case[0],case[1])<4: 
         nearest=nearestEKnights[i]
-        hired_Eknights.append([nearest[1] - case[1], nearest[0] - case[0]])
+        hired_Eknights.append([nearest.x - case[1], nearest.y - case[0]])
         i+=1
     next_moves=min_max_alpha_beta_result([hired_knights,hired_Eknights])
     for i, movement in enumerate(next_moves):
         if (nearestKnights[i].y != movement[0] or nearestKnights[i].x != movement[1]):
-            nearestKnights[i].move(movement) 
+            nearestKnights[i].move(movement[0], movement[1]) 
         else:
             nearestKnights[i].used = True
