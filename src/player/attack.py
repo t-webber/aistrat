@@ -107,8 +107,8 @@ def hunt(knights: list[Knight], epawns: list[Pawn], eknights: list[Knight]):
         vus = []
         for k, ep in cl.hongrois_distance(not_used_knights, epawns):
             vus.append(not_used_knights[k])
+            not_used_knights[k].target = epawns[ep]
             y, x = not_used_knights[k].coord
-            k.target = epawns[ep]
             i, j = epawns[ep].coord
             if abs(y - i) + abs(x - j) == 1:
                 attaque((i, j), not_used_knights, eknights)
@@ -140,14 +140,14 @@ def free_pawn(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy]
     for knight in knights:
         if not knight.used:
             for castle in castles:
-                if cl.distance(knight.x, knight.y, castle.x, castle.y) == 1 and prediction_attaque((castle.x,castle.y),knights,eknights):
-                    if not knight.used:
-                        knight.move(castle.y, castle.x)
+                if cl.distance(knight.x, knight.y, castle.x, castle.y) == 1 and prediction_attaque((castle.y,castle.x),knights,eknights):
+                    allies_voisins_exploitable = cl.movable_neighbors(castle.coord, knights)
+                    move_everyone(castle.coord, allies_voisins_exploitable)
         if not knight.used:
             for epawn in epawns:
-                if cl.distance(knight.x, knight.y, epawn.x, epawn.y) == 1 and prediction_attaque((epawns.x,epawns.y),knights,eknights):
-                    if not knight.used:
-                        knight.move(epawn.y, epawn.x)
+                if cl.distance(knight.x, knight.y, epawn.x, epawn.y) == 1 and prediction_attaque((epawn.y,epawn.x),knights,eknights):
+                    allies_voisins_exploitable = cl.movable_neighbors(epawn.coord, knights)
+                    move_everyone(epawn, allies_voisins_exploitable)
 
 def endgame(knights: list[Knight], eknights: list[Knight]):
     knights_not_used = list(filter(lambda knight: not knight.used, knights))
@@ -164,3 +164,24 @@ def endgame(knights: list[Knight], eknights: list[Knight]):
         knights_not_used = list(filter(lambda knight: not knight.used, knights))
 
 # def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy], castles: list[Castle]):
+#     not_used_knights = list(filter(lambda knight: not knight.used, knights))
+#     dicoattaque = {}
+#     for ep in epawns:
+#         dicoattaque[ep]=[]
+#     for k in not_used_knights:
+#         epawn = k.target
+#         dicoattaque[epawn]= dicoattaque[ep] + [k]
+#     for ep in dicoattaque:
+#         i,j = ep.coord
+#         newpos=[]
+#         for k in dicoattaque[ep]:
+#             y, x = k.coord
+#             a = i - y
+#             b = j - x
+#             if a == 0:
+#                 if not cl.connection.get_eknights(y, x + (b)) 
+#                     if (y, x + b) not in newpos:
+#                         k.move(y, x + b)
+#                         newpos += (y,x+b)
+                
+#             elif b ==0: 
