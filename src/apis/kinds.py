@@ -165,7 +165,8 @@ class Pawn(Person):
             raise ValueError(f"Gold {gold} not found in {golds}.\n The client golds where {self.player.good_gold + self.player.bad_gold}")
         connection.farm(
             self.y, self.x, self.player.id, self.player.token)
-
+        if len(sys.argv) > 2 and sys.argv[2] == "debug":
+            print(f"* Farmed {self} on {gold}")
         self.used = True
         self.player.gold += 1
         gold.reduce()
