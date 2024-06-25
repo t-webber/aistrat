@@ -134,7 +134,8 @@ def destroy_castle(knights: list[Knight], castles: list[Castle],
             if abs(y - i) + abs(x - j) == 1:
                 attaque((i, j), knights_not_used, eknights)
             else:
-                cl.move_without_suicide(knights_not_used[k], eknights, i, j)
+                if not knights.used:
+                    cl.move_without_suicide(knights_not_used[k], eknights, i, j)
 
 
 def free_pawn(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy], castles: list[Castle]):
