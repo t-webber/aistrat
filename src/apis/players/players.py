@@ -8,8 +8,7 @@ import player.attack as atk
 # import player.decisions as dec
 # import player.defense as dfd
 from player import peons
-from player.heatmap import heatMapMove
-
+from player.heatmap import heatMapMove, print_heatmaps
 
 class Player(Player_struct):
     """Class pour implémenter les actions d'un joueur."""
@@ -26,6 +25,11 @@ class Player(Player_struct):
         self.update_ennemi_data()
         self.update_fog()
 
+        
+        # if self.turn%10 == 0:
+        #     print_heatmaps(self.pawns, self.knights, self.castles, self.eknights, self.ecastles, self.epawns, self._gold_map, self.id)
+
+        
         serv = connection.get_gold()[self.id]
         if serv != self.gold:
             raise ValueError(f"wrong gold value: S({serv}) != P({self.gold})")
@@ -41,7 +45,6 @@ class Player(Player_struct):
 
         heatMapMove(self.pawns, self.knights, self.castles, self.epawns, self.eknights, self.ecastles, self._gold_map, self.id)
         
-        peons.explore_knight(self, self.pawns + self.castles)
         self.update_gold_map()
 
         connection.end_turn(self.id, self.token)

@@ -4,7 +4,12 @@ import logic.client_logic as cl
 config=[[[1,0],[1,0],[1,0],[1,0]],[[1,1],[0,0]]]
 
 def min_max_alpha_beta_result(base_map:list[list[int,int]]):
-    depth=6
+    '''
+    Permet d'appliquer min_max_alpha_beta dans les conditions standard
+
+    Renvoie les alliés dans leurs coordonnées relatives post-déplacement
+    '''
+    depth=2*(len(base_map[0])+len(base_map[1])<3) + 2 *(len(base_map[0])+len(base_map[1])<5) + 2
     alpha=-100
     beta=1000
     player=0
@@ -19,28 +24,35 @@ def min_max_alpha_beta(depth:int,alpha:int,beta:int, base_map:list[list[int,int]
     algorithme min-max avec elaguage alpha beta, au quel sont ajoutees les contraintes suivantes:
         o impossible de s'eloigner de la case ciblee (consideree en 0,0)
         o possibilite de sortir de 0,0
-        o possibilite de s'eloigner du centre si cela permet d'attaquer '''
-    extrem=player*10000
-    map_id_max=None
+        o possibilite de s'eloigner du centre si cela permet d'attaquer 7
+    '''
+    extrem=player*10000 - 100
+    map_id_max=[0 for i  in range (len(base_map[0]))]
     map_id=None
     new_beta=beta
     new_alpha=alpha
+
+    #Tant qu'on a pas atteind une profondeur de 0...
     if depth>0:
         cond_init=True
         next_move=copy.deepcopy(base_map)
         while(map_id!=None or cond_init ):
             if player==0 and [0,0] in next_move[0]:
-                val=eval_config(next_move)+depth
+                #On calcule le score si on est en première itération de la boucle ou sur le point d'aller au centre
+                val=eval_config(next_move)+depth 
             else:
+                #Sinon on s'enfonce
                 val,_ = min_max_alpha_beta(depth-1,new_alpha,new_beta,next_move,1-player)
             if val> extrem and not player:
+                #Lorsqu'on atteind un nouveau extremum et si on est l'allié...
                 extrem = val
                 if map_id is not None:
-                    map_id_max=map_id.copy()
-                new_alpha=max(alpha,val)
+                    map_id_max=map_id.copy() #On retient les nouveaux déplacements
+                new_alpha=max(alpha,val) #Et le nouvel alpha
                 if val >= beta:
-                    return val,map_id_max
+                    return val,map_id_max #Puis on renvoie val si on dépasse beta
             if val< extrem and player:
+                #Même chose si on est le méchant mais en opposé
                 extrem = val
                 if map_id is not None:
                     map_id_max = map_id.copy()
@@ -49,27 +61,34 @@ def min_max_alpha_beta(depth:int,alpha:int,beta:int, base_map:list[list[int,int]
                     return val,(map_id_max,config)  
                 
             next_move,map_id = next_turn(base_map,player,map_id)
+            #On récupère ensuite les paramètres pour le nouveau tour
             if map_id is not None:
                 fight_resolver(next_move,player)
-            cond_init=False
-        return extrem,map_id_max
+            cond_init=False            
+        return extrem,map_id_max 
+        #Si on a atteind le fond, on renvoie le maximum trouvé
     else:
-        return eval_config(base_map), []
+        return eval_config(base_map), [] #Si on a dépassé la limite de profondeur, on renvoie simplement l'évaluation de l'état
 
 
 def eval_config(config):
+    '''
+    Fonction d'évalutation/scoring d'une configuration de carte
+    '''
     score=0
     exist=False
     for knight in config[0]:
         if knight==[0,0] and not exist:
-            score+=30
+            score+=30 #Si on est arrivé au centre, gros bonus
             exist=True
-        if abs(knight[0])!=2400:
+        else:
+            score+=0.5-(abs(knight[0])+abs(knight[1]))/100
+        if abs(knight[0])!=2400: #On récompense la non mort
             score+=1
     for knight in config[1]:
-        if abs(knight[0])!=2400:
+        if abs(knight[0])!=2400: #Chaque ennemi non mort nous pénalise
             score-=2
-    return max(score,0)
+    return score #On met pas de score négatif
 
 
 def next_match(units,new_vector):
@@ -79,19 +98,20 @@ def next_match(units,new_vector):
     new_units=[]
     for i,unit in enumerate(units):
         if abs(unit[0])==2400:
+            #Si l'unité est morte, n'y touche pas
             new_units.append(unit)
-            continue
-        match(new_vector[i]):
-            case 1:
-                new_units.append([unit[0]-1,unit[1]])
-            case 2:
-                new_units.append([unit[0]+1,unit[1]])
-            case 3:
-                new_units.append([unit[0],unit[1]-1])
-            case 4:
-                new_units.append([unit[0],unit[1]+1])
-            case _: 
-                new_units.append(unit)
+        else: 
+            match(new_vector[i]): #0 on bonge pas, 1 haut, 2 bas, 3 gauche, 4 droites
+                case 1:
+                    new_units.append([unit[0]-1,unit[1]]) 
+                case 2:
+                    new_units.append([unit[0]+1,unit[1]])
+                case 3:
+                    new_units.append([unit[0],unit[1]-1])
+                case 4:
+                    new_units.append([unit[0],unit[1]+1])
+                case _: 
+                    new_units.append(unit)
     return new_units
 
 def good_move(last_vector:list[int],new_move:list[int],units:list[list[int,int]],baddies:list[list[int,int]]):
@@ -105,10 +125,10 @@ def good_move(last_vector:list[int],new_move:list[int],units:list[list[int,int]]
         if new[ind]!=origin[ind]:
             if (cl.distance(new[ind][0],new[ind][1],0,0)>cl.distance(origin[ind][0],origin[ind][1],0,0) and not new[ind] in baddies) \
                     and not (origin[ind][0]==0 and origin[ind][1]==0):
-                #Si on se rapproche du centre ou 
-                #print("Check pas passé : \n",baddies,new[ind])
+                #Si on ne se rapproche PAS du centre ou on ne fight pas, on a un mauvais move
+                #On autorise tous les moves au centre
                 return False
-                
+    #RAS = branche valide 
     return True
 
 def cinq_adder(last_vector,indice,units):
@@ -119,12 +139,12 @@ def cinq_adder(last_vector,indice,units):
     '''
     if indice>=len(last_vector):
         return None
-    if abs(units[indice][0])==2400:
+    if abs(units[indice][0])==2400: #Si on essaye de deplacer une unité morte, on la bouge pas et on passe au reste
         return cinq_adder(last_vector,indice+1,units)
-    if last_vector[indice]+1 >= 5:
+    if last_vector[indice]+1 >= 5: #En cas d'overflow sur le bit, on fait passer la retenue au "bit" suivant
         last_vector[indice]=0
         return cinq_adder(last_vector,indice+1,units)
-    else:
+    else: #Si rien à signaler, on incrémente
         last_vector[indice]+=1
         return last_vector
 
@@ -135,17 +155,18 @@ def next_turn(units:list[list[int,int]],player:int,last_vector:list[int]=None):
     Renvoie le placement des nouvelles unités ainsi que le vecteur associé
     Le vecteur correspond à un déplacement par rapport à leur situation initiale au début du tour.
     '''
-    if last_vector is None: #Cas initial: Pas de dernier vecteur donc on le crée
+    if last_vector is None: #Cas initial: Pas de dernier vecteur donc on le crée de longueur du nombre d'alliés déplaçables
         last_vector=[0 for _ in range(len(units[player]))]
         return units, last_vector
-    units=copy.deepcopy(units)
+    units=copy.deepcopy(units) #On ne veut pas modifier les unités en entrée
     my_units=units[player]
-    new_move=cinq_adder(last_vector,0,my_units)
+    new_move=cinq_adder(last_vector,0,my_units) #Prochain mouvement = incrémentation du vecteur encodé en pentaire (1-2-3-4 pour déplacements latéraux, 0= immobile)
     while (new_move is not None) and (not good_move(last_vector,new_move,my_units,units[1-player])):
+        #Si on a un move qui est vraiment pas bien (éloignant sans attaque), on évite de créer une branche pour rien et on refait
         new_move=cinq_adder(last_vector,0,my_units)
-    if new_move is None:
+    if new_move is None: #Si on a None, cinq_adder a complètement overflow donc on a tout vu
         return None,None
-    units[player]=next_match(my_units,new_move)
+    units[player]=next_match(my_units,new_move) #On effectue le déplacement une fois le move vérifié et on le renvoie avec le vecteur
     return units,new_move
 
 def fight_resolver(all_units,player):
@@ -183,4 +204,3 @@ def fight_resolver(all_units,player):
                     index+=1
                 #Complexité au pire O(n^2*m) avec n nombres d'alliés, m nombre d'ennemis
 
-print(min_max_alpha_beta(6,-100,1000,config,0))      

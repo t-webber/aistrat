@@ -114,6 +114,6 @@ def explore(player: Player, otherunits=[]):
 def explore_knight(player: Player, otherunits=[]):
     """Envoie en exploration les chevaliers inactifs pour le tour."""
     eknights = player.eknights
-    knights = player.attack 
+    knights = player.knights 
     path(knights, otherunits, eknights)
     ex.path_trou(knights, otherunits, eknights)
