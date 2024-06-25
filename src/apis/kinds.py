@@ -2,6 +2,7 @@
 
 
 from __future__ import annotations
+import sys
 from typing import TYPE_CHECKING
 
 from apis import connection
@@ -122,6 +123,9 @@ class Person(Unit):
                             x, self.player.id, self.player.token)
         except ValueError as e:
             raise ValueError(f"Tried to move {self} to {y, x} but not allowed: {e}") from e
+
+        if len(sys.argv) > 2 and sys.argv[2] == "debug":
+            print(f"* Moved {self} to {y, x}")
 
         self.y = y
         self.x = x
