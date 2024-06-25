@@ -106,3 +106,4 @@
 - Jules et Nicolas : correction de l stratégie d'exploration sur la branche oop10
 - Jules : correction de multiples bugs concernant la fonction pour récupérer les chevaliers ennemis d'une case, l'update des golds, la fuite. Il n'y a maintenant que les attaquants qui explorent s'ils n'ont rien à faire
 - Pierre et Nicolas : Continuation du travail sur le min-max avec application de l'itération, résolution des éventuels combats...
+- Erwan : rajout d'un système de débug dans la branche heatmap pour tester les heatmaps sur des configurations personnalisées et ainsi mieux approcher les comportemants souhaité. Puis aide de Pierre et Nicolas pour le débug du min-max.
