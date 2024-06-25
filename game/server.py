@@ -53,7 +53,7 @@ CASTLE = 'B'
 requires = {'C': 'B', 'M': 'B', 'B': 'C'}  # what do we need to build
 winner = ''
 curPlayer = 'A'  # initial player
-gold = {'A': 500, 'B': 500}  # initial gold
+gold = {'A': 25, 'B': 25}  # initial gold
 
 mapdata[0][0]['A']['C'] = 3
 mapdata[-1][-1]['B']['C'] = 3
