@@ -1,3 +1,5 @@
+import os
+import sys
 from math import ceil
 from flask import Flask
 from flask import jsonify
@@ -9,9 +11,6 @@ import string
 import logging
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
-
-
-print(" http://localhost:8080/ ")
 
 
 dirs = [(1, 0), (0, 1), (-1, 0), (0, -1)]
@@ -109,6 +108,7 @@ def giveAllView():
 
 @app.route('/view/<player>/<token>')
 def giveView(player, token):
+
     global winner
     if player == "all" or winner != "":
         return giveAllView()
@@ -240,6 +240,8 @@ def changeturn(player, token):
     global farmed
     global winner
     global tokenOf
+    print(f"======================= {player} ==================================")
+    print(mapdata)
     assert (tokenOf[player] == token)
     assert (player == curPlayer)
     solveBattles(player, opponent[player])
@@ -264,4 +266,9 @@ def root():
     return app.send_static_file('index.html')
 
 
-app.run(host='0.0.0.0', port=8080, debug=True)
+if len(sys.argv) > 1:
+    PORT = int(sys.argv[1])
+else:
+    PORT = 8080
+print(f" http://localhost:{PORT}/ ")
+app.run(host='0.0.0.0', port=PORT, debug=True)

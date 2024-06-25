@@ -53,24 +53,21 @@ def fuite(pawns: list[Pawn], knights: list[Knight], eknights: list[Knight]):
 
 def free_gold(pawns: list[Pawn], golds: list[GoldPile]):
     """Si le péon est sur une pile d'or, il la récolte."""
-    not_seen_golds = [gold for gold in golds]
     for pawn in pawns:
         if pawn.used:
             continue
-        for gold in not_seen_golds:
-            if gold.coord == pawn.coord:
+        for gold in golds:
+            if gold.coord == pawn.coord and not gold.used:
                 pawn.farm(gold)
-                not_seen_golds.remove(gold)
                 break
-    return not_seen_golds
 
 
-def farm(player: Player, available_golds: list[GoldPile]):
+def farm(player: Player, golds: list[GoldPile]):
     """Récolte l'or quand c'est possible, sinon ce déplace vers la pile disponible la plus proche."""
-
     pawns = [unit for unit in player.pawns if not unit.used]
     eknights = player.eknights
     ecastles = player.ecastles
+    available_golds = [gold for gold in golds if not gold.used]
 
     # simple_gold = golds
     if available_golds and pawns:

@@ -10,8 +10,7 @@ if TYPE_CHECKING:
     from apis.players.players import Player
 
 
-def agressiv_defense(defense: list[Knight], epawns: list[Pawn], player: Player,
-                     token: str, eknigths: list[Knight]):
+def agressiv_defense(defense: list[Knight], epawns: list[Pawn], eknigths: list[Knight], ecastles: list[Castle]):
     """Effectue des attaque d'opportunité avec la défense.
 
     Regarde les défenseurs déjà sur place et attaque les ennemis proches en
@@ -22,36 +21,36 @@ def agressiv_defense(defense: list[Knight], epawns: list[Pawn], player: Player,
         None
     """
     for d in defense:
-        dir_knights, near_eknights = cl.neighbors(d, eknigths)
-        dir_pawns, near_epawns = cl.neighbors(d, epawns)
-
-        if near_epawns == [] and near_eknights == []:
-            return
+        if d.used:
+            continue
+        dir_knights, near_eknights = cl.neighbors((d.y,d.x), eknigths)
+        dir_pawns, near_epawns = cl.neighbors((d.y,d.x), epawns)
+        dir_castles, near_ecastles = cl.neighbors((d.y,d.x), ecastles)
 
         agressiv_defenders = []
         for d2 in defense:
-            if (d2.y, d2.x) == (d.y, d.x):
-                agressiv_defenders += d2
-
-        options = [(dir_pawns[d], d) for d in dir_knights]
+            if d2.used or d.used:
+                continue
+            if (d2.y, d2.x) == (d.y, d.x) :
+                agressiv_defenders.append(d2)
+        print(dir_knights)
+        options = [(len(dir_castles[d]),d) for d in dir_castles if len(dir_castles[d])]+[(len(dir_pawns[d]), d) for d in dir_pawns if len(dir_pawns[d])]+[(len(dir_knights[d]), d) for d in dir_knights if len(dir_knights[d])]
         options.sort()
         for op in options:
             _, direction = op
 
             will_attack = []
-
+            
             for i in agressiv_defenders:
-
-                will_attack += i
-                if cl.prediction_combat(len(will_attack), dir_knights[direction])[0] and\
-                        not (cl.prediction_combat(len(near_eknights) - dir_knights[direction], len(agressiv_defenders) - len(will_attack))[0]):
-                    (y, x), (y2, x2) = d, (d[0] + direction[0], d[1] + direction[1])
-                    for to_move in will_attack:
-                        defense.remove(to_move)
+                if not i.used:
+                    will_attack.append(i)
+                if cl.prediction_combat(len(will_attack), len(dir_knights[direction]))[0] and\
+                        not (cl.prediction_combat(near_eknights - len(dir_knights[direction]), len(agressiv_defenders) - len(will_attack))[0]):
+                    (y2, x2) = (d.y + direction[0], d.x + direction[1])
+                    for d in will_attack:
                         d.move(y2, x2)
-                        cl.move_unit(y, x, y2, x2, player)
-                    agressiv_defenders -= i
-                    near_eknights -= dir_knights[direction]
+                    near_eknights -= len(dir_knights[direction])
+                    break
 
 
 def move_defense(defense: list[Knight], pawns: list[Pawn], eknight: list[Knight]):
@@ -64,43 +63,12 @@ def move_defense(defense: list[Knight], pawns: list[Pawn], eknight: list[Knight]
     if pawns == []:
         return defense, []
     hongroise = cl.hongrois_distance(defense, pawns)
-    utilise = []
-    arrived = []
     for d, p in hongroise:
-        yd, xd = defense[d].y, defense[d].x
-        yp, xp = pawns[p].y, pawns[p].x
-        utilise.append(defense[d])
-        # Pour ne pas que le defenseur aille toujours
-        # d'abord en haut puis à gauche
-        if rd.random() > 0.5:
-            if xd > xp and (cl.find_unit(eknight, yd, xd - 1) is not None):
-                defense[d].move(yd, xd - 1)
-            elif xd < xp and (cl.find_unit(eknight, yd, xd + 1) is not None):
-                defense[d].move(yd, xd + 1)
-            elif yd > yp and (cl.find_unit(eknight, yd - 1, xd) is not None):
-                defense[d].move(yd - 1, xd)
-            elif yd < yp and (cl.find_unit(eknight, yd + 1, xd) is not None):
-                defense[d].move(yd + 1, xd)
-            else:
-                arrived.append(defense[d])
-        else:
-            if yd > yp and (cl.find_unit(eknight, yd - 1, xd) is not None):
-                defense[d].move(yd - 1, xd)
-            elif yd < yp and (cl.find_unit(eknight, yd + 1, xd) is not None):
-                defense[d].move(yd + 1, xd)
-            elif xd > xp and (cl.find_unit(eknight, yd, xd - 1) is not None):
-                defense[d].move(yd, xd - 1)
-            elif xd < xp and (cl.find_unit(eknight, yd, xd + 1) is not None):
-                defense[d].move(yd, xd + 1)
-            else:
-                arrived.append(defense[d])
-
-    for d in utilise:
-        defense.remove(d)
-    return (defense, arrived)
+        yp, xp = pawns[p].coord
+        cl.move_safe_random(defense[d], eknight, [], yp,xp)
 
 
-def defend(pawns: list[Pawn], defense: list[Knight], eknights: list[Knight], castle: list[Castle], player: str, token: str):
+def defend(pawns: list[Pawn], defense: list[Knight], eknights: list[Knight], castle: list[Castle]):
     """
     Défend les péons en utilisant la strategie de défense.
 
@@ -127,16 +95,12 @@ def defend(pawns: list[Pawn], defense: list[Knight], eknights: list[Knight], cas
 
     # on priorise les pions selon la distance à un chevalier ennemi
     # compteur = 0
-    left_defense = defense.copy()
-    arrived = []
     for compteur in sorted(needing_help.keys()):
-        if not left_defense:
+        defense_not_used = [d for d in defense if not d.used]
+        if not defense_not_used:
             break
         rd.shuffle(needing_help[compteur])
-        left_defense, arrived2 = move_defense(
-            left_defense, needing_help[compteur], eknights)
-    arrived += arrived2
-    return arrived
+        move_defense(defense_not_used, needing_help[compteur], eknights)
 
 
 def eknight_based_defense(defense: list[Knight], eknights: list[Knight], player: Player):

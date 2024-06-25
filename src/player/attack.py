@@ -61,16 +61,16 @@ def prediction_attaque(case_attaquee: tuple[int, int], knights: list[Knight], ek
     if not eknights:
         return True
     _, attaquants = cl.movable_neighbors(case_attaquee, knights)
-    _, defenseurs_voisins_nombre = cl.neighbors(
-        case_attaquee, eknights)
-    defenseurs = connection.get_map(
-    )[case_attaquee[0]][case_attaquee[1]][eknights[0].player][connection.KNIGHT]
-    b1, b2, pertes_attaque, pertes_defense = prediction_combat(
-        attaquants, defenseurs)
+    _, defenseurs_voisins_nombre = cl.neighbors(case_attaquee, eknights)
+    try:
+        defenseurs = connection.get_map()[case_attaquee[0]][case_attaquee[1]][eknights[0].player][connection.KNIGHT]
+    except Exception as e:
+        raise ValueError(f'data = {connection.get_map()} with case = {case_attaquee} on eknights = {eknights}') from e
+
+    b1, b2, pertes_attaque, pertes_defense = prediction_combat(attaquants, defenseurs)
     if b1 and b2:
         attaquants -= pertes_attaque
-        b1, b2, pertes_attaque2, pertes_defense2 = prediction_combat(
-            attaquants, defenseurs_voisins_nombre)
+        b1, b2, pertes_attaque2, pertes_defense2 = prediction_combat(attaquants, defenseurs_voisins_nombre)
         return (pertes_attaque + pertes_attaque2) <= (pertes_defense + pertes_defense2)
     else:
         return False
@@ -109,6 +109,7 @@ def hunt(knights: list[Knight], epawns: list[Pawn], eknights: list[Knight]):
             vus.append(not_used_knights[k])
             not_used_knights[k].target = epawns[ep]
             y, x = not_used_knights[k].coord
+            not_used_knights[k].target = epawns[ep]
             i, j = epawns[ep].coord
             if abs(y - i) + abs(x - j) == 1:
                 attaque((i, j), not_used_knights, eknights)
@@ -149,10 +150,11 @@ def free_pawn(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy]
                     allies_voisins_exploitable = cl.movable_neighbors(epawn.coord, knights)
                     move_everyone(epawn, allies_voisins_exploitable)
 
+
 def endgame(knights: list[Knight], eknights: list[Knight]):
     knights_not_used = list(filter(lambda knight: not knight.used, knights))
     while knights_not_used and eknights:
-        vus=[]
+        vus = []
         for k, ep in cl.hongrois_distance(knights_not_used, eknights):
             vus.append(knights_not_used[k])
             y, x = knights_not_used[k].coord
