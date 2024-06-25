@@ -98,15 +98,15 @@ def hunt(knights: list[Knight], epawns: list[Pawn], eknights: list[Knight]):
         #         if neighbor and not voisins_ennemis[]:
         #             k.move(k.y + i[0], k.x + i[1])
 
-    not_used_knights = list(filter(lambda knight: not knight.used, knights))
+    print(knights)
+
+    not_used_knights = [k for k in knights if not k.used]
     if not_used_knights and epawns:
 
         # affecation problem
         # choisis les mines d'or vers lesquelles vont se diriger les peons
         # pour en minimiser le nombre total de mouvements
-        vus = []
         for k, ep in cl.hongrois_distance(not_used_knights, epawns):
-            vus.append(not_used_knights[k])
             not_used_knights[k].target = epawns[ep]
             y, x = not_used_knights[k].coord
             not_used_knights[k].target = epawns[ep]
@@ -114,13 +114,14 @@ def hunt(knights: list[Knight], epawns: list[Pawn], eknights: list[Knight]):
             if abs(y - i) + abs(x - j) == 1:
                 attaque((i, j), not_used_knights, eknights)
             else:
+                print("clmws = ", k)
                 cl.move_without_suicide(not_used_knights[k], eknights, i, j)
 
 
 def destroy_castle(knights: list[Knight], castles: list[Castle],
                    eknights: list[Knight]):
     """Chasse les chateaux adverses, si possibilité de le détruire, le détruit."""
-    knights_not_used = list(filter(lambda knight: not knight.used, knights))
+    knights_not_used = [k for k in knights if not k.used]
     if knights_not_used and castles:
         # probleme d'affectation
         # choisis les chateaux vers lesquelles vont se diriger les chevaliers
@@ -141,16 +142,16 @@ def free_pawn(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy]
     for knight in knights:
         if not knight.used:
             for castle in castles:
-                if cl.distance(knight.x, knight.y, castle.x, castle.y) == 1 and prediction_attaque((castle.y,castle.x),knights,eknights):
-                    a= cl.movable_neighbors(castle.coord, knights)[0]
+                if cl.distance(knight.x, knight.y, castle.x, castle.y) == 1 and prediction_attaque((castle.y, castle.x), knights, eknights):
+                    a = cl.movable_neighbors(castle.coord, knights)[0]
                     allies_voisins_exploitable = []
                     for e in a:
                         allies_voisins_exploitable += a[e]
                     move_everyone(castle.coord, allies_voisins_exploitable)
         if not knight.used:
             for epawn in epawns:
-                if cl.distance(knight.x, knight.y, epawn.x, epawn.y) == 1 and prediction_attaque((epawn.y,epawn.x),knights,eknights):
-                    a= cl.movable_neighbors(epawn.coord, knights)[0]
+                if cl.distance(knight.x, knight.y, epawn.x, epawn.y) == 1 and prediction_attaque((epawn.y, epawn.x), knights, eknights):
+                    a = cl.movable_neighbors(epawn.coord, knights)[0]
                     allies_voisins_exploitable = []
                     for e in a:
                         allies_voisins_exploitable += a[e]
@@ -187,9 +188,9 @@ def endgame(knights: list[Knight], eknights: list[Knight]):
 #             a = i - y
 #             b = j - x
 #             if a == 0:
-#                 if not cl.connection.get_eknights(y, x + (b)) 
+#                 if not cl.connection.get_eknights(y, x + (b))
 #                     if (y, x + b) not in newpos:
 #                         k.move(y, x + b)
 #                         newpos += (y,x+b)
-                
-#             elif b ==0: 
+
+#             elif b ==0:
