@@ -110,5 +110,8 @@
 
 ## 25/06
 
-- Erwan : Finalisation du code de heatmap et aide pour le minmax. Premiers tests de heatmap avec débug et différents test sur des constante d'heuristique choisies. 
+- Erwan : Finalisation du code de heatmap et aide pour le minmax. Premiers tests de heatmap avec débug et différents test sur des constante d'heuristique choisies.
 - Nicolas : Aide au débug de heatmap et minmax. Commentaire de tout heatmap et minmax + nettoyage du code pour plus de lisibilité.
+- Jules et Pierre: Ajout de la défense dans la branche oop10.
+- Jules : réflexion sur la fonction buil_castle et début d'implémentation d'un autre choix pour la construction de châteaux. Correction d'erreurs concernant des tests dans move_safe, du fait de regarder si un gold est used avant de le considérer comme une destination par un autre péon1. On regarde maintenant aussi si un péon est used avant de le faire fuir (même si ce cas ne devrait pas arriver, il arrive parfois)
+- Tom et Jules: ajout d'outils pour mieux débuguer, notamment le debugage tour par tour et l'option debut avec start_match
