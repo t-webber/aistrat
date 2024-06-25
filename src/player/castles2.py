@@ -13,39 +13,29 @@ if TYPE_CHECKING:
     from apis.players.players import Player
 
 
-def move_peon_to_first_location(player: Player, border: int, border_y: int, border_x: int):
+def move_to_castle(player: Player, castle : int):
     """Construit le premier château."""
-    destination = (border, border) if player == "A" else (border_y, border_x)
-    d = cl.distance_to_list(destination, player.pawns)[0]
-    # si d == 0, le pion est au bon endroit
-    # donc il va construire un château ici
-    if not d:
-        global HARD_CODE
-        HARD_CODE = False
-        return
-
-    for pawn in player.pawns:
-        if pawn.used:
-            continue
-        # ce pions est le plus proche de la bonne localisation
-        if cl.distance(pawn.y, pawn.x, destination[0], destination[1]) == d:
-            if player == "A":
-                # assez proche de la destination en x : déplacement en y
-                if pawn.x >= border:
-                    pawn.move(pawn.y + 1, pawn.x)
-                else:  # déplacement en x
-                    pawn.move(pawn.y, pawn.x + 1)
-            else:
-                # assez proche de la destination en x : déplacement en y
-                if pawn.x <= border_x:
-                    pawn.move(pawn.y - 1, pawn.x)
-                else:  # déplace en x
-                    pawn.move(pawn.y, pawn.x - 1)
-            break
+    len_y, len_x = connection.size_map()
+    if player == "A":
+        if castle ==1:
+            destination = (2, 2)
+        elif castle ==2:
+            destination = (4,3)
+    else:
+        if castle ==1:
+            destination = (len_y - 3, len_x - 3)
+        elif castle ==2:
+            destination = (len_y - 5, len_x - 4)
+    d,unit = cl.distance_to_list(destination, player.pawns)
+    if castle ==2 and d == 0:
+        global second_castle_built
+        second_castle_built = True
+    cl.move_without_suicide(unit, player.eknights, destination[0], destination[1])
 
 
-HARD_CODE = True
 
+first_castle_built = False
+second_castle_built = False
 
 def build_castle(player: Player):
     """
@@ -54,19 +44,21 @@ def build_castle(player: Player):
     Au début, cette fonction controle d'un péon
     pour construire le premier château au bon endroit.
     """
-    len_y, len_x = connection.size_map()
 
+    len_y, len_x = connection.size_map()
     # Définis les bordures pour ne pas y construire de château
     border = 2
     border_y = len_y - 1 - border
     border_x = len_x - 1 - border
+    
+    global first_castle_built 
+    if len(player.castles) == 1 and not first_castle_built  :
+        first_castle_built = True
+    if not first_castle_built:
+        move_to_castle(player, 1)
+    elif not second_castle_built:
+        move_to_castle(player, 2)
 
-    # Si aucun château n'a été construit, prend le controle d'un pion,
-    # le met en (2,2) pour construire un château
-    if not len(player.castles) and HARD_CODE:
-        move_peon_to_first_location(player, border, border_y, border_x)
-
-    # Si il y a suffisemment de châteaux ou pas assez d'argent, on ne peut pas construire
     if len(player.castles) >= get_nb_castles() or player.gold < consts.PRICES[consts.CASTLE]:
         return
 
