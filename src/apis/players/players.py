@@ -21,6 +21,7 @@ class Player(Player_struct):
         print("============= Begin Turn for player", self.id, " =====================")
 
         self.turn += 1
+
         self.checks_turn_data()
         self.update_golds()
         self.update_ennemi_data()
@@ -36,23 +37,16 @@ class Player(Player_struct):
         create_units(self)
         peons.fuite(self.pawns, self.defense + self.attack, self.eknights)
         build_castle(self)
-
         peons.free_gold(self.pawns, self.bad_gold)
         peons.free_gold(self.pawns, self.good_gold)
-
         # je farm d'abord ce que je vois
         peons.farm(self, self.good_gold)
         # j'explore ensuite dans la direction opposée au spawn
         peons.explore(self, self._knights + self.castles)
-
         # atk.free_pawn(self.attack + self.defense, self.eknights, self.epawns, self.ecastles)
-
         dfd.defend(self.pawns, self.defense, self.eknights, self.castles)
         # left_defense = dfd.eknight_based_defense ( defense, eknights, castles, token)
-        print('defense:', self.defense)
         dfd.agressiv_defense(self.defense, self.epawns, self.eknights, self.ecastles)
-        print('defense2:', self.defense)
-
         last_len = None
 
         while (length := [k for k in self.attack if not k.used]):
@@ -63,7 +57,9 @@ class Player(Player_struct):
                 break
 
             last_len = length
+
         peons.explore_knight(self, self.pawns + self.castles)
+
         self.update_gold_map()
 
         connection.end_turn(self.id, self.token)
