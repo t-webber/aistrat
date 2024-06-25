@@ -26,7 +26,8 @@ class Player(Player_struct):
         self.update_ennemi_data()
         self.update_fog()
 
-        input("Press enter to continue...")
+        # if self == "A":
+        # input("Press enter to continue...")
 
         serv = connection.get_gold()[self.id]
         if serv != self.gold:
