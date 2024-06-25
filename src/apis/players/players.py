@@ -9,6 +9,7 @@ import player.attack as atk
 import player.defense as dfd
 from player import peons
 import sys
+from debug import log_func, pause
 
 
 class Player(Player_struct):
@@ -34,30 +35,36 @@ class Player(Player_struct):
         if serv != self.gold:
             raise ValueError(f"wrong gold value: S({serv}) != P({self.gold})")
 
+        # print('golds', self.good_gold, self.bad_gold)
         create_units(self)
+        log_func("fuite")
         peons.fuite(self.pawns, self.defense + self.attack, self.eknights)
+        log_func("castle")
         build_castle(self)
         peons.free_gold(self.pawns, self.bad_gold)
         peons.free_gold(self.pawns, self.good_gold)
         # je farm d'abord ce que je vois
+        log_func("farm")
         peons.farm(self, self.good_gold)
         # j'explore ensuite dans la direction opposée au spawn
+        log_func("explore")
         peons.explore(self, self._knights + self.castles)
-        atk.free_pawn(self.attack + self.defense, self.eknights, self.epawns, self.ecastles)
+        # atk.free_pawn(self.attack + self.defense, self.eknights, self.epawns, self.ecastles)
+        log_func("defend")
         dfd.defend(self.pawns, self.defense, self.eknights, self.castles)
-        # left_defense = dfd.eknight_based_defense ( defense, eknights, castles, token)
         # dfd.agressiv_defense(self.defense, self.epawns, self.eknights, self.ecastles)
         last_len = None
 
         while (length := [k for k in self.attack if not k.used]):
-
+            log_func("hunt")
             atk.hunt(self.attack, self.epawns, self.eknights)
+            log_func("destroy")
             atk.destroy_castle(self.attack, self.ecastles, self.eknights)
             if last_len == length:
                 break
 
             last_len = length
-
+        log_func("explore_knight")
         peons.explore_knight(self, self.pawns + self.castles)
 
         self.update_gold_map()
