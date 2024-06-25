@@ -6,7 +6,7 @@ from apis.players.player_structure import Player_struct
 from player.castles import create_units, build_castle
 import player.attack as atk
 # import player.decisions as dec
-# import player.defense as dfd
+import player.defense as dfd
 from player import peons
 import time
 
@@ -45,7 +45,13 @@ class Player(Player_struct):
         # j'explore ensuite dans la direction opposée au spawn
         peons.explore(self, self._knights + self.castles)
 
-        atk.free_pawn(self.attack + self.defense, self.eknights, self.epawns, self.ecastles)
+        # atk.free_pawn(self.attack + self.defense, self.eknights, self.epawns, self.ecastles)
+
+        dfd.defend(self.pawns, self.defense, self.eknights, self.castles)
+        #left_defense = dfd.eknight_based_defense ( defense, eknights, castles, token)
+        print('defense:', self.defense)
+        dfd.agressiv_defense(self.defense, self.epawns, self.eknights, self.ecastles)
+        print('defense2:', self.defense)
 
         last_len = None
 

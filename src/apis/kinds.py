@@ -210,7 +210,7 @@ class Castle(Unit):
         """Crée un défenseur."""
         cost = consts.PRICES[connection.KNIGHT]
         if self.player.gold < cost:
-            raise ValueError(f"Not enough gold to proceed: {self.gold}")
+            raise ValueError(f"Not enough gold to proceed: {self.player.gold}")
         connection.build(connection.KNIGHT, self.y, self.x, self.player.id, self.player.token)
         self.player.gold -= cost
         self.player.defense.append(Knight(*self.coord, self.player))
@@ -219,7 +219,7 @@ class Castle(Unit):
         """Crée un défenseur."""
         cost = consts.PRICES[connection.KNIGHT]
         if self.player.gold < cost:
-            raise ValueError(f"Not enough gold to proceed: {self.gold}")
+            raise ValueError(f"Not enough gold to proceed: {self.player.gold}")
         connection.build(connection.KNIGHT, self.y, self.x, self.player.id, self.player.token)
         self.player.gold -= cost
         self.player.attack.append(Knight(*self.coord, self.player))
@@ -228,7 +228,7 @@ class Castle(Unit):
         """Crée un défenseur."""
         cost = consts.PRICES[connection.PAWN]
         if self.player.gold < cost:
-            raise ValueError(f"Not enough gold to proceed: {self.gold}")
+            raise ValueError(f"Not enough gold to proceed: {self.player.gold}")
         connection.build(connection.PAWN, self.y, self.x, self.player.id, self.player.token)
         self.player.gold -= cost
         self.player.pawns.append(Pawn(*self.coord, self.player))
