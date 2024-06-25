@@ -59,11 +59,6 @@ gold = {'A': 25, 'B': 25}  # initial gold
 
 mapdata[0][0]['A'][PAWN] = 3
 mapdata[-1][-1]['B'][PAWN] = 3
-mapdata[1][1]['G'] = 2
-mapdata[0][1]['G'] = 2
-mapdata[1][0]['G'] = 2
-mapdata[0][2]['G'] = 100
-mapdata[2][0]['G'] = 100
 
 
 opponent = {'A': 'B', 'B': 'A'}
