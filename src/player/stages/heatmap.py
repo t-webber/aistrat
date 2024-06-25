@@ -107,13 +107,8 @@ def heatbattle(knights : list[Knight], eknights : list[Knight], x:int, y:int,A,B
         return 0
     return (A*pa/pd)**B - len(usable_knight)*C
 
-<<<<<<< HEAD
-config=[[[3,0],[3,0],[3,0],[3,0]],[[0,0],[0,0],[0,0],[0,0]]]
-
-=======
 instance=[[[3,0],[3,0],[3,0],[3,0],[3,0]],[[0,0],[0,0]]]
     
->>>>>>> 6bbacfdc852ca2b2b64238210e97f2839896e334
 def min_max_alpha_beta(depth:int,alpha:int,beta:int, base_map:list[list[int,int]],player:int):
     extrem=player*10000
     config=None
