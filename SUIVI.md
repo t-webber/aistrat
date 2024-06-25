@@ -107,3 +107,8 @@
 - Jules : correction de multiples bugs concernant la fonction pour récupérer les chevaliers ennemis d'une case, l'update des golds, la fuite. Il n'y a maintenant que les attaquants qui explorent s'ils n'ont rien à faire
 - Pierre et Nicolas : Continuation du travail sur le min-max avec application de l'itération, résolution des éventuels combats...
 - Erwan : rajout d'un système de débug dans la branche heatmap pour tester les heatmaps sur des configurations personnalisées et ainsi mieux approcher les comportemants souhaité. Puis aide de Pierre et Nicolas pour le débug du min-max.
+
+## 25/06
+
+- Erwan : Finalisation du code de heatmap et aide pour le minmax. Premiers tests de heatmap avec débug et différents test sur des constante d'heuristique choisies. 
+- Nicolas : Aide au débug de heatmap et minmax. Commentaire de tout heatmap et minmax + nettoyage du code pour plus de lisibilité.
