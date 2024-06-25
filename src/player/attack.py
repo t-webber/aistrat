@@ -142,13 +142,19 @@ def free_pawn(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy]
         if not knight.used:
             for castle in castles:
                 if cl.distance(knight.x, knight.y, castle.x, castle.y) == 1 and prediction_attaque((castle.y,castle.x),knights,eknights):
-                    allies_voisins_exploitable = cl.movable_neighbors(castle.coord, knights)
+                    a= cl.movable_neighbors(castle.coord, knights)[0]
+                    allies_voisins_exploitable = []
+                    for e in a:
+                        allies_voisins_exploitable += a[e]
                     move_everyone(castle.coord, allies_voisins_exploitable)
         if not knight.used:
             for epawn in epawns:
                 if cl.distance(knight.x, knight.y, epawn.x, epawn.y) == 1 and prediction_attaque((epawn.y,epawn.x),knights,eknights):
-                    allies_voisins_exploitable = cl.movable_neighbors(epawn.coord, knights)
-                    move_everyone(epawn, allies_voisins_exploitable)
+                    a= cl.movable_neighbors(epawn.coord, knights)[0]
+                    allies_voisins_exploitable = []
+                    for e in a:
+                        allies_voisins_exploitable += a[e]
+                    move_everyone(epawn.coord, allies_voisins_exploitable)
 
 
 def endgame(knights: list[Knight], eknights: list[Knight]):
