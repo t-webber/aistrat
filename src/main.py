@@ -4,7 +4,7 @@ import sys
 import time
 from apis import connection
 from apis.players import Player
-from apis.kinds import Knight
+from apis.kinds import Knight, Pawn
 
 
 if len(sys.argv) > 2 and sys.argv[2]:
@@ -39,7 +39,12 @@ def main():
 
     if debug:
         player1.knights.append(Knight(1, 1, player1))
-        player1.knights.append(Knight(1, 1, player1))
+        player1.knights.append(Knight(1, 3, player1))
+        player1.pawns = []
+        player1.pawns.append(Pawn(1, 2, player1))
+        player1.pawns.append(Pawn(1, 2, player1))
+        player1.pawns.append(Pawn(1, 2, player1))
+
         player1.update_ennemi_data()
         player1.update_gold_map()
         player1.print_heatmaps()

@@ -53,10 +53,10 @@ gold = {'A': 25, 'B': 25}  # initial gold
 debug = True
 if debug:
     print("Mode débug")
-    mapdata[1][1]['A']['M'] = 2
-    mapdata[1][0]['B']['C'] = 1
-    mapdata[1][3]['B']['C'] = 1
-    mapdata[1][0]['B']['M'] = 1
+    mapdata[1][1]['A']['M'] = 1
+    mapdata[1][3]['A']['M'] = 1
+    mapdata[1][2]['A']['C'] = 3
+    mapdata[3][2]['B']['M'] = 1
 
     
 else:  
