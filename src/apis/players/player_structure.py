@@ -57,6 +57,9 @@ class Player_struct:
         connection.get_data(self.id, self.token)
         kinds = connection.get_kinds(self.id)
 
+        print("MAP")
+        print(connection.get_map())
+
         self.check_set_list_coord(self.pawns, kinds[connection.PAWN], "PAWN")
         self.check_set_list_coord(self.castles, kinds[connection.CASTLE], "CASTLES")
 
@@ -180,15 +183,16 @@ class Player_struct:
 
     def check_two_set_list_coord(self, attack: list[Knight], defense: list[Knight], server_knights: list[(int, int)]):
         server = server_knights.copy()
-        # client = attack + defense
-        for unit in attack:
+        log_attack = attack.copy()
+        log_defense = defense.copy()
+        for unit in attack.copy():
             if unit.coord in server:
                 server.remove(unit.coord)
             else:
                 print(f'ATTACK {unit} was killed')
                 attack.remove(unit)
 
-        for unit in defense:
+        for unit in defense.copy():
             if unit.coord in server:
                 server.remove(unit.coord)
             else:
@@ -197,4 +201,4 @@ class Player_struct:
 
         if server:
             # print(connection.get_map())
-            raise ValueError(f"KNIGHT changed: {server} left in {server_knights} != client attack {attack} + defense {defense}")
+            raise ValueError(f"KNIGHT changed: {server} left in {server_knights} != client attack {log_attack} + defense {log_defense}")

@@ -8,7 +8,7 @@ import player.attack as atk
 # import player.decisions as dec
 import player.defense as dfd
 from player import peons
-import time
+import sys
 
 
 class Player(Player_struct):
@@ -26,8 +26,8 @@ class Player(Player_struct):
         self.update_ennemi_data()
         self.update_fog()
 
-        # if self == "A":
-        # input("Press enter to continue...")
+        if self == "A" and sys.argv[2] == "debug":
+            input("Press enter to continue...")
 
         serv = connection.get_gold()[self.id]
         if serv != self.gold:
@@ -48,7 +48,7 @@ class Player(Player_struct):
         # atk.free_pawn(self.attack + self.defense, self.eknights, self.epawns, self.ecastles)
 
         dfd.defend(self.pawns, self.defense, self.eknights, self.castles)
-        #left_defense = dfd.eknight_based_defense ( defense, eknights, castles, token)
+        # left_defense = dfd.eknight_based_defense ( defense, eknights, castles, token)
         print('defense:', self.defense)
         dfd.agressiv_defense(self.defense, self.epawns, self.eknights, self.ecastles)
         print('defense2:', self.defense)
@@ -57,10 +57,8 @@ class Player(Player_struct):
 
         while (length := [k for k in self.attack if not k.used]):
 
-            atk.hunt(self.attack, self.epawns,
-                     self.eknights)
-            atk.destroy_castle(self.attack, self.ecastles,
-                               self.eknights)
+            atk.hunt(self.attack, self.epawns, self.eknights)
+            atk.destroy_castle(self.attack, self.ecastles, self.eknights)
             if last_len == length:
                 break
 
