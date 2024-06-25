@@ -50,7 +50,7 @@ gold = {'A': 25, 'B': 25}  # initial gold
 
 
 #### RAJOUT DE DEBUG POUR TESTER DES POSSIBILITES ####
-debug = True
+debug = False
 if debug:
     print("Mode débug")
     mapdata[1][1]['A']['M'] = 1

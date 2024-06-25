@@ -90,7 +90,7 @@ def build_castle(player: Player):
 
 def create_units(player: Player):
     """Création des unités par le château."""
-    n = len(player.eknights) - len(player.defense) - len(player.attack)
+    n = len(player.eknights) - len(player.knights)
     nb_pawn = len(player.pawns)
 
     for castle in player.castles:

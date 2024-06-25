@@ -7,7 +7,7 @@ from player.stages.exploration import path_simple
 import numpy as np
 import matplotlib.pyplot as plt
 import math
-
+from player.stages.min_max import min_max_alpha_beta_result
 
 defHeat={"Pawn":5,"Knight":-3,"Castle":15,"Eknight":9,"ChosenKnight":-10}
 attHeat={"Epawn":5,"Ecastle":30, "Epawn_adj" : 40, "Ecastle_adj" : 120}
@@ -39,7 +39,7 @@ def moveLight(map:np.array,mask,oldcoord:tuple[int,int],newcoord:tuple[int,int])
     addLight(map,mask,newcoord)
     addLight(map,-mask,oldcoord)    
 
-def heatMapDefenseGen(pawns: list[Pawn], castles : list[Castle], eknights : list[Knight]):
+def heatMapDefenseGen(pawns: list[Pawn], castles : list[Castle], eknights : list[Knight], knights : list[Knight]):
     """Génère la Heat Map défensive"""
     heat_map=np.zeros((co.size_map()))
     for pawn in pawns:
@@ -48,6 +48,9 @@ def heatMapDefenseGen(pawns: list[Pawn], castles : list[Castle], eknights : list
         addLight(heat_map,maskHeatDef["Castle"],(castle.y,castle.x))
     for eknight in eknights:
         addLight(heat_map, maskHeatDef["Eknight"], (eknight[0], eknight[1]))
+    for knight in knights:
+        if knight.used:
+            addLight(heat_map, maskHeatDef["ChosenKnight"], (knight.y, knight.x))
     return heat_map
 
 # def heatMapDefGenBis(pawns: list[Pawn], castles : list[Castle], knights : list[Knight], eknights : list[Knight], player : str, gold_map : list[list[int]]):
@@ -69,14 +72,6 @@ def heatMapDefenseGen(pawns: list[Pawn], castles : list[Castle], eknights : list
 #         heat_map[i][j] += heatbattle(eknights, knights, i, j, 2, 2, 2) + gold_map[i][j]
 #     return heat_map
 
-
-def print_heatmaps(pawns : list[Pawn], knights : list[Knight], castles : list[Castle], eknights : list[Knight], ecastles : list[Castle], epawns : list[Pawn], gold_map : list[list[int]], name : str):
-    a = heatMapAttackGen(epawns, ecastles, name, knights, eknights, gold_map)
-    b = heatMapDefenseGen(pawns, castles, eknights)
-    plt.imshow(a, cmap='hot', interpolation='nearest')
-    plt.show()
-    plt.imshow(b, cmap='hot', interpolation='nearest')
-    plt.show()
 
 
 def heatbattle(knights : list[Knight], eknights : list[Knight], x:int, y:int,A,B,C):
@@ -121,6 +116,7 @@ def heatMapAttackGen(epawns : list[Pawn], ecastles : list[Castle], id : str, kni
                 heat_map[i][j] += AVANCEMENT*(co.size_map[0]-j-1)
             
         #rajout de l'impact des combats    
+                ### TO DO : GESTION DE LA GOLD MAP
             gold_here = 0
             if gold_map[i][j] is not None:
                 gold_here = 0
@@ -143,27 +139,38 @@ def heatMapAttackGen(epawns : list[Pawn], ecastles : list[Castle], id : str, kni
     return heat_map
 
 
-# def heatMapMove(player:pl.Player):
-#     while all( not knight.used for knight in player.knights):
-#         attmap = heatMapAttackGen(player)
-#         defmap = heatMapDefenseGen(player)
-#         max = 0
-#         co=(-1,-1)
-#         tp=None
-#         for i in range(co.sizemap()[0]):
-#             for j in range(co.sizemap()[1]):
-#                 if attmap[i][j]>max:
-#                     max=attmap[i][j]
-#                     co=(i,j)
-#                     tp="A"
-#                 if defmap[i][j]>max:
-#                     max=attmap[i][j]
-#                     co=(i,j)
-#                     tp="D"
-#         if tp=="A":
-#             attackHere(player,(i,j))
-#         else:
-#             defendHere(player,(i,j))
+
+
+def print_heatmaps(pawns : list[Pawn], knights : list[Knight], castles : list[Castle], eknights : list[Knight], ecastles : list[Castle], epawns : list[Pawn], gold_map : list[list[int]], name : str):
+    a = heatMapAttackGen(epawns, ecastles, name, knights, eknights, gold_map)
+    b = heatMapDefenseGen(pawns, castles, eknights)
+    plt.imshow(a, cmap='hot', interpolation='nearest')
+    plt.show()
+    plt.imshow(b, cmap='hot', interpolation='nearest')
+    plt.show()
+
+
+def heatMapMove(pawns :list[Pawn], knights : list[Knight], castles : list[Castle], epawns : list[Pawn], eknights : list[Knight], ecastles : list[Castle], gold_map : list[list[int]], id : str):
+    while all( not knight.used for knight in knights):
+        attmap = heatMapAttackGen(epawns, ecastles, id, knights, eknights, gold_map)
+        defmap = heatMapDefenseGen(pawns, castles, eknights, knights)
+        max = 0
+        co=(-1,-1)
+        tp=None
+        for i in range(co.sizemap()[0]):
+            for j in range(co.sizemap()[1]):
+                if attmap[i][j]>max:
+                    max=attmap[i][j]
+                    co=(i,j)
+                    tp="A"
+                if defmap[i][j]>max:
+                    max=attmap[i][j]
+                    co=(i,j)
+                    tp="D"
+        if tp=="A":
+            attackHere(knights, eknights,(i,j))
+        else:
+            defendHere(knights, eknights,(i,j))
 
 """ 
 La fonction qui prend en argument la case sélectionnée à défendre prend un chevalier pertinent à 
@@ -172,49 +179,43 @@ proximité et le bouge intelligemment dans sa direction, enlève le mask knight 
 """
 
 
-### TO DO WITHOUT PLAYER ###
+### TO DO ###
 
-# def defendHere(player:pl.Player,case:tuple[int,int]):
-#     nearestKnights=sorted(player.knights,lambda x:cl.distance(x,case))
-#     i=0
-#     movement=None
-#     while movement is None and i<nearestKnights.length():
-#         nearest=nearestKnights[i]
-#         if not nearest.used:
-#             movement=path_simple(nearest,case,player.eknights)
-#         i+=1
-#     if i>=nearestKnights.length():
-#         return
-#     nearest.move(movement)
+def defendHere(knights : list[Knight], eknights : list[Knight],case:tuple[int,int]):
+    nearestKnights=sorted(knights,lambda x:cl.distance(x,case))
+    i=0
+    movement=None
+    while movement is None and i<nearestKnights.length():
+        nearest=nearestKnights[i]
+        if not nearest.used:
+            movement=path_simple(nearest,case,eknights)
+        i+=1
+    if i>=nearestKnights.length():
+        return
+    if (nearest.y != case[0] or nearest.x != case[1]):
+        nearest.move(movement)
+    else:
+        nearest.used = True
 
-def attackHere(player:pl.Player,case:tuple[int,int]):
-    nearestKnights=sorted(player.knights,lambda x:cl.distance(x.y,x.x,case[0],case[1]))
+
+def attackHere(knights : list[Knight], eknights : list[Knight],case:tuple[int,int]):
+    nearestKnights=sorted([knight for knight in knights if not knight.used], lambda x:cl.distance(x.y,x.x,case[0],case[1]))
     hired_knights=[]
-    true_hired_knights=[]
+    i = 0
     while i<nearestKnights.length() and cl.distance(nearestKnights[i].y,nearestKnights[i].x,case[0],case[1])<4: 
         nearest=nearestKnights[i]
-        hired_knights.append([nearest.x,nearest.y])
+        hired_knights.append([nearest.x - case[1],nearest.y - case[0]])
         i+=1
-    nearestEKnights=sorted(player.eknights,lambda x:cl.distance(x.y,x.x,case[0],case[1]))
+    nearestEKnights=sorted(eknights,lambda x:cl.distance(x.y,x.x,case[0],case[1]))
     hired_Eknights=[]
-    while i<nearestEKnights.length() and cl.distance(nearestEKnights[i].y,nearestEKnights[i].x,case[0],case[1])<4: 
+    i = 0
+    while i<nearestEKnights.length() and cl.distance(nearestEKnights[i][0],nearestEKnights[i][1],case[0],case[1])<4: 
         nearest=nearestEKnights[i]
-        hired_Eknights.append([nearest.x,nearest.y])
+        hired_Eknights.append([nearest[1] - case[1], nearest[0] - case[0]])
         i+=1
-    _,next_moves=min_max_alpha_beta(6,-100,1000,[hired_knights,hired_Eknights],0)
-    for i in next_moves 
-    
-
-
-
-
-#     if i>=nearestKnights.length():
-#         return
-#     nearest.move(movement)
-
-#     """
-#     units=[]
-#     for i,j in range(len(map_zero)),len(map_zero[0]):
-#         if map_zero[i][j] is not None:
-#             for k in range(map_zero[i][j][player]):
-#                 units.add((i,j))"""
+    next_moves=min_max_alpha_beta_result([hired_knights,hired_Eknights])
+    for i, movement in enumerate(next_moves):
+        if (nearestKnights[i].y != movement[0] or nearestKnights[i].x != movement[1]):
+            nearestKnights[i].move(movement) 
+        else:
+            nearestKnights[i].used = True

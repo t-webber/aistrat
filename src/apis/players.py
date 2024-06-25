@@ -60,7 +60,7 @@ class Player:
         kinds = connection.get_kinds(self.id)
 
         check_set_list_coord(self.pawns, kinds[connection.PAWN], "PAWN")
-        check_set_list_coord(self.attack + self.defense, kinds[connection.KNIGHT], "KNIGHT")
+        check_set_list_coord(self.knights, kinds[connection.KNIGHT], "KNIGHT")
         check_set_list_coord(self.castles, kinds[connection.CASTLE], "CASTLES")
 
         # golds = self.good_gold + self.bad_gold
@@ -114,7 +114,7 @@ class Player:
         # j'explore ensuite dans la direction opposée au spawn
         peons.explore(self, self.knights + self.castles)
 
-        # hm.heatMapMove(self)
+        hm.heatMapMove(self.pawns, self.knights, self.castles, self.epawns, self.eknights, self.ecastles, self._gold_map, self.id)
 
 
         self.update_gold_map()

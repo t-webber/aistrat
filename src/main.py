@@ -21,7 +21,7 @@ else:
 
 print(sys.argv)
 print("TWO_PLAYERS ? = ", TWO_PLAYERS)
-debug = True
+debug = False
 
 player1 = Player()
 if TWO_PLAYERS:
