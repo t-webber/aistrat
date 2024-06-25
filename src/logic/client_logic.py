@@ -151,9 +151,6 @@ def prediction_combat(a: int, d: int):
     return (d <= 0, pertes_a <= pertes_d, pertes_a, pertes_d)
 
 
-print("".join([chr(ord(c) + 1) for c in "Xnt\x1fvhkk\x1fmdudq\x1fehmc\x1fld"]))
-
-
 def neighbors(case: tuple[int, int], knights: list[Knight]):
     """Renvois les voisins d'une case.
 
@@ -280,7 +277,6 @@ def move_without_suicide(unit: Unit, eknights: list[Knight], i: int, j: int):
 
 def move_safe_random_without_purpose(unit: Unit, eknights: list[Knight], ecastles: list[Castle]):
     """Déplace une unité de manière aléatoire vers une case sûre."""
-    # print("move_safe_random_without_purpose")
     for (i, j) in connection.get_moves(unit.y, unit.x):
         if not in_obj(Coord(i, j), eknights) and (i, j) not in ecastles and \
                 (neighbors((i, j), eknights)[1] == 0 or neighbors((i, j), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):

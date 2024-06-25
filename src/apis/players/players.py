@@ -8,6 +8,7 @@ import player.attack as atk
 # import player.decisions as dec
 # import player.defense as dfd
 from player import peons
+import time
 
 
 class Player(Player_struct):
@@ -25,6 +26,8 @@ class Player(Player_struct):
         self.update_ennemi_data()
         self.update_fog()
 
+        input("Press enter to continue...")
+
         serv = connection.get_gold()[self.id]
         if serv != self.gold:
             raise ValueError(f"wrong gold value: S({serv}) != P({self.gold})")
@@ -33,8 +36,11 @@ class Player(Player_struct):
         peons.fuite(self.pawns, self.defense + self.attack, self.eknights)
         build_castle(self)
 
+        peons.free_gold(self.pawns, self.bad_gold)
+        available_good_golds = peons.free_gold(self.pawns, self.good_gold)
+
         # je farm d'abord ce que je vois
-        peons.farm(self, self.good_gold)
+        peons.farm(self, available_good_golds)
         # j'explore ensuite dans la direction opposée au spawn
         peons.explore(self, self._knights + self.castles)
 
@@ -44,10 +50,8 @@ class Player(Player_struct):
 
         while (length := [k for k in self.attack if not k.used]):
 
-            # print("HUNT ATK\t", self.pawns)
             atk.hunt(self.attack, self.epawns,
                      self.eknights)
-            # print("DESTROY CASTLE\t", self.pawns)
             atk.destroy_castle(self.attack, self.ecastles,
                                self.eknights)
             if last_len == length:

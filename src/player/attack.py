@@ -60,7 +60,7 @@ def prediction_attaque(case_attaquee: tuple[int, int], knights: list[Knight], ek
     """
     if not eknights:
         return True
-    _, attaquants = cl.neighbors(case_attaquee, knights)
+    _, attaquants = cl.movable_neighbors(case_attaquee, knights)
     _, defenseurs_voisins_nombre = cl.neighbors(
         case_attaquee, eknights)
     defenseurs = connection.get_map(
@@ -108,6 +108,7 @@ def hunt(knights: list[Knight], epawns: list[Pawn], eknights: list[Knight]):
         for k, ep in cl.hongrois_distance(not_used_knights, epawns):
             vus.append(not_used_knights[k])
             y, x = not_used_knights[k].coord
+            k.target = epawns[ep]
             i, j = epawns[ep].coord
             if abs(y - i) + abs(x - j) == 1:
                 attaque((i, j), not_used_knights, eknights)
@@ -139,12 +140,12 @@ def free_pawn(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy]
     for knight in knights:
         if not knight.used:
             for castle in castles:
-                if cl.distance(knight.x, knight.y, castle.x, castle.y) == 1 and not cl.in_obj(castle, eknights):
+                if cl.distance(knight.x, knight.y, castle.x, castle.y) == 1 and prediction_attaque((castle.x,castle.y),knights,eknights):
                     if not knight.used:
                         knight.move(castle.y, castle.x)
         if not knight.used:
             for epawn in epawns:
-                if cl.distance(knight.x, knight.y, epawn.x, epawn.y) == 1 and not cl.in_obj(epawn, eknights):
+                if cl.distance(knight.x, knight.y, epawn.x, epawn.y) == 1 and prediction_attaque((epawns.x,epawns.y),knights,eknights):
                     if not knight.used:
                         knight.move(epawn.y, epawn.x)
 
@@ -161,3 +162,5 @@ def endgame(knights: list[Knight], eknights: list[Knight]):
             else:
                 cl.move_without_suicide(knights_not_used[k], eknights, i, j)
         knights_not_used = list(filter(lambda knight: not knight.used, knights))
+
+# def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy], castles: list[Castle]):

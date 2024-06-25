@@ -182,6 +182,7 @@ class Knight(Person):
         """Initialise un chevalier."""
         super().__init__(y, x, consts.KNIGHT, consts.EKNIGHT, player)
         self.cible = None  # attribut pour la défense en fonction des chevaliers ennemis
+        self.target = None # cible d'attaque
 
     def __str__(self):
         """Affiche un chevalier."""
