@@ -9,11 +9,9 @@ import player.attack as atk
 import player.defense as dfd
 from player import peons
 import sys
+from debug import log_func, pause
 
 
-def log_func(name: str):
-    if len(sys.argv) > 2 and sys.argv[2] == "debug":
-        print(f"DEBUT de {name}")
 
 class Player(Player_struct):
     """Class pour implémenter les actions d'un joueur."""
@@ -31,13 +29,13 @@ class Player(Player_struct):
         self.update_ennemi_data()
         self.update_fog()
 
-        if self == "A" and sys.argv[2] == "debug":
-            input("Press enter to continue...")
+        pause(self.id)
 
         serv = connection.get_gold()[self.id]
         if serv != self.gold:
             raise ValueError(f"wrong gold value: S({serv}) != P({self.gold})")
-
+        
+        print('golds', self.good_gold, self.bad_gold)
         create_units(self)
         log_func("fuite")
         peons.fuite(self.pawns, self.defense + self.attack, self.eknights)

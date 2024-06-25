@@ -5,6 +5,7 @@ import numpy as np
 from apis.kinds import Unit, Knight, Pawn, Castle, GoldPile, Coord
 from apis import connection
 import random as rd
+import debug as db
 
 defense_knights = {"A": [], "B": []}
 
@@ -209,18 +210,22 @@ def move_safe_random(unit: Unit, eknights: list[Knight], ecastles: list[Castle],
         if unit.x > j and not in_obj(Coord(unit.y, unit.x - 1),eknights) and (unit.y, unit.x - 1) not in ecastles and \
                 (neighbors((unit.y, unit.x - 1), eknights)[1] == 0 or neighbors((unit.y, unit.x - 1), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
             unit.move(unit.y, unit.x - 1)
+            db.log_func_destination(i,j)
             return True
         elif unit.x < j and not in_obj(Coord(unit.y, unit.x + 1),eknights) and (unit.y, unit.x + 1) not in ecastles and \
                 (neighbors((unit.y, unit.x + 1), eknights)[1] == 0 or neighbors((unit.y, unit.x + 1), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
             unit.move(unit.y, unit.x + 1)
+            db.log_func_destination(i,j)
             return True
         elif unit.y > i and not in_obj(Coord(unit.y - 1, unit.x),eknights) and (unit.y - 1, unit.x) not in ecastles and \
                 (neighbors((unit.y - 1, unit.x), eknights)[1] == 0 or neighbors((unit.y - 1, unit.x), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
             unit.move(unit.y - 1, unit.x)
+            db.log_func_destination(i,j)
             return True
         elif unit.y < i and not in_obj(Coord(unit.y + 1, unit.x),eknights) and (unit.y + 1, unit.x) not in ecastles and \
                 (neighbors((unit.y + 1, unit.x), eknights)[1] == 0 or neighbors((unit.y + 1, unit.x), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
             unit.move(unit.y + 1, unit.x)
+            db.log_func_destination(i,j)
             return True
         else:
             return False
@@ -228,18 +233,22 @@ def move_safe_random(unit: Unit, eknights: list[Knight], ecastles: list[Castle],
         if unit.y > i and not in_obj(Coord(unit.y - 1, unit.x),eknights) and (unit.y - 1, unit.x) not in ecastles and \
                 (neighbors((unit.y - 1, unit.x), eknights)[1] == 0 or neighbors((unit.y - 1, unit.x), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
             unit.move(unit.y - 1, unit.x)
+            db.log_func_destination(i,j)
             return True
         elif unit.y < i and not in_obj(Coord(unit.y + 1, unit.x),eknights) and (unit.y + 1, unit.x) not in ecastles and \
                 (neighbors((unit.y + 1, unit.x), eknights)[1] == 0 or neighbors((unit.y + 1, unit.x), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
             unit.move(unit.y + 1, unit.x)
+            db.log_func_destination(i,j)
             return True
         elif unit.x > j and not in_obj(Coord(unit.y, unit.x - 1),eknights) and (unit.y, unit.x - 1) not in ecastles and \
                 (neighbors((unit.y, unit.x - 1), eknights)[1] == 0 or neighbors((unit.y, unit.x - 1), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
             unit.move(unit.y, unit.x - 1)
+            db.log_func_destination(i,j)
             return True
         elif unit.x < j and not in_obj(Coord(unit.y, unit.x + 1),eknights) and (unit.y, unit.x + 1) not in ecastles and \
                 (neighbors((unit.y, unit.x + 1), eknights)[1] == 0 or neighbors((unit.y, unit.x + 1), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
             unit.move(unit.y, unit.x + 1)
+            db.log_func_destination(i,j)
             return True
         else:
             return False
