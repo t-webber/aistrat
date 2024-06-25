@@ -122,7 +122,8 @@ def explore(player: Player, otherunits=[]):
     """Envoie en exploration les "pawns" inactifs pour le tour."""
     eknights = player.eknights
     path(player.pawns, otherunits, eknights)
-    farm(player, player.bad_gold)
+    bad_gold_not_used = [gold for gold in player.bad_gold if not gold.used]
+    farm(player, bad_gold_not_used)
     ex.path_trou(player.pawns, otherunits, eknights)
 
 
