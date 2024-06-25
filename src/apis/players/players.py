@@ -35,7 +35,7 @@ class Player(Player_struct):
         if serv != self.gold:
             raise ValueError(f"wrong gold value: S({serv}) != P({self.gold})")
         
-        print('golds', self.good_gold, self.bad_gold)
+        # print('golds', self.good_gold, self.bad_gold)
         create_units(self)
         log_func("fuite")
         peons.fuite(self.pawns, self.defense + self.attack, self.eknights)
