@@ -50,11 +50,15 @@ def distance(x1: int, y1: int, x2: int, y2: int):
 def distance_to_list(current_position: tuple[int, int], list_units: list[Unit]):
     """Donne la distance au château le plus proche."""
     d = float('inf')
+    args = None
     y_curr, x_curr = current_position
     for unit in list_units:
         y, x = unit.coord
-        d = min(distance(y, x, y_curr, x_curr), d)
-    return d
+        d_temp = distance(y, x, y_curr, x_curr)
+        if d_temp < d:
+            d = d_temp
+            args = unit
+    return d,args
 
 
 def exists_close(position: Unit, list_targets: list[Unit], sep: int) -> bool:
