@@ -171,25 +171,31 @@ def endgame(knights: list[Knight], eknights: list[Knight]):
                 cl.move_without_suicide(knights_not_used[k], eknights, i, j)
         knights_not_used = list(filter(lambda knight: not knight.used, knights))
 
-# def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy], castles: list[Castle]):
-#     not_used_knights = list(filter(lambda knight: not knight.used, knights))
-#     dicoattaque = {}
-#     for ep in epawns:
-#         dicoattaque[ep]=[]
-#     for k in not_used_knights:
-#         epawn = k.target
-#         dicoattaque[epawn]= dicoattaque[ep] + [k]
-#     for ep in dicoattaque:
-#         i,j = ep.coord
-#         newpos=[]
-#         for k in dicoattaque[ep]:
-#             y, x = k.coord
-#             a = i - y
-#             b = j - x
-#             if a == 0:
-#                 if not cl.connection.get_eknights(y, x + (b)) 
-#                     if (y, x + b) not in newpos:
-#                         k.move(y, x + b)
-#                         newpos += (y,x+b)
-                
-#             elif b ==0: 
+def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy]):
+    not_used_knights = list(filter(lambda knight: not knight.used, knights))
+    dicoattaque = {}
+    for ep in epawns:
+        dicoattaque[ep]=[]
+    for k in not_used_knights:
+        epawn = k.target
+        dicoattaque[epawn]= dicoattaque[ep] + [k]
+    for ep in dicoattaque:
+        i,j = ep.coord
+        newpos=[]
+        for k in dicoattaque[ep]:
+            y, x = k.coord
+            a = i - y
+            b = j - x
+            y2 = a/abs(a)
+            x2 = b/abs(b)
+            if a != 0 and b !=0:
+                if not cl.connection.get_eknights(y, x + x2) and (y, x + x2) not in newpos:
+                    k.move(y, x + x2)
+                    newpos += (y,x + x2)
+                elif not cl.connection.get_eknights(y + y2, x) and (y + y2, x) not in newpos:
+                    k.move(y + y2, x)
+                    newpos += (y + y2,x)
+                else:
+                    cl.move_without_suicide(k, eknights, i, j)
+            else: 
+                cl.move_without_suicide(k, eknights, i, j)

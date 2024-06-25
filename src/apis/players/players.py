@@ -57,8 +57,8 @@ class Player(Player_struct):
 
         while (length := [k for k in self.attack if not k.used]):
 
-            atk.hunt(self.attack, self.epawns,
-                     self.eknights)
+            atk.sync_atk(self.attack,
+                     self.eknights, self.epawns)
             atk.destroy_castle(self.attack, self.ecastles,
                                self.eknights)
             if last_len == length:
