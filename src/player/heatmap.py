@@ -13,7 +13,7 @@ from player.min_max import min_max_alpha_beta_result
 
 IMPORTANCE_ATT = 5
 AVANCEMENT = 0.03
-VAL_GOLD = 1/100
+VAL_GOLD = 1/300
 
 defHeat={"Pawn":3,"Knight":-2,"Castle":5,"Eknight":30,"ChosenKnight":-50}
 attHeat={"Epawn":10*IMPORTANCE_ATT,"Ecastle":30*IMPORTANCE_ATT, "Epawn_adj" : 100*IMPORTANCE_ATT, "Ecastle_adj" : 120*IMPORTANCE_ATT, "Eknight":50*IMPORTANCE_ATT}
@@ -316,7 +316,9 @@ def attackHere(knights : list[Knight], eknights : list[Knight],case:tuple[int,in
     #On répète la même chose pour les ennemis... sans le forçage car vérifié précédemment 
     while i<len(nearestEKnights) and (cl.distance(nearestEKnights[i].y,nearestEKnights[i].x,case[0],case[1])<max(3, abs(hired_knights[0][0]) + abs(hired_knights[0][1]))): 
         nearest=nearestEKnights[i]
-        hired_Eknights.append([nearest.y - case[0], nearest.x - case[1]])
+        
+        if len(hired_knights) != 1 or cl.distance(hired_knights[0][0], hired_knights[0][1], nearest.y, nearest.x) <= 2:        
+            hired_Eknights.append([nearest.y - case[0], nearest.x - case[1]])
         i+=1
 
     print("chevaliers en actions : ",[hired_knights, hired_Eknights])
@@ -324,6 +326,7 @@ def attackHere(knights : list[Knight], eknights : list[Knight],case:tuple[int,in
     if len([knight for knight in hired_Eknights if knight == (0,0)]) > len(hired_knights) :
         print("Trop dangereux")
         return
+
 
     next_moves=min_max_alpha_beta_result([hired_knights,hired_Eknights]) 
     #Pour choisir comment déplacer les unités, on fait un min-max
