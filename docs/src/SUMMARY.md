@@ -8,10 +8,10 @@
 
 ---
 
-1. [Explication de la base de code](./stages/introduction.md)
+1. [Explication de la base de code]()
    1. [Code généric]()
       1. [API de connection avec le server](./stages/server.md)
-      1. [Fonction utiles](./stages/server.md)
+      1. [Fonction utiles](./stages/client_logic.md)
    1. [Code par étape]()
       1. [Fuite](./stages/fuite.md)
       1. [Construction](./stages/castles.md)

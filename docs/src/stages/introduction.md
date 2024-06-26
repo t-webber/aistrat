@@ -1,1 +1,0 @@
-# Optimisation par étape
