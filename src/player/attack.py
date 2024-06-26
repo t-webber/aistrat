@@ -214,7 +214,7 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                 elif k2.x - j == 1:
                     X3 += 1
             for k in dicoattaque[ep]:
-                print("target = ", k.target)
+                print("target = ", k.target, "for knight = ", k)
                 if k.used:
                     continue
                 else:
