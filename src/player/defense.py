@@ -33,7 +33,6 @@ def agressiv_defense(defense: list[Knight], epawns: list[Pawn], eknigths: list[K
                 continue
             if (d2.y, d2.x) == (d.y, d.x):
                 agressiv_defenders.append(d2)
-        print(dir_knights)
         options = [(len(dir_castles[d]), d) for d in dir_castles if len(dir_castles[d])] \
             + [(len(dir_pawns[d]), d) for d in dir_pawns if len(dir_pawns[d])] \
             + [(len(dir_knights[d]), d) for d in dir_knights if len(dir_knights[d])]
@@ -46,8 +45,7 @@ def agressiv_defense(defense: list[Knight], epawns: list[Pawn], eknigths: list[K
             for i in agressiv_defenders:
                 if not i.used:
                     will_attack.append(i)
-                if cl.prediction_combat(len(will_attack), len(dir_knights[direction]))[0] and\
-                        not (cl.prediction_combat(near_eknights - len(dir_knights[direction]), len(agressiv_defenders) - len(will_attack))[0]):
+                if cl.prediction_combat(len(will_attack), len(dir_knights[direction]))[0] :
                     (y2, x2) = (d.y + direction[0], d.x + direction[1])
                     for d in will_attack:
                         d.move(y2, x2)

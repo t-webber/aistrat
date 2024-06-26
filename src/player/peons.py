@@ -31,7 +31,6 @@ def fuite(pawns: list[Pawn], knights: list[Knight], eknights: list[Knight]):
                     on_case.append(k)
                     allies += 1
             on_case.sort(key=lambda x: x.used)
-            print(on_case)
             if cl.prediction_combat(total_enemies, allies + allies_backup)[0]:
                 # si on perd le combat même avec les alliés on fuit
                 if cl.move_safe_random_without_purpose(p, eknights, knights):

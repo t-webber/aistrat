@@ -54,7 +54,8 @@ class Player(Player_struct):
         # atk.free_pawn(self.attack + self.defense, self.eknights, self.epawns, self.ecastles)
         log_func("defend")
         dfd.defend(self.pawns, self.defense, self.eknights, self.castles)
-        # dfd.agressiv_defense(self.defense, self.epawns, self.eknights, self.ecastles)
+        log_func("agressiv_defense")
+        dfd.agressiv_defense(self.defense, self.epawns, self.eknights, self.ecastles)
         last_len = None
         log_func("sync atk")
         atk.sync_atk(self.attack, self.eknights, self.epawns, self)
