@@ -98,7 +98,7 @@ def nb_units_near_castles(castle: Castle, units: list[Unit], radius: int):
 
 def create_units(player: Player):
     """Création des unités par le château."""
-    eknight_offset = len(player.eknights) - len(player.defense)
+    eknight_offset = len(player.eknights) - (1/2)*len(player.knights)
     len_golds = len(player._golds)
     missing_priority_castles = len(player.castles) < get_nb_castles() // settings.PRIORITISED_CASTLES_RATIO
     for castle in player.castles:

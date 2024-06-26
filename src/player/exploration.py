@@ -1,6 +1,7 @@
 """Fonctions liées au déplacement et a l'exploration."""
 import numpy as np
 from apis import connection
+import random as rd
 import logic.client_logic as cl
 from apis.kinds import Pawn, Knight, Unit
 import apis.players as pl
@@ -18,10 +19,23 @@ import apis.players as pl
 def path_simple(unit,destination:tuple[int,int], eknights : Knight):
     """Cherche un bon chemin en un déplacement pour une unité"""
     moves=connection.get_moves(unit.y,unit.x)
+    rd.shuffle(moves)
     best_moves=sorted(moves,key=lambda x:cl.scalar((unit.y,unit.x),x,destination))
     for move in best_moves:
         ennemies = cl.neighbors(move, eknights)[1]
         if ennemies == 0 or ennemies <= len(connection.get_eknights(move[0], move[1])):
+            return move
+    return None
+
+def path_simple_bis(unit,destination:tuple[int,int], eknights : Knight):
+    """Cherche un bon chemin en un déplacement pour une unité"""
+    moves=connection.get_moves(unit.y,unit.x)
+    rd.shuffle(moves)
+    best_moves=sorted(moves,key=lambda x:cl.scalar((unit.y,unit.x),x,destination))
+    for move in best_moves:
+        if cl.scalar((unit.y,unit.x),move,destination)<0:
+            return None
+        if len(connection.get_eknights(move[0], move[1])) == 0:
             return move
     return None
 

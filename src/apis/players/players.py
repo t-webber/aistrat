@@ -24,6 +24,9 @@ class Player(Player_struct):
 
         self.turn += 1
 
+        # if self.turn%10 == 0:
+        #     print_heatmaps(self.pawns, self.knights, self.castles, self.eknights, self.ecastles, self.epawns, self._gold_map, self.id)
+
         self.checks_turn_data()
         self.update_golds()
         self.update_ennemi_data()

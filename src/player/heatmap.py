@@ -3,14 +3,14 @@ from apis.kinds import Castle, Knight, Pawn
 from typing import TYPE_CHECKING
 
 import logic.client_logic as cl
-from player.exploration import path_simple
+from player.exploration import path_simple_bis
 import numpy as np
 import matplotlib.pyplot as plt
 import math
 from player.min_max import min_max_alpha_beta_result
 
-defHeat={"Pawn":3,"Knight":-2,"Castle":5,"Eknight":10,"ChosenKnight":-10}
-attHeat={"Epawn":5,"Ecastle":30, "Epawn_adj" : 40, "Ecastle_adj" : 120}
+defHeat={"Pawn":3,"Knight":-2,"Castle":5,"Eknight":30,"ChosenKnight":-30}
+attHeat={"Epawn":5,"Ecastle":30, "Epawn_adj" : 100, "Ecastle_adj" : 120}
 
 
 
@@ -52,8 +52,8 @@ def heatMapDefenseGen(pawns: list[Pawn], castles : list[Castle], eknights : list
         addLight(heat_map,maskHeatDef["Castle"],(castle.y,castle.x), 1) #Les châteaux
     for eknight in eknights:
         for unit in pawns + castles:
-            if cl.distance(*unit.coord, *eknight.coord) < 3:
-                addLight(heat_map, maskHeatDef["Eknight"], (eknight.y, eknight.x), 1) #Les chevaliers ennemis placent leur lumière sur les cases a protéger.
+            if cl.distance(*unit.coord, *eknight.coord) < 2:
+                addLight(heat_map, maskHeatDef["Eknight"], (unit.y, unit.x), 1) #Les chevaliers ennemis placent leur lumière sur les cases a protéger.
     for knight in knights:
         if knight.used:
             addLight(heat_map, maskHeatDef["ChosenKnight"], (knight.y, knight.x), 1) #Les chevaliers alliés déjà utilisés
@@ -104,7 +104,7 @@ def heatbattle(knights : list[Knight], eknights : list[Knight], x:int, y:int,A,B
     victory,_,pa,pd=cl.prediction_combat(int(poid_k),int(poid_ek)) 
     #On prédit ensuite le résultat du combat avec la partie entière des forces présentes
 
-    if (not victory) : return -100 #Si l'estimation nous annonce une défaite, on n'attaque absolument pas
+    if (not victory) : return -1000 #Si l'estimation nous annonce une défaite, on n'attaque absolument pas
     if len(eknights) == 0 or pd == 0:
         return 0 #Si aucun ennemi, neutralité
     return (A*pa/pd)**B - len(usable_knight)*C #Sinon on donne un score à l'opportunité
@@ -166,6 +166,41 @@ def print_heatmaps(pawns : list[Pawn], knights : list[Knight], castles : list[Ca
     plt.imshow(b, cmap='hot', interpolation='nearest')
     plt.show()
 
+    # b = heatMapDefenseGen(pawns, [], [], [])
+    # for i in range(len(a)):
+    #     for j in range(len(a[0])):
+    #         a[i][j] = max(a[i][j], -5)
+    #         b[i][j] = max(b[i][j], -5)
+
+    # plt.imshow(b, cmap='hot', interpolation='nearest')
+    # plt.show()
+
+    # b = heatMapDefenseGen([], castles, [], [])
+    # for i in range(len(a)):
+    #     for j in range(len(a[0])):
+    #         a[i][j] = max(a[i][j], -5)
+    #         b[i][j] = max(b[i][j], -5)
+
+    # plt.imshow(b, cmap='hot', interpolation='nearest')
+    # plt.show()
+
+    # b = heatMapDefenseGen(pawns, castles], knights, [])
+    # for i in range(len(a)):
+    #     for j in range(len(a[0])):
+    #         a[i][j] = max(a[i][j], -5)
+    #         b[i][j] = max(b[i][j], -5)
+
+    # plt.imshow(b, cmap='hot', interpolation='nearest')
+    # plt.show()
+     # b = heatMapDefenseGen([], [], [], knights)
+    # for i in range(len(a)):
+    #     for j in range(len(a[0])):
+    #         a[i][j] = max(a[i][j], -5)
+    #         b[i][j] = max(b[i][j], -5)
+
+    
+   #  plt.imshow(b, cmap='hot', interpolation='nearest')
+   #  plt.show()
 
 def heatMapMove(pawns :list[Pawn], knights : list[Knight], castles : list[Castle], epawns : list[Pawn], eknights : list[Knight], ecastles : list[Castle], gold_map : list[list[int]], id : str):
     """ 
@@ -188,8 +223,8 @@ def heatMapMove(pawns :list[Pawn], knights : list[Knight], castles : list[Castle
             for j in range(con.size_map()[1]):
 
                 # Cas particulier : la attmap a vue une défaite un 1 sur certaine cases, on l'indique ainsi aussi a defmap  
-                if attmap[i][j] < 0:
-                    defmap[i][j] = -10
+                # if attmap[i][j] < 0:
+                #     defmap[i][j] = -10
 
 
                 #Quand des valeurs se distinguent sur les cates on va essayer d'agir en conséquence en prennant la plus grande
@@ -219,10 +254,10 @@ def defendHere(knights : list[Knight], eknights : list[Knight],case:tuple[int,in
     while movement is None and i<len(nearestKnights): #On cherche un déplacement valide et sûr dans nos chevaliers proches
         nearest=nearestKnights[i]
         if not nearest.used:
-            movement=path_simple(nearest,case,eknights)
+            movement=path_simple_bis(nearest,case,eknights)
         i+=1
     if movement is None: #Si movement est None à la fin on a rien pu bouger donc on sort
-        forbiden_case += case
+        forbiden_case.append(case)
         return
     if (nearest.y != case[0] or nearest.x != case[1]): #Et tant qu'on est pas exactement sur la case on se déplacé
         nearest.move(movement[0], movement[1])
@@ -239,7 +274,7 @@ def attackHere(knights : list[Knight], eknights : list[Knight],case:tuple[int,in
     if len(eknights) == 0: 
         #S'il n'y a aucun ennemis, on avance directement vers l'objectif
         knight = nearestKnights[0]
-        movement = path_simple(knight, case, eknights)
+        movement = path_simple_bis(knight, case, eknights)
         if (movement[0] != knight.y or movement[1] != knight.x):
             knight.move(movement[0], movement[1])
         else:
