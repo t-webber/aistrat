@@ -7,12 +7,12 @@ from typing import TYPE_CHECKING
 from apis import connection
 from config import consts, settings
 import logic.client_logic as cl
-from apis.kinds import Unit, Castle
+from apis.kinds import Unit, Castle, Knight
 
 if TYPE_CHECKING:
     from apis.players.players import Player
 
-build_order = []
+build_order = ["defense"]
 
 def move_peon_to_first_location(player: Player, border: int, border_y: int, border_x: int):
     """Construit le premier château."""
@@ -148,5 +148,46 @@ def create_units(player: Player):
                     if player.gold >= consts.PRICES[consts.KNIGHT]:
                         castle.create_attack()
                         build_order.pop()
-
+                else:
+                    if player.gold >= consts.PRICES[consts.KNIGHT]:
+                        castle.create_defense()
+                        build_order.pop()
             
+def castle_flee(castles: Castle, knights: list[Knight], eknights: list[Knight]):
+    """Les châteaux appellennt des chevaliers en cas d'attaque adverse"""
+    i = 0
+    knights_not_used = [k for k in knights if not k.used]
+    while i < len(castles):
+        c = castles[i]
+        i += 1
+        total_enemies = nb_units_near_castles(c, eknights, 2)
+        if total_enemies > 0:
+            direc_allies, allies_backup = cl.movable_neighbors((c.y, c.x), knights_not_used)
+            allies = 0
+            allies_defense = 0
+            on_case = []
+            for k in knights:
+                if k.y == c.y and k.x == c.x:
+                    on_case.append(k)
+                    allies += 1
+            on_case.sort(key=lambda x: x.used)
+            if cl.prediction_combat(total_enemies, allies + allies_backup)[0]:
+                # si on perd le combat même avec les alliés on peut détruire les ennemis de plus loin
+                #TODO
+                pass
+            else:
+                print(cl.prediction_combat(total_enemies, allies_defense)[0])
+                while cl.prediction_combat(total_enemies, allies_defense)[0] and len(on_case) > 0:
+                    on_case[-1].used = True
+                    on_case.pop()
+                    allies_defense += 1
+                # on peut réussir à gagner le combat avec les alliés et on le fait venir
+                while cl.prediction_combat(total_enemies, allies)[0] and allies_backup > 0:
+                    for _, list_allies in direc_allies.items():
+                        if list_allies:
+                            list_allies[-1].move(c.y, c.x)
+                            knights_not_used.remove(list_allies[-1])
+                            list_allies.pop()
+                            allies_backup -= 1
+                            allies += 1
+                            break

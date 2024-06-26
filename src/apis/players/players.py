@@ -3,7 +3,7 @@
 
 from apis import connection
 from apis.players.player_structure import Player_struct
-from player.castles import create_units, build_castle
+from player.castles import create_units, build_castle, castle_flee
 import player.attack as atk
 # import player.decisions as dec
 import player.defense as dfd
@@ -37,8 +37,12 @@ class Player(Player_struct):
 
         # print('golds', self.good_gold, self.bad_gold)
         create_units(self)
+
+        log_func("castle_flee")
+        castle_flee(self.castles, self.defense + self.attack, self.eknights)
         log_func("fuite")
         peons.fuite(self.pawns, self.defense + self.attack, self.eknights)
+
         log_func("castle")
         build_castle(self)
         peons.free_gold(self.pawns, self.bad_gold)
