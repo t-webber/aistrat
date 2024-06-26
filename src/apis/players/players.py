@@ -3,7 +3,8 @@
 
 from apis import connection
 from apis.players.player_structure import Player_struct
-from player.castles import create_units, build_castle
+import player.castles as cstl
+import player.castles3 as cstl3
 import player.attack as atk
 # import player.decisions as dec
 import player.defense as dfd
@@ -36,11 +37,12 @@ class Player(Player_struct):
             raise ValueError(f"wrong gold value: S({serv}) != P({self.gold})")
 
         # print('golds', self.good_gold, self.bad_gold)
-        create_units(self)
+
+        cstl.create_units(self)
         log_func("fuite")
         peons.fuite(self.pawns, self.defense + self.attack, self.eknights)
         log_func("castle")
-        build_castle(self)
+        cstl.build_castle(self)
         peons.free_gold(self.pawns, self.bad_gold)
         peons.free_gold(self.pawns, self.good_gold)
         # je farm d'abord ce que je vois
