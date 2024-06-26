@@ -131,3 +131,5 @@
   Débuggage de heatmap et fusion propre avec oop10 pour profiter du travail sur la gestion des péons et des châteaux.s
 - Martin : implémentation finale de l'attaque synchronisé et debuggage en tout genre sur l'attaque.
 - Tom : Amélioration de la logique des châteaux, avec un système intelligent qui prend en compte tous les châteaux (cf. `economy`). Correction de bugs sur l'attaque synchronisée, debug de l'attaque, des châteaux et des mouvements de péons. Écriture du rapport final. Correction et écriture de la documentation du mdbook.
+- Jules et Tom: implémentation d'une fuite des châteaux ( appel de chevaliers alliés vers le château ) avec une prise en compte de l'estimation des golds produits pour les prochains tours
+- Jules : changement sur move_safe_random pour qu'il privilégie quand même d'abord un exploration vers le centre, correction de fuite qui encore une fois ne faisait pas tout à fait ce que l'on souhaitait mais tout est à présent bon d'après nos observations et le débugage. Rajout de defense agressiv un peu modifiée pour éliminer les chevaliers adverses trop proches.
