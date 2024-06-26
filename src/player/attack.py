@@ -185,6 +185,9 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
             if dist2 <= dist:
                 dist = dist2
                 k.target = ep
+        if (k.target.coord == k.coord):
+            k.target = None
+    not_used_knights = list(filter(lambda knight: (knight.target is not None), not_used_knights))
     for k in not_used_knights:
         dicoattaque[k.target] = []
     for k in not_used_knights:
