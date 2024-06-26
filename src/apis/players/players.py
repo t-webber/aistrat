@@ -44,7 +44,7 @@ class Player(Player_struct):
         peons.fuite(self.pawns, self.defense + self.attack, self.eknights)
 
         log_func("castle")
-        build_castle(self)
+        cstl.build_castle(self)
         peons.free_gold(self.pawns, self.bad_gold)
         peons.free_gold(self.pawns, self.good_gold)
         # je farm d'abord ce que je vois

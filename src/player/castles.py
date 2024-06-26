@@ -7,12 +7,13 @@ from typing import TYPE_CHECKING
 from apis import connection
 from config import consts, settings
 import logic.client_logic as cl
-from apis.kinds import Unit, Castle, Knight
+from apis.kinds import Unit, Castle, Knight, Coord
 
 if TYPE_CHECKING:
     from apis.players.players import Player
 
-build_order = ["defense"]
+build_order = []
+
 
 def move_peon_to_first_location(player: Player, border: int, border_y: int, border_x: int):
     """Construit le premier château."""
@@ -86,8 +87,8 @@ def build_castle(player: Player):
                     global first_castle_built
                     if not first_castle_built:
                         global build_order
-                        build_order = ['attack']+(len(player.good_gold)+1)*['pawn']
-                        print('build_order: ',build_order)
+                        build_order = ['attack'] + (len(player.good_gold) + 1) * ['pawn']
+                        print('build_order: ', build_order)
                     pawn.build()
                     first_castle_built = True
                     return
@@ -99,52 +100,63 @@ def get_nb_castles():
     return min(len_y, len_x) // settings.CASTLES_RATIO
 
 
-def nb_units_near_castles(castle: Castle, units: list[Unit], radius: int):
+def nb_units_near_castles(castle: Castle, coords: list[Coord], radius: int):
     """Renvoie le nombre d'unités dans un rayon donné autour d'un château."""
-    return len([0 for unit in units if cl.distance(*unit.coord, *castle.coord) <= radius])
+    return len([0 for unit in coords if cl.distance(*unit.coord, *castle.coord) <= radius])
+
+
+def create_units_with_economy(player: Player, economy: int = 0):
+    """Créé des unitées, en gardant la quantité `economy` d'argent."""
+    len_golds = len(player._golds)
+    eknight_offset = len(player.eknights) - len(player.defense)
+    for castle in player.castles:
+        # 1. Nous sommes attaqués, production de défenseurs
+        if nb_units_near_castles(castle, player.eknights, 6) > 1.5 * nb_units_near_castles(castle, player.defense, 6):
+            print("---priory1---")
+            if player.gold >= consts.PRICES[consts.KNIGHT] + economy:
+                castle.create_defense()
+                eknight_offset -= 1
+            break
+        # 2. Vraiment pas assez de péon
+        elif nb_units_near_castles(castle, player.good_gold, settings.DISTANCE_BETWEEN_CASTLES) >= len(player.pawns):
+            print("---priory2---")
+            if player.gold >= consts.PRICES[consts.PAWN] + economy:
+                castle.create_pawn()
+        # 3. Il y a des péons ennemis
+        elif len(player.epawns) >= settings.PAWNS_KNIGHTS_RATIO * len(player.attack):
+            print("---priory3---")
+            if player.gold >= consts.PRICES[consts.KNIGHT] + consts.PRICES[consts.KNIGHT] + economy:
+                castle.create_attack()
+        # 4. Pas assez de péons
+        elif len_golds > 1.5 * len(player.pawns):
+            print("---priory4---")
+            if player.gold >= consts.PRICES[consts.PAWN] + consts.PRICES[consts.KNIGHT] + economy:
+                castle.create_pawn()
+        # 5. Production d'attaquants
+        elif player.gold >= consts.PRICES[consts.KNIGHT] + consts.PRICES[consts.KNIGHT] + economy:
+            print("---priory5---")
+            castle.create_attack()
 
 
 def create_units(player: Player):
     """Création des unités par le château."""
     if not build_order:
-        eknight_offset = len(player.eknights) - len(player.defense)
-        len_golds = len(player._golds)
-        missing_priority_castles = len(player.castles) < get_nb_castles() // settings.PRIORITISED_CASTLES_RATIO
+        missing_money = 0
         for castle in player.castles:
-            # 1. Nous sommes attaqués, production de défenseurs
-            if nb_units_near_castles(castle, player.eknights, 6) > nb_units_near_castles(castle, player.defense, 6) or nb_units_near_castles(castle, player.eknights, 1) > nb_units_near_castles(castle, player.defense, 0):
-                # print("---priory1---")
+            missing_castle_defense = nb_units_near_castles(castle, player.eknights, 2) - nb_units_near_castles(castle, player.defense, 0)
+            if missing_castle_defense > 0:
                 if player.gold >= consts.PRICES[consts.KNIGHT]:
                     castle.create_defense()
-                    eknight_offset -= 1
-            # # 2. Pas assez de châteaux
-            # elif missing_priority_castles:
-                # print("---priory2---")
-                # Pas assez de péons pour contruire des châteaux
-            elif nb_units_near_castles(castle, player._golds, settings.DISTANCE_BETWEEN_CASTLES) + settings.PAWNS_OFFSET >= len(player.pawns):
-                if player.gold >= consts.PRICES[consts.PAWN]:
-                    castle.create_pawn()
-            # 3. Il y a des péons ennemis
-            elif len(player.epawns) >= settings.PAWNS_KNIGHTS_RATIO * len(player.attack):
-                # print("---priory3---")
-                if player.gold >= consts.PRICES[consts.KNIGHT] + consts.PRICES[consts.KNIGHT]:
-                    castle.create_attack()
-            # 4. Pas assez de péons
-            elif len_golds > len(player.pawns):
-                # print("---priory4---")
-                if player.gold >= consts.PRICES[consts.PAWN] + consts.PRICES[consts.KNIGHT]:
-                    castle.create_pawn()
-            # 5. Production d'attaquants
-            elif player.gold >= consts.PRICES[consts.KNIGHT] + consts.PRICES[consts.KNIGHT]:
-                # print("---priory5---")
-                castle.create_attack()
+                    missing_castle_defense -= 1
+            missing_money += missing_castle_defense * consts.PRICES[consts.KNIGHT]
+        create_units_with_economy(player, missing_money)
     else:
         for castle in player.castles:
-                if build_order[-1]=='pawn':
+                if build_order[-1] == 'pawn':
                     if player.gold >= consts.PRICES[consts.PAWN]:
                         castle.create_pawn()
                         build_order.pop()
-                elif build_order[-1]=='attack':
+                elif build_order[-1] == 'attack':
                     if player.gold >= consts.PRICES[consts.KNIGHT]:
                         castle.create_attack()
                         build_order.pop()
