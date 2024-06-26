@@ -135,7 +135,6 @@ def destroy_castle(knights: list[Knight], castles: list[Castle],
                 attaque((i, j), knights_not_used, eknights)
             else:
                 if not knights_not_used[k].used:
-                if not knights_not_used[k].used:
                     cl.move_without_suicide(knights_not_used[k], eknights, i, j)
 
 
@@ -174,21 +173,21 @@ def endgame(knights: list[Knight], eknights: list[Knight]):
                 cl.move_without_suicide(knights_not_used[k], eknights, i, j)
         knights_not_used = list(filter(lambda knight: not knight.used, knights))
 
-def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy]):
+def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy], player):
     print("sync")
     not_used_knights = list(filter(lambda knight: (knight.target != None), knights))
     dicoattaque = {}
     print(not_used_knights)
     print("epawns", epawns)
     for k in not_used_knights:
-        dist = 5
+        dist = 2
         for ep in epawns:
             dist2 = (abs(ep.x - k.target.x) + abs(ep.y - k.target.y))
             print("dist2 =", dist2)
-            if dist2 < dist:
+            if dist2 <= dist:
                 dist = dist2
                 k.target = ep
-                print("maj target")            
+                print("maj target")
     for k in not_used_knights:
         dicoattaque[k.target]=[]
     for k in not_used_knights:
@@ -397,4 +396,18 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy])
                                     X3 -= 1
                         else:
                             cl.move_without_suicide(k, eknights, i, j)
-                        
+    connection.get_data(player.id, player.token)
+    player.update_ennemi_data()
+    epawnsf = player.epawns
+    print('player.epawns',epawnsf)
+    for k in not_used_knights:
+        dist = 2
+        for ep in epawnsf:
+            dist2 = (abs(ep.x - k.target.x) + abs(ep.y - k.target.y))
+            print("dist2 =", dist2)
+            if dist2 <= dist:
+                dist = dist2
+                k.target = ep
+                print("maj target 222222222222222")
+        if dist == 2:
+            k.target = None
