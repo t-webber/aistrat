@@ -1,11 +1,16 @@
 """Fonctions globales disponibles pour toutes les strategie."""
-
+from __future__ import annotations
 from scipy.optimize import linear_sum_assignment
 import numpy as np
 from apis.kinds import Unit, Knight, Pawn, Castle, GoldPile, Coord
 from apis import connection
 import random as rd
 import debug as db
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from apis.players.players import Player
+
 
 defense_knights = {"A": [], "B": []}
 
@@ -292,3 +297,24 @@ def move_safe_random_without_purpose(unit: Unit, eknights: list[Knight], ecastle
             unit.move(i, j)
             return True
     return False
+
+
+def nb_units_near_units(centre: Coord, units: list[Coord], radius: int):
+    """Renvoie le nombre d'unités dans un rayon donné autour d'un château."""
+    return len([0 for unit in units if distance(*unit.coord, *centre.coord) <= radius])
+
+
+def gold_expectation_minimal(player: Player, turn: int):
+    """
+    Get the minimum amount of gold available in next few turns.
+
+    turn is the offset of turns between now, and the wanted time.
+    turn = 0 for the current turn.
+    """
+    future_gold = player.gold
+    for gold in player._golds:
+        y, x = gold.coord
+        if in_obj(gold.coord, player.pawns):
+            eknight_d = distance_to_list((y, x), player.eknights)
+            future_gold += max(0, turn - eknight_d, gold.gold)
+    return future_gold
