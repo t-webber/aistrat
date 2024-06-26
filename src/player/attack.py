@@ -229,12 +229,16 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                     l,L = connection.size_map()
                     if a > 0:
                         y2 = 1
-                    else:
+                    elif a < 0:
                         y2 = -1
+                    else :
+                        y2 = 0
                     if b > 0:
                         x2 = 1
-                    else:
+                    elif b < 0:
                         x2 = -1
+                    else:
+                        x2 = 0
                     if abs(b) > abs(a) or (abs(b) == abs(a) and (l-y)>=(L-x) ):
                         if Y1:
                             if Y2 or Y3:
