@@ -112,6 +112,8 @@ def create_units_with_economy(player: Player, economy: int = 0):
     len_golds = len(player._golds)
     eknight_offset = len(player.eknights) - len(player.defense)
     for castle in player.castles:
+        if castle.used:
+            continue
         # 1. Nous sommes attaqués, production de défenseurs
         if nb_units_near_castles(castle, player.eknights, 6) > 1.5 * nb_units_near_castles(castle, player.defense, 6):
             print("---priory1---")
