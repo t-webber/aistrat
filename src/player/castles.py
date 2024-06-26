@@ -142,7 +142,7 @@ def create_units(player: Player):
         for castle in player.castles:
             missing_castle_defense = nb_units_near_castles(castle, player.eknights, 2) - nb_units_near_castles(castle, player.defense, 0)
             if missing_castle_defense > 0:
-                if player.gold >= consts.PRICES[consts.KNIGHT]:
+                if player.gold >= consts.PRICES[consts.KNIGHT] and not castle.used:
                     castle.create_defense()
                     missing_castle_defense -= 1
                 missing_money += missing_castle_defense * consts.PRICES[consts.KNIGHT]
