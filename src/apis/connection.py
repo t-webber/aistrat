@@ -225,7 +225,15 @@ def add_visible(carte, unit: Coord) -> list[int]:
 
 def get_eknights(y: int, x: int) -> list[tuple]:
     """Renvoie la liste des chevaliers présents sur une case donnée."""
-    d = get_map()[y][x][other(current_player())]
+    try:
+        d = get_map()[y][x][other(current_player())]
+    except IndexError as e:
+        print("y = ", y)
+        print("x = ", x)
+        print("map = ", get_map())
+        print("map_y = ", get_map()[y])
+        print("map_x = ", get_map())
+        raise e
     result = []
     if d[KNIGHT]:
         for _ in range(d[KNIGHT]):
