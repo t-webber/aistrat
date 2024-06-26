@@ -1,15 +1,14 @@
 """Fonctions globales disponibles pour toutes les strategie."""
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from apis.players.players import Player
 from scipy.optimize import linear_sum_assignment
 import random as rd
 import numpy as np
 from apis.kinds import Unit, Knight, Pawn, Castle, GoldPile, Coord
 from apis import connection
 import debug as db
-
-from __future__ import annotations
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    from apis.players.players import Player
 
 
 defense_knights = {"A": [], "B": []}
@@ -416,7 +415,7 @@ def move_safe_random_without_purpose(unit: Unit, eknights: list[Knight], ecastle
 
 def nb_units_near_units(centre: Coord, units: list[Coord], radius: int):
     """Renvoie le nombre d'unités dans un rayon donné autour d'un château."""
-    return len([0 for unit in units if cl.distance(*unit.coord, *centre.coord) <= radius])
+    return len([0 for unit in units if distance(*unit.coord, *centre.coord) <= radius])
 
 
 def gold_expectation_minimal(player: Player, turn: int):

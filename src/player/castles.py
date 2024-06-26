@@ -83,7 +83,7 @@ def build_castle(player: Player):
             # suffisamment loin des autres châteaux
             if cl.distance_to_list((y, x), player.castles)[0] >= settings.DISTANCE_BETWEEN_CASTLES:
                 # suffisamment loin des autres péons
-                if not cl.exists_close(pawn, player.eknights, 2) and not cl.in_obj(pawn.coord, player.ecastles):
+                if not cl.exists_close(pawn, player.eknights, 2) and not cl.in_obj(pawn, player.ecastles):
                     global first_castle_built
                     if not first_castle_built:
                         global build_order
