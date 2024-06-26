@@ -196,11 +196,11 @@ def get_seen_coordinates():
     return results
 
 
-def get_visible(units: list[Unit]) -> list[int]:
+def get_visible(units: list[Unit | tuple[int, int]]) -> list[int]:
     """Renvoie une carte avec des nombres donnant le "nombre de fois" que chaque case est visible."""
     carte = np.zeros(size_map())
     for boy in units:
-        if type(boy) != tuple:
+        if not isinstance(boy, tuple):
             for y in [boy.y + k for k in [-2, -1, 0, 1, 2]]:
                 for x in [boy.x + k for k in [-2, -1, 0, 1, 2]]:
                     if (0 <= (y) < len(carte)) and (0 <= (x) < len(carte[0])):

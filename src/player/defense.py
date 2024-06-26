@@ -34,8 +34,9 @@ def agressiv_defense(defense: list[Knight], epawns: list[Pawn], eknigths: list[K
             if (d2.y, d2.x) == (d.y, d.x):
                 agressiv_defenders.append(d2)
         print(dir_knights)
-        options = [(len(dir_castles[d]), d) for d in dir_castles if len(dir_castles[d])] + [(len(dir_pawns[d]), d)
-                                                                                            for d in dir_pawns if len(dir_pawns[d])] + [(len(dir_knights[d]), d) for d in dir_knights if len(dir_knights[d])]
+        options = [(len(dir_castles[d]), d) for d in dir_castles if len(dir_castles[d])] \
+            + [(len(dir_pawns[d]), d) for d in dir_pawns if len(dir_pawns[d])] \
+            + [(len(dir_knights[d]), d) for d in dir_knights if len(dir_knights[d])]
         options.sort()
         for op in options:
             _, direction = op

@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from apis import connection
 from config import consts, settings
 import logic.client_logic as cl
-from apis.kinds import Unit, Castle, Knight, Coord
+from apis.kinds import Castle, Knight, Coord
 
 if TYPE_CHECKING:
     from apis.players.players import Player
@@ -172,7 +172,7 @@ def create_units(player: Player):
 
 
 def castle_flee(castles: Castle, knights: list[Knight], eknights: list[Knight]):
-    """Les châteaux appellennt des chevaliers en cas d'attaque adverse"""
+    """Les châteaux appellennt des chevaliers en cas d'attaque adverse."""
     i = 0
     knights_not_used = [k for k in knights if not k.used]
     while i < len(castles):

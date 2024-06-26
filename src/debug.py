@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from apis import connection
+
 import sys
 if TYPE_CHECKING:
     from apis.kinds import Castle
@@ -9,7 +11,7 @@ if TYPE_CHECKING:
 
 def test_debug() -> bool:
     """Test si le programme est executé en mode debug."""
-    return len(sys.argv) > 2 and sys.argv[2] == "debug"
+    return len(sys.argv) > 2 and sys.argv[2] == "debug" and connection.current_player() == "A"
 
 
 def log_func(name: str):
@@ -26,11 +28,11 @@ def log_func_destination(i: int, j: int):
 
 def pause(id: str):
     """Met en pause le programme."""
-    if id == 'A' and len(sys.argv) > 2 and sys.argv[2] == "debug":
+    if test_debug():
         input("Press Enter to continue...\r")
 
 
 def log_create_unit(castle: Castle, unit: str):
     """Affiche la création d'une unité."""
     if test_debug():
-        print(f"Created {unit} at {castle.y},{castle.x}")
+        print(f"Created {unit} at {castle}")
