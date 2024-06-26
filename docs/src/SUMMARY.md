@@ -20,7 +20,7 @@
       1. [Défense](./stages/defense.md)
       1. [Attaque](./stages/attaque.md)
 
-1. [Stratégies](./strategies/introduction.md)
+1. [Stratégies]()
       1. [Stratégie 'Gloutonne'](./strategies/glouton.md)
       1. [Stratégie 'Avec Mémoire'](./strategies/memory/introduction.md)
          1. [API d'abstraction du joueur](./strategies/memory/player.md)
