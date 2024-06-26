@@ -146,9 +146,9 @@ def create_units(player: Player):
                     castle.create_defense()
                     missing_castle_defense -= 1
                 missing_money += missing_castle_defense * consts.PRICES[consts.KNIGHT]
-                print("missing_money: ", missing_money)
-                print("missing_castle_defense: ", missing_castle_defense)
-                print("prices = ", consts.PRICES, consts.PRICES[consts.KNIGHT])
+                # print("missing_money: ", missing_money)
+                # print("missing_castle_defense: ", missing_castle_defense)
+                # print("prices = ", consts.PRICES, consts.PRICES[consts.KNIGHT])
         create_units_with_economy(player, missing_money)
     else:
         print("build_order: ", player.build_order)

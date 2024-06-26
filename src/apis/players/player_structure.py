@@ -15,15 +15,15 @@ class Player_struct:
         self.id, self.token = connection.create_player()
         connection.get_data(self.id, self.token)
         self.height, self.width = connection.size_map()
-        self.turn = 0
+        self.turn = 200
         # units
         self.pawns: list[Pawn] = [Pawn(y, x, self) for y, x in connection.get_kinds(self.id)[connection.PAWN]]
         self.epawns: list[Enemy] = []
         self.eknights: list[Enemy] = []
         self.castles: list[Castle] = [Castle(y, x, self) for y, x in connection.get_kinds(self.id)[connection.CASTLE]]
         self.ecastles: list[Pawn] = []
-        self.attack: list[Knight] = []
-        self.defense: list[Knight] = [Knight(y, x, self) for y, x in connection.get_kinds(self.id)[connection.KNIGHT]]
+        self.attack: list[Knight] = [Knight(y, x, self) for y, x in connection.get_kinds(self.id)[connection.KNIGHT]]
+        self.defense: list[Knight] = []
         # resources
         self._golds: list[GoldPile] = [GoldPile(coord[0], coord[1], coord[2], self) for coord in connection.get_kinds(self.id)[
             connection.GOLD]]

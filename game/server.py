@@ -25,9 +25,9 @@ tokenOf = {}
 #####  GAME PARAMETERS #####
 
 MAX_NB_ROUNDS = 2000
-MAP_WIDTH = 16
-MAP_HEIGHT = 9
-NB_GOLD_SPOTS = 15
+MAP_WIDTH = 8
+MAP_HEIGHT = 8
+NB_GOLD_SPOTS = 0
 
 # defines an empty map
 farmed = set()
@@ -54,10 +54,15 @@ CASTLE = 'B'
 requires = {'C': 'B', 'M': 'B', 'B': 'C'}  # what do we need to build
 winner = ''
 curPlayer = 'A'  # initial player
-gold = {'A': 25, 'B': 25}  # initial gold
+gold = {'A': 0, 'B':0}  # initial gold
 
-mapdata[0][0]['A'][PAWN] = 3
-mapdata[-1][-1]['B'][PAWN] = 3
+mapdata[2][2]['A']['B'] = 1
+mapdata[3][4]['A']['M'] = 2
+mapdata[2][2]['A']['M'] = 1
+mapdata[2][-2]['A']['B'] = 1
+mapdata[-2][2]['A']['B'] = 1
+
+mapdata[1][3]['B']['M'] = 1
 
 
 opponent = {'A': 'B', 'B': 'A'}
