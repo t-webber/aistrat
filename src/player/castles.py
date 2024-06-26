@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from apis import connection
 from config import consts, settings
 import logic.client_logic as cl
-from apis.kinds import Castle, Knight, Coord
+from apis.kinds import Castle, Knight
 
 if TYPE_CHECKING:
     from apis.players.players import Player
@@ -83,7 +83,7 @@ def build_castle(player: Player):
             # suffisamment loin des autres châteaux
             if cl.distance_to_list((y, x), player.castles)[0] >= settings.DISTANCE_BETWEEN_CASTLES:
                 # suffisamment loin des autres péons
-                if not cl.exists_close(pawn, player.eknights, 2):
+                if not cl.exists_close(pawn, player.eknights, 2) and not cl.in_obj(pawn.coord, player.ecastles):
                     global first_castle_built
                     if not first_castle_built:
                         global build_order
@@ -100,11 +100,6 @@ def get_nb_castles():
     return min(len_y, len_x) // settings.CASTLES_RATIO
 
 
-def nb_units_near_castles(castle: Castle, coords: list[Coord], radius: int):
-    """Renvoie le nombre d'unités dans un rayon donné autour d'un château."""
-    return len([0 for unit in coords if cl.distance(*unit.coord, *castle.coord) <= radius])
-
-
 def create_units_with_economy(player: Player, economy: int = 0):
     """Créé des unitées, en gardant la quantité `economy` d'argent."""
     if economy < 0:
@@ -112,15 +107,17 @@ def create_units_with_economy(player: Player, economy: int = 0):
     len_golds = len(player._golds)
     eknight_offset = len(player.eknights) - len(player.defense)
     for castle in player.castles:
+        if castle.used:
+            continue
         # 1. Nous sommes attaqués, production de défenseurs
-        if nb_units_near_castles(castle, player.eknights, 6) > 1.5 * nb_units_near_castles(castle, player.defense, 6):
+        if cl.nb_units_near_units(castle, player.eknights, 6) > 1.5 * cl.nb_units_near_units(castle, player.defense, 6):
             print("---priory1---")
             if player.gold >= consts.PRICES[consts.KNIGHT] + economy:
                 castle.create_defense()
                 eknight_offset -= 1
             break
         # 2. Vraiment pas assez de péon
-        elif nb_units_near_castles(castle, player.good_gold, settings.DISTANCE_BETWEEN_CASTLES) >= len(player.pawns):
+        elif cl.nb_units_near_units(castle, player.good_gold, settings.DISTANCE_BETWEEN_CASTLES) >= len(player.pawns):
             print("---priory2---")
             if player.gold >= consts.PRICES[consts.PAWN] + economy:
                 castle.create_pawn()
@@ -145,7 +142,7 @@ def create_units(player: Player):
     if not build_order:
         missing_money = 0
         for castle in player.castles:
-            missing_castle_defense = nb_units_near_castles(castle, player.eknights, 2) - nb_units_near_castles(castle, player.defense, 0)
+            missing_castle_defense = cl.nb_units_near_units(castle, player.eknights, 2) - cl.nb_units_near_units(castle, player.defense, 0)
             if missing_castle_defense > 0:
                 if player.gold >= consts.PRICES[consts.KNIGHT]:
                     castle.create_defense()
@@ -178,7 +175,7 @@ def castle_flee(castles: Castle, knights: list[Knight], eknights: list[Knight]):
     while i < len(castles):
         c = castles[i]
         i += 1
-        total_enemies = nb_units_near_castles(c, eknights, 2)
+        total_enemies = cl.nb_units_near_units(c, eknights, 2)
         if total_enemies > 0:
             direc_allies, allies_backup = cl.movable_neighbors((c.y, c.x), knights_not_used)
             allies = 0

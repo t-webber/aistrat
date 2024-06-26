@@ -174,6 +174,7 @@ def endgame(knights: list[Knight], eknights: list[Knight]):
                 cl.move_without_suicide(knights_not_used[k], eknights, i, j)
         knights_not_used = list(filter(lambda knight: not knight.used, knights))
 
+
 def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy], player):
     not_used_knights = list(filter(lambda knight: not knight.used , knights))
     not_used_knights = list(filter(lambda knight: (knight.target != None), not_used_knights))
@@ -486,6 +487,8 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
     player.update_ennemi_data()
     epawnsf = player.epawns
     for k in not_used_knights:
+        if k.target is None:
+            continue
         if k.target is None:
             continue
         dist = 2
