@@ -1,8 +1,8 @@
 import copy 
 import random as rd
-import logic.client_logic as cl
+#import logic.client_logic as cl
 
-config=[[[1,0],[1,0],[1,0],[1,0]],[[1,1],[0,0]]]
+config=[[[0,1],[-1,0]],[[0,0],[0,0],[0,-1],[1,1],[-1,-2]]]
 
 def min_max_alpha_beta_result(base_map:list[list[int,int]]):
     '''
@@ -86,7 +86,7 @@ def eval_config(config):
         if knight==[0,0] and not exist:
             score+=30 #Si on est arrivé au centre, gros bonus
             exist=True
-        elif knight[0] != 2400:
+        elif abs(knight[0]) != 2400:
             score+=0.5-(abs(knight[0])+abs(knight[1]))/100
         if abs(knight[0])!=2400: #On récompense la non mort
             score+=1
@@ -131,7 +131,7 @@ def good_move(last_vector:list[int],new_move:list[int],units:list[list[int,int]]
     new=next_match(units,new_move,offsets)
     for ind in range(len(new_move)): #On vérifie pour chaque unité déplacée
         if new[ind]!=origin[ind]:
-            if (cl.distance(new[ind][0],new[ind][1],0,0)>cl.distance(origin[ind][0],origin[ind][1],0,0) and not new[ind] in baddies) \
+            if (distance(new[ind][0],new[ind][1],0,0)>distance(origin[ind][0],origin[ind][1],0,0) and not new[ind] in baddies) \
                     and not (origin[ind][0]==0 and origin[ind][1]==0):
                 #Si on ne se rapproche PAS du centre ou on ne fight pas, on a un mauvais move
                 #On autorise tous les moves au centre
@@ -196,7 +196,7 @@ def fight_resolver(all_units,player):
                 for index2,other_ally in enumerate(allies):
                     if index!=index2 and ally==other_ally:
                         force+=1
-                removing=cl.prediction_combat(force,sum) #On va chercher l'issue du combat
+                removing=prediction_combat(force,sum) #On va chercher l'issue du combat
                 i=0
                 while i<removing[2]: #On marque removing[2] alliés morts sur la case de ally comme morts (lui le premier)
                     if allies[index]==ally: 
@@ -211,4 +211,36 @@ def fight_resolver(all_units,player):
                         i+=1
                     index+=1
                 #Complexité au pire O(n^2*m) avec n nombres d'alliés, m nombre d'ennemis
+                    
+def distance(x1: int, y1: int, x2: int, y2: int):
+    """
+    Effectue le calcul de la distance de Manhattan entre (x1, y1) et (x2, y2).
 
+    Parametres:
+        x1, y1 : les coordonées du premier point.
+        x2, y2 : Les coordonées du second point.
+    """
+    return abs(x1 - x2) + abs(y1 - y2)
+
+def prediction_combat(a: int, d: int):
+    """Prédit le gaganant d'un combat.
+
+    Parameters:
+        a (int): Force de l'attaquant.
+        d (int): Force du defenseur.
+
+    Returns: tuple (bool, int, int) où:
+        - bool: True si l'attaquant gagne, False sinon.
+        - int: nombre de pertes de l'attaquant.
+        - int: nombre de pertes du défenseur.
+    """
+    pertes_a = 0
+    pertes_d = 0
+    while a > 0 and d > 0:
+        pertes_a += min(a, (d + 1) // 2)
+        a = a - (d + 1) // 2
+        pertes_d += min(d, (a + 1) // 2)
+        d = d - (a + 1) // 2
+    return (d <= 0, pertes_a <= pertes_d, pertes_a, pertes_d)
+
+print(min_max_alpha_beta_result(config))

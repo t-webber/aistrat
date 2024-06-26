@@ -107,7 +107,7 @@ def heatbattle(knights : list[Knight], eknights : list[Knight], x:int, y:int,A,B
     victory,_,pa,pd=cl.prediction_combat(int(poid_k),int(poid_ek)) 
     #On prédit ensuite le résultat du combat avec la partie entière des forces présentes
 
-    if (not victory) : return -1000 #Si l'estimation nous annonce une défaite, on n'attaque absolument pas
+    if (not victory) : return -10000 #Si l'estimation nous annonce une défaite, on n'attaque absolument pas
     if len(eknights) == 0 or pd == 0:
         return 0 #Si aucun ennemi, neutralité
     return (A*pa/pd)**B - len(usable_knight)*C #Sinon on donne un score à l'opportunité
@@ -314,7 +314,7 @@ def attackHere(knights : list[Knight], eknights : list[Knight],case:tuple[int,in
     hired_Eknights=[]
     i = 0
     #On répète la même chose pour les ennemis... sans le forçage car vérifié précédemment 
-    while i<len(nearestEKnights) and (cl.distance(nearestEKnights[i].y,nearestEKnights[i].x,case[0],case[1])<max(3, abs(hired_knights[0][0]) + abs(hired_knights[0][1]))): 
+    while i<len(nearestEKnights) and (cl.distance(nearestEKnights[i].y,nearestEKnights[i].x,case[0],case[1])<=max(3, abs(hired_knights[0][0]) + abs(hired_knights[0][1]))): 
         nearest=nearestEKnights[i]
         
         if len(hired_knights) != 1 or cl.distance(hired_knights[0][0], hired_knights[0][1], nearest.y, nearest.x) <= 2:        
@@ -327,6 +327,11 @@ def attackHere(knights : list[Knight], eknights : list[Knight],case:tuple[int,in
         print("Trop dangereux")
         return
 
+    if hired_knights[0] == case:
+        for i, knights in enumerate(hired_knights):
+            if knight == case:
+                nearestKnights[i].used = True
+        return
 
     next_moves=min_max_alpha_beta_result([hired_knights,hired_Eknights]) 
     #Pour choisir comment déplacer les unités, on fait un min-max
