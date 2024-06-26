@@ -197,7 +197,7 @@ def castle_flee(castles: Castle, knights: list[Knight], eknights: list[Knight], 
             on_case.sort(key=lambda x: x.used)
             if cl.prediction_combat(total_enemies, allies + allies_backup)[0]:
                 # si on perd le combat même avec les alliés on peut détruire les ennemis de plus loin
-                # TODO
+                # a faire peutetre
                 pass
             else:
                 print(cl.prediction_combat(total_enemies, allies_defense)[0])
