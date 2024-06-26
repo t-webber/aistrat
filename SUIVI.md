@@ -112,6 +112,7 @@
 - Tom : correction de bugs sur les déplacements des péons et des chevaliers, et amélioration des piles vides.
 - Pierre et Nicolas : Continuation du travail sur le min-max avec application de l'itération, résolution des éventuels combats...
 - Erwan : rajout d'un système de débug dans la branche heatmap pour tester les heatmaps sur des configurations personnalisées et ainsi mieux approcher les comportemants souhaité. Puis aide de Pierre et Nicolas pour le débug du min-max.
+- Martin : modification de l'algorithme pour gérer la fin de partie et modification de l'attaque pour corriger des bugs apparuent avec l'orienté objet.
 
 ## 25/06
 
@@ -122,7 +123,9 @@
 - Tom: debuggage des mouvements des unités et de la gestion d'exploration, creations d'un système de 24 match concurrents pour tester les différentes versions de l'IA.
 - Tom et Jules: ajout d'outils pour mieux débuguer, notamment le debugage tour par tour et l'option debut avec start_match
 - Tom: fix des tests de vérification de cohérence avec le serveur (gérer les attaquants défenseurs et les comparer avec le serveur pour savoir quand est-ce qu'ils meurent ou change de type).
+- Martin : correction d'un bug de l'attaque d'opportunité, amorce d'un algorithme pour coordonner les attaquants chassant une même cible.
 
 ### 26/06
 - Erwan : Amélioration des constantes de heatmap en jouant avec ces dernières, et en comparant notre IA avec celle présente actuellement sur le main.
 Débuggage de heatmap et fusion propre avec oop10 pour profiter du travail sur la gestion des péons et des châteaux.s
+- Martin : implémentation finale de l'attaque synchronisé et debuggage en tout genre sur l'attaque.
