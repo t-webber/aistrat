@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 from apis import connection
 from config import consts
-
+import debug as db
 if TYPE_CHECKING:
     from apis.players.players import Player
 
@@ -217,6 +217,7 @@ class Castle(Unit):
         if self.player.gold < cost:
             raise ValueError(f"Not enough gold to proceed: {self.player.gold}")
         connection.build(connection.KNIGHT, self.y, self.x, self.player.id, self.player.token)
+        db.log_create_unit(self, "defense")
         self.player.gold -= cost
         self.player.defense.append(Knight(*self.coord, self.player))
         self.player.knights.append(Knight(*self.coord, self.player))
@@ -227,6 +228,7 @@ class Castle(Unit):
         if self.player.gold < cost:
             raise ValueError(f"Not enough gold to proceed: {self.player.gold}")
         connection.build(connection.KNIGHT, self.y, self.x, self.player.id, self.player.token)
+        db.log_create_unit(self, "attack")
         self.player.gold -= cost
         self.player.attack.append(Knight(*self.coord, self.player))
         self.player.knights.append(Knight(*self.coord, self.player))
@@ -238,5 +240,6 @@ class Castle(Unit):
         if self.player.gold < cost:
             raise ValueError(f"Not enough gold to proceed: {self.player.gold}")
         connection.build(connection.PAWN, self.y, self.x, self.player.id, self.player.token)
+        db.log_create_unit(self, "pawn")
         self.player.gold -= cost
         self.player.pawns.append(Pawn(*self.coord, self.player))
