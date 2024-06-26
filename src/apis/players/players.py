@@ -37,7 +37,7 @@ class Player(Player_struct):
         create_units(self)
 
         log_func("castle_flee")
-        castle_flee(self.castles, self.defense + self.attack, self.eknights)
+        castle_flee(self.castles, self.defense + self.attack, self.eknights, self)
         log_func("fuite")
         peons.fuite(self.pawns, self.defense + self.attack, self.eknights)
 
