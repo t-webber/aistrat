@@ -37,6 +37,7 @@ class Player_struct:
         self.good_gold, self.bad_gold = cl.clean_golds(
             self._golds, self.pawns, self.ecastles)
         self.fog: list[GoldPile] = []
+        self.build_order = []
         # private
         self._knights: list[Knight] = []
         self._gold_map: list[int | GoldPile] = np.full(connection.size_map(), None)

@@ -36,3 +36,8 @@ def log_create_unit(castle: Castle, unit: str):
     """Affiche la création d'une unité."""
     if test_debug():
         print(f"Created {unit} at {castle}")
+
+def log_create_castle(castle: Castle):
+    """Affiche la création d'un château."""
+    if test_debug():
+        print(f"Created castle at {castle}")

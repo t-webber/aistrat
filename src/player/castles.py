@@ -12,7 +12,6 @@ from apis.kinds import Castle, Knight, Coord
 if TYPE_CHECKING:
     from apis.players.players import Player
 
-build_order = []
 
 
 def move_peon_to_first_location(player: Player, border: int, border_y: int, border_x: int):
@@ -86,9 +85,8 @@ def build_castle(player: Player):
                 if not cl.exists_close(pawn, player.eknights, 2) and not cl.in_obj(pawn, player.ecastles):
                     global first_castle_built
                     if not first_castle_built:
-                        global build_order
-                        build_order = ['attack'] + (len(player.good_gold) + 1) * ['pawn']
-                        print('build_order: ', build_order)
+                        player.build_order = ['attack'] + (len(player.good_gold) + 1- len(player.pawns)) * ['pawn']
+                        print('build_order: ', player.build_order)
                     pawn.build()
                     first_castle_built = True
                     return
@@ -144,7 +142,7 @@ def create_units_with_economy(player: Player, economy: int = 0):
 
 def create_units(player: Player):
     """Création des unités par le château."""
-    if not build_order:
+    if not player.build_order:
         missing_money = 0
         for castle in player.castles:
             missing_castle_defense = nb_units_near_castles(castle, player.eknights, 2) - nb_units_near_castles(castle, player.defense, 0)
@@ -158,20 +156,20 @@ def create_units(player: Player):
                 print("prices = ", consts.PRICES, consts.PRICES[consts.KNIGHT])
         create_units_with_economy(player, missing_money)
     else:
-        print("build_order: ", build_order)
+        print("build_order: ", player.build_order)
         for castle in player.castles:
-            if build_order[-1] == 'pawn':
+            if player.build_order[-1] == 'pawn':
                 if player.gold >= consts.PRICES[consts.PAWN]:
                     castle.create_pawn()
-                    build_order.pop()
-            elif build_order[-1] == 'attack':
+                    player.build_order.pop()
+            elif player.build_order[-1] == 'attack':
                 if player.gold >= consts.PRICES[consts.KNIGHT]:
                     castle.create_attack()
-                    build_order.pop()
+                    player.build_order.pop()
             else:
                 if player.gold >= consts.PRICES[consts.KNIGHT]:
                     castle.create_defense()
-                    build_order.pop()
+                    player.build_order.pop()
 
 
 def castle_flee(castles: Castle, knights: list[Knight], eknights: list[Knight], player: Player):
