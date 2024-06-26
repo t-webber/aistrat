@@ -442,7 +442,7 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                                     X3 -= 1
                         elif X2 and X3 and (abs(b) + abs(a) == 2):
                             connection.get_data(player.id, player.token)
-                            if (connection.get_kinds_on_coord(k.target.y, k.target.x + x2, id, consts.KNIGHT)):
+                            if (connection.get_kind_on_coord(k.target.y, k.target.x + x2, id, consts.KNIGHT)):
                                 k.used = True
                             else:
                                 if x - j == 1:
