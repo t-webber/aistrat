@@ -247,6 +247,7 @@ def changeturn(player, token):
     global tokenOf
     assert (tokenOf[player] == token)
     assert (player == curPlayer)
+    print("Player", player, " at turn", nbRounds, "with score", score)
     solveBattles(player, opponent[player])
     curPlayer = opponent[player]
     nbMoves = defaultdict(int)

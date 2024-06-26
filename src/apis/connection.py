@@ -241,15 +241,16 @@ def get_eknights(y: int, x: int) -> list[tuple]:
     return result
 
 
-def get_kind_on_coord(y: int, x: int, id: str, kind: str):
+def get_kind_on_coord(y: int, x: int, player_id: str, kind: str):
     """Récupérer toutes les unitées d'un type donné sur une case donnée."""
     try:
-        return get_map()[y][x][id][kind]
+        return get_map()[y][x][player_id][kind]
     except Exception as e:
         print("y = ", y)
         print("x = ", x)
+        print("kind = ", kind)
         print("map = ", get_map())
         print("map_y = ", get_map()[y])
         print("map_x = ", get_map()[y][x])
-        print("map_kind = ", get_map()[y][kind])
+        print("map_kind = ", get_map()[y][x][kind])
         raise e
