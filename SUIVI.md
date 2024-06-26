@@ -122,3 +122,7 @@
 - Tom: debuggage des mouvements des unités et de la gestion d'exploration, creations d'un système de 24 match concurrents pour tester les différentes versions de l'IA.
 - Tom et Jules: ajout d'outils pour mieux débuguer, notamment le debugage tour par tour et l'option debut avec start_match
 - Tom: fix des tests de vérification de cohérence avec le serveur (gérer les attaquants défenseurs et les comparer avec le serveur pour savoir quand est-ce qu'ils meurent ou change de type).
+
+### 26/06
+- Erwan : Amélioration des constantes de heatmap en jouant avec ces dernières, et en comparant notre IA avec celle présente actuellement sur le main.
+Débuggage de heatmap et fusion propre avec oop10 pour profiter du travail sur la gestion des péons et des châteaux.s
