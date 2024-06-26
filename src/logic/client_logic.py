@@ -214,7 +214,7 @@ def right_p(unit: Unit, i: int, j: int, eknights: list[Knight], ecastles: list[C
     if unit.x < j and not in_obj(Coord(unit.y, unit.x + 1), eknights) and (unit.y, unit.x + 1) not in ecastles and \
         (neighbors((unit.y, unit.x + 1), eknights)[1] == 0 or neighbors((unit.y, unit.x + 1), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
             unit.move(unit.y, unit.x + 1)
-            db.log_func_destination(i,j)
+            db.log_func_destination(i, j)
             return True
     return False
 
@@ -222,7 +222,7 @@ def up_p(unit: Unit, i: int, j: int, eknights: list[Knight], ecastles: list[Cast
     if unit.y > i and not in_obj(Coord(unit.y - 1, unit.x), eknights) and (unit.y - 1, unit.x) not in ecastles and \
                 (neighbors((unit.y - 1, unit.x), eknights)[1] == 0 or neighbors((unit.y - 1, unit.x), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
             unit.move(unit.y - 1, unit.x)
-            db.log_func_destination(i,j)
+            db.log_func_destination(i, j)
             return True
     return False
 

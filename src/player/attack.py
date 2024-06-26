@@ -98,29 +98,30 @@ def hunt(knights: list[Knight], epawns: list[Pawn], eknights: list[Knight]):
         #         if neighbor and not voisins_ennemis[]:
         #             k.move(k.y + i[0], k.x + i[1])
 
-    # print(knights)
-
-    not_used_knights = [k for k in knights if not k.used]
+    not_used_knights = list(filter(lambda knight: not knight.used, knights))
     if not_used_knights and epawns:
 
-        # affecation problem
+        # > problème d'affectation <
         # choisis les mines d'or vers lesquelles vont se diriger les peons
         # pour en minimiser le nombre total de mouvements
+        vus = []
         for k, ep in cl.hongrois_distance(not_used_knights, epawns):
+            vus.append(not_used_knights[k])
             not_used_knights[k].target = epawns[ep]
             y, x = not_used_knights[k].coord
             not_used_knights[k].target = epawns[ep]
             i, j = epawns[ep].coord
             if abs(y - i) + abs(x - j) == 1:
                 attaque((i, j), not_used_knights, eknights)
-            elif not not_used_knights[k].used:
-                cl.move_without_suicide(not_used_knights[k], eknights, i, j)
+            else:
+                if not not_used_knights[k].used:
+                    cl.move_without_suicide(not_used_knights[k], eknights, i, j)
 
 
 def destroy_castle(knights: list[Knight], castles: list[Castle],
                    eknights: list[Knight]):
     """Chasse les chateaux adverses, si possibilité de le détruire, le détruit."""
-    knights_not_used = [k for k in knights if not k.used]
+    knights_not_used = list(filter(lambda knight: not knight.used, knights))
     if knights_not_used and castles:
         # probleme d'affectation
         # choisis les chateaux vers lesquelles vont se diriger les chevaliers
@@ -172,25 +173,244 @@ def endgame(knights: list[Knight], eknights: list[Knight]):
                 cl.move_without_suicide(knights_not_used[k], eknights, i, j)
         knights_not_used = list(filter(lambda knight: not knight.used, knights))
 
-# def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy], castles: list[Castle]):
-#     not_used_knights = list(filter(lambda knight: not knight.used, knights))
-#     dicoattaque = {}
-#     for ep in epawns:
-#         dicoattaque[ep]=[]
-#     for k in not_used_knights:
-#         epawn = k.target
-#         dicoattaque[epawn]= dicoattaque[ep] + [k]
-#     for ep in dicoattaque:
-#         i,j = ep.coord
-#         newpos=[]
-#         for k in dicoattaque[ep]:
-#             y, x = k.coord
-#             a = i - y
-#             b = j - x
-#             if a == 0:
-#                 if not cl.connection.get_eknights(y, x + (b))
-#                     if (y, x + b) not in newpos:
-#                         k.move(y, x + b)
-#                         newpos += (y,x+b)
 
-#             elif b ==0:
+def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy], player):
+    print("sync")
+    not_used_knights = list(filter(lambda knight: (knight.target is not None), knights))
+    dicoattaque = {}
+    print(not_used_knights)
+    print("epawns", epawns)
+    for k in not_used_knights:
+        dist = 2
+        for ep in epawns:
+            dist2 = (abs(ep.x - k.target.x) + abs(ep.y - k.target.y))
+            print("dist2 =", dist2)
+            if dist2 <= dist:
+                dist = dist2
+                k.target = ep
+                print("maj target")
+    for k in not_used_knights:
+        dicoattaque[k.target] = []
+    for k in not_used_knights:
+        epawn = k.target
+        dicoattaque[epawn] = dicoattaque[epawn] + [k]
+    for ep in dicoattaque:
+        if ep is not None:
+            i, j = ep.coord
+            newpos = []
+            Y1 = 0
+            Y2 = 0
+            Y3 = 0
+            X1 = 0
+            X2 = 0
+            X3 = 0
+            for k2 in dicoattaque[ep]:
+                if k2.y == i:
+                    Y1 += 1
+                elif k2.y - i == 1:
+                    Y2 += 1
+                elif k2.y - i == -1:
+                    Y3 += 1
+                if k2.x == j:
+                    X1 += 1
+                elif k2.x - j == 1:
+                    X2 += 1
+                elif k2.x - j == 1:
+                    X3 += 1
+            print(Y1, Y2, Y3, X1, X2, X3)
+            for k in dicoattaque[ep]:
+                if k.used:
+                    continue
+                else:
+                    y, x = k.coord
+                    a = i - y
+                    b = j - x
+                    y2 = 0
+                    x2 = 0
+
+                    if a > 0:
+                        y2 = 1
+                    else:
+                        y2 = -1
+                    if b > 0:
+                        x2 = 1
+                    else:
+                        x2 = -1
+                    if abs(b) >= abs(a):
+                        print(a)
+                        if Y1:
+                            if Y2 or Y3:
+                                if y == i:
+                                    if not (connection.get_eknights(y, x + x2)):
+                                        k.move(y, x + x2)
+                                    elif (y + 1 < connection.size_map()[0]) and not (connection.get_eknights(y + 1, x)):
+                                        k.move(y + 1, x)
+                                        Y2 += 1
+                                        Y1 -= 1
+                                    elif (y - 1 >= 0) and not (connection.get_eknights(y - 1, x)):
+                                        k.move(y - 1, x)
+                                        Y3 += 1
+                                        Y1 -= 1
+                                    else:
+                                        k.target = None
+                                        Y1 -= 1
+                                elif y - i == 1:
+                                    if not (connection.get_eknights(y, x + x2)):
+                                        k.move(y, x + x2)
+                                    elif not (connection.get_eknights(y - 1, x)):
+                                        k.move(y - 1, x)
+                                        Y1 += 1
+                                        Y2 -= 1
+                                    else:
+                                        k.target = None
+                                        Y2 -= 1
+                                elif y - i == -1:
+                                    if not (connection.get_eknights(y, x + x2)):
+                                        k.move(y, x + x2)
+                                    elif not (connection.get_eknights(y + 1, x)):
+                                        k.move(y + 1, x)
+                                        Y1 += 1
+                                        Y3 -= 1
+                                    else:
+                                        k.target = None
+                                        Y3 -= 1
+                                else:
+                                    cl.move_without_suicide(k, eknights, i, j)
+                            elif Y1 > 1:
+                                print("j en decale 1")
+                                if y == i:
+                                    if (y + 1 < connection.size_map()[0]) and not (connection.get_eknights(y + 1, x)):
+                                        k.move(y + 1, x)
+                                        Y2 += 1
+                                        Y1 -= 1
+                                    elif (y - 1 >= 0) and not (connection.get_eknights(y - 1, x)):
+                                        k.move(y - 1, x)
+                                        Y3 += 1
+                                        Y1 -= 1
+                                    elif not (connection.get_eknights(y, x + x2)):
+                                        k.move(y, x + x2)
+                                    else:
+                                        k.target = None
+                                        Y1 -= 1
+                            else:
+                                cl.move_without_suicide(k, eknights, i, j)
+                        elif Y2 or Y3:
+                            if y - i == 1:
+                                if not (connection.get_eknights(y - 1, x)):
+                                    k.move(y - 1, x)
+                                    Y1 += 1
+                                    Y2 -= 1
+                                elif not (connection.get_eknights(y, x + x2)):
+                                    k.move(y, x + x2)
+                                else:
+                                    k.target = None
+                                    Y2 -= 1
+                            if y - i == -1:
+                                if not (connection.get_eknights(y + 1, x)):
+                                    k.move(y + 1, x)
+                                    Y1 += 1
+                                    Y3 -= 1
+                                elif not (connection.get_eknights(y, x + x2)):
+                                    k.move(y, x + x2)
+                                else:
+                                    k.target = None
+                                    Y3 -= 1
+                        else:
+                            cl.move_without_suicide(k, eknights, i, j)
+                    else:
+                        if X1:
+                            if X2 or X3:
+                                if x == j:
+                                    if not (connection.get_eknights(y + y2, x)):
+                                        k.move(y + y2, x)
+                                    elif (x + 1 < connection.size_map()[1]) and not (connection.get_eknights(y, x + 1)):
+                                        k.move(y, x + 1)
+                                        X2 += 1
+                                        X1 -= 1
+                                    elif (x - 1 >= 0) and not (connection.get_eknights(y, x - 1)):
+                                        k.move(y, x - 1)
+                                        X3 += 1
+                                        X1 -= 1
+                                    else:
+                                        k.target = None
+                                        X1 -= 1
+                                elif x - j == 1:
+                                    if not (connection.get_eknights(y + y2, x)):
+                                        k.move(y + y2, x)
+                                    elif not (connection.get_eknights(y, x - 1)):
+                                        k.move(y, x - 1)
+                                        X1 += 1
+                                        X2 -= 1
+                                    else:
+                                        k.target = None
+                                        X2 -= 1
+                                elif x - j == -1:
+                                    if not (connection.get_eknights(y + y2, x)):
+                                        k.move(y + y2, x)
+                                    elif not (connection.get_eknights(y, x + 1)):
+                                        k.move(y, x + 1)
+                                        X1 += 1
+                                        X3 -= 1
+                                    else:
+                                        k.target = None
+                                        X3 -= 1
+                                else:
+                                    cl.move_without_suicide(k, eknights, i, j)
+                            elif X1 > 1:
+                                print("j en decale 1")
+                                if x == j:
+                                    if (x + 1 < connection.size_map()[1]) and not (connection.get_eknights(y, x + 1)):
+                                        k.move(y, x + 1)
+                                        X2 += 1
+                                        X1 -= 1
+                                    elif (x - 1 >= 0) and not (connection.get_eknights(y, x - 1)):
+                                        k.move(y, x - 1)
+                                        X3 += 1
+                                        X1 -= 1
+                                    elif not (connection.get_eknights(y + y2, x)):
+                                        k.move(y + y2, x)
+                                    else:
+                                        k.target = None
+                                        Y1 -= 1
+                            else:
+                                cl.move_without_suicide(k, eknights, i, j)
+                        elif X2 or X3:
+                            if x - j == 1:
+                                if not (connection.get_eknights(y, x - 1)):
+                                    k.move(y, x - 1)
+                                    X1 += 1
+                                    X2 -= 1
+                                elif not (connection.get_eknights(y + y2, x)):
+                                    k.move(y + y2, x)
+                                else:
+                                    k.target = None
+                                    X2 -= 1
+                            if x - j == -1:
+                                if not (connection.get_eknights(y, x + 1)):
+                                    k.move(y, x + 1)
+                                    X1 += 1
+                                    X3 -= 1
+                                elif not (connection.get_eknights(y + y2, x)):
+                                    k.move(y + x2, x)
+                                else:
+                                    k.target = None
+                                    X3 -= 1
+                        else:
+                            cl.move_without_suicide(k, eknights, i, j)
+    connection.get_data(player.id, player.token)
+    player.update_ennemi_data()
+    epawnsf = player.epawns
+    print('player.epawns', epawnsf)
+    for k in not_used_knights:
+        if k.target is None:
+            continue
+        dist = 2
+        for ep in epawnsf:
+            dist2 = (abs(ep.x - k.target.x) + abs(ep.y - k.target.y))
+            print("dist2 =", dist2)
+            if dist2 <= dist:
+                dist = dist2
+                k.target = ep
+                print("maj target 222222222222222")
+        if dist == 2:
+            k.target = None

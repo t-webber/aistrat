@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from apis import connection
 from config import consts, settings
 import logic.client_logic as cl
-from apis.kinds import Unit, Castle, Knight, Coord
+from apis.kinds import Castle, Knight, Coord
 
 if TYPE_CHECKING:
     from apis.players.players import Player
@@ -107,9 +107,13 @@ def nb_units_near_castles(castle: Castle, coords: list[Coord], radius: int):
 
 def create_units_with_economy(player: Player, economy: int = 0):
     """Créé des unitées, en gardant la quantité `economy` d'argent."""
+    if economy < 0:
+        raise ValueError(f"economy not valid: {economy} < 0")
     len_golds = len(player._golds)
     eknight_offset = len(player.eknights) - len(player.defense)
     for castle in player.castles:
+        if castle.used:
+            continue
         # 1. Nous sommes attaqués, production de défenseurs
         if nb_units_near_castles(castle, player.eknights, 6) > 1.5 * nb_units_near_castles(castle, player.defense, 6):
             print("---priory1---")
@@ -148,25 +152,29 @@ def create_units(player: Player):
                 if player.gold >= consts.PRICES[consts.KNIGHT]:
                     castle.create_defense()
                     missing_castle_defense -= 1
-            missing_money += missing_castle_defense * consts.PRICES[consts.KNIGHT]
+                missing_money += missing_castle_defense * consts.PRICES[consts.KNIGHT]
+                print("missing_money: ", missing_money)
+                print("missing_castle_defense: ", missing_castle_defense)
+                print("prices = ", consts.PRICES, consts.PRICES[consts.KNIGHT])
         create_units_with_economy(player, missing_money)
     else:
         for castle in player.castles:
-                if build_order[-1] == 'pawn':
-                    if player.gold >= consts.PRICES[consts.PAWN]:
-                        castle.create_pawn()
-                        build_order.pop()
-                elif build_order[-1] == 'attack':
-                    if player.gold >= consts.PRICES[consts.KNIGHT]:
-                        castle.create_attack()
-                        build_order.pop()
-                else:
-                    if player.gold >= consts.PRICES[consts.KNIGHT]:
-                        castle.create_defense()
-                        build_order.pop()
-            
+            if build_order[-1] == 'pawn':
+                if player.gold >= consts.PRICES[consts.PAWN]:
+                    castle.create_pawn()
+                    build_order.pop()
+            elif build_order[-1] == 'attack':
+                if player.gold >= consts.PRICES[consts.KNIGHT]:
+                    castle.create_attack()
+                    build_order.pop()
+            else:
+                if player.gold >= consts.PRICES[consts.KNIGHT]:
+                    castle.create_defense()
+                    build_order.pop()
+
+
 def castle_flee(castles: Castle, knights: list[Knight], eknights: list[Knight]):
-    """Les châteaux appellennt des chevaliers en cas d'attaque adverse"""
+    """Les châteaux appellennt des chevaliers en cas d'attaque adverse."""
     i = 0
     knights_not_used = [k for k in knights if not k.used]
     while i < len(castles):
@@ -185,7 +193,7 @@ def castle_flee(castles: Castle, knights: list[Knight], eknights: list[Knight]):
             on_case.sort(key=lambda x: x.used)
             if cl.prediction_combat(total_enemies, allies + allies_backup)[0]:
                 # si on perd le combat même avec les alliés on peut détruire les ennemis de plus loin
-                #TODO
+                # TODO
                 pass
             else:
                 print(cl.prediction_combat(total_enemies, allies_defense)[0])
