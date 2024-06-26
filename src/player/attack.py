@@ -215,11 +215,8 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                 elif k2.x - j == 1:
                     X3 += 1
             for k in dicoattaque[ep]:
-                connection.get_data(player.id, player.token)
                 if k.used:
                     continue
-                if (connection.get_map()[k.target.y][k.target.x][player.id][consts.KNIGHT]):
-                    k.target = None
                 else:
                     print("target = ", k.target)
                     y, x = k.coord
@@ -318,6 +315,7 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                                     k.target = None
                                     Y3 -= 1
                         elif Y2 and Y3 and (abs(b) + abs(a) == 2):
+                            connection.get_data(player.id, player.token)
                             if (connection.get_map()[k.target.y + y2][k.target.x][player.id][consts.KNIGHT]):
                                 k.used = True
                             else:
@@ -442,6 +440,7 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                                     k.target = None
                                     X3 -= 1
                         elif X2 and X3 and (abs(b) + abs(a) == 2):
+                            connection.get_data(player.id, player.token)
                             if (connection.get_map()[k.target.y][k.target.x + x2][player.id][consts.KNIGHT]):
                                 k.used = True
                             else:
