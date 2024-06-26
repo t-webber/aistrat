@@ -70,6 +70,8 @@ class Player(Player_struct):
         log_func("explore_knight")
         peons.explore_knight(self, self.pawns + self.castles)
 
+        log_func("second create unit")
+        create_units(self)
         self.update_gold_map()
 
         connection.end_turn(self.id, self.token)
