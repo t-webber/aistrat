@@ -430,5 +430,5 @@ def gold_expectation_minimal(player: Player, turn: int):
         y, x = gold.coord
         if in_obj(gold, player.pawns):
             eknight_d = distance_to_list((y, x), player.eknights)[0]
-            future_gold += max(0, turn - eknight_d, gold.gold)
+            future_gold += min(turn, eknight_d - 1, gold.gold)
     return future_gold
