@@ -22,8 +22,8 @@ class Player_struct:
         self.eknights: list[Enemy] = []
         self.castles: list[Castle] = [Castle(y, x, self) for y, x in connection.get_kinds(self.id)[connection.CASTLE]]
         self.ecastles: list[Pawn] = []
-        self.defense: list[Knight] = []
-        self.attack: list[Knight] = [Knight(y, x, self) for y, x in connection.get_kinds(self.id)[connection.KNIGHT]]
+        self.attack: list[Knight] = []
+        self.defense: list[Knight] = [Knight(y, x, self) for y, x in connection.get_kinds(self.id)[connection.KNIGHT]]
         # resources
         self._golds: list[GoldPile] = [GoldPile(coord[0], coord[1], coord[2], self) for coord in connection.get_kinds(self.id)[
             connection.GOLD]]
