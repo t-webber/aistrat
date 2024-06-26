@@ -20,8 +20,7 @@ def move_peon_to_first_location(player: Player, border: int, border_y: int, bord
     # si d == 0, le pion est au bon endroit
     # donc il va construire un château ici
     if not d:
-        global move_to_first_castle
-        move_to_first_castle = False
+        player.move_to_first_castle = False
         return
 
     for pawn in player.pawns:
@@ -44,10 +43,6 @@ def move_peon_to_first_location(player: Player, border: int, border_y: int, bord
             break
 
 
-move_to_first_castle = True
-first_castle_built = False
-
-
 def build_castle(player: Player):
     """
     Construit des châteaux.
@@ -64,7 +59,7 @@ def build_castle(player: Player):
 
     # Si aucun château n'a été construit, prend le controle d'un pion,
     # le met en (2,2) pour construire un château
-    if not len(player.castles) and move_to_first_castle:
+    if not len(player.castles) and player.move_to_first_castle:
         move_peon_to_first_location(player, border, border_y, border_x)
 
     # Si il y a suffisemment de châteaux ou pas assez d'argent, on ne peut pas construire
@@ -82,12 +77,11 @@ def build_castle(player: Player):
             if cl.distance_to_list((y, x), player.castles)[0] >= settings.DISTANCE_BETWEEN_CASTLES:
                 # suffisamment loin des autres péons
                 if not cl.exists_close(pawn, player.eknights, 2) and not cl.in_obj(pawn, player.ecastles):
-                    global first_castle_built
-                    if not first_castle_built:
-                        player.build_order = ['attack'] + (len(player.good_gold) + 1 - len(player.pawns)) * ['pawn']
+                    if not player.first_castle_built:
+                        player.build_order = ['attack'] + (len(player.good_gold) + settings.PAWNS_OFFSET - len(player.pawns)) * ['pawn']
                         print('build_order: ', player.build_order)
                     pawn.build()
-                    first_castle_built = True
+                    player.first_castle_built = True
                     return
 
 
@@ -107,10 +101,12 @@ def create_units_with_economy(player: Player, economy: int = 0):
     if economy < 0:
         raise ValueError(f"economy not valid: {economy} < 0")
     len_golds = len(player.good_gold)
+    len_golds = len(player.good_gold)
     eknight_offset = len(player.eknights) - len(player.defense)
     for castle in player.castles:
         if castle.used:
             continue
+        print('economy: ', economy)
         # 1. Nous sommes attaqués, production de défenseurs
         if nb_units_near_castles(castle, player.eknights, 6) > 1.5 * nb_units_near_castles(castle, player.defense, 6):
             print("--- priory1 --- ", economy)
@@ -157,6 +153,8 @@ def create_units(player: Player):
     else:
         print("build_order: ", player.build_order)
         for castle in player.castles:
+            if castle.used:
+                continue
             if player.build_order[-1] == 'pawn':
                 if player.gold >= consts.PRICES[consts.PAWN]:
                     castle.create_pawn()

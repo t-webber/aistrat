@@ -38,6 +38,8 @@ class Player_struct:
             self._golds, self.pawns, self.ecastles)
         self.fog: list[GoldPile] = []
         self.build_order = []
+        self.move_to_first_castle = True
+        self.first_castle_built = False
         # private
         self._knights: list[Knight] = []
         self._gold_map: list[int | GoldPile] = np.full(connection.size_map(), None)
