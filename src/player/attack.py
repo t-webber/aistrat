@@ -176,6 +176,7 @@ def endgame(knights: list[Knight], eknights: list[Knight]):
 
 
 def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy], player):
+    """coordonne les chevaliers alliés qui attaquent la même cible pour optimiser l'attaque"""
     not_used_knights = list(filter(lambda knight: (knight.target is not None), knights))
     dicoattaque = {}
     for k in not_used_knights:
