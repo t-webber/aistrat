@@ -27,7 +27,7 @@ class Player(Player_struct):
         self.update_ennemi_data()
         self.update_fog()
 
-        if self == "A" and sys.argv[2] == "debug":
+        if self == "A" and len(sys.argv) >= 3 and sys.argv[2] == "debug":
             input("Press enter to continue...")
 
         serv = connection.get_gold()[self.id]
@@ -48,7 +48,7 @@ class Player(Player_struct):
         # left_defense = dfd.eknight_based_defense ( defense, eknights, castles, token)
         dfd.agressiv_defense(self.defense, self.epawns, self.eknights, self.ecastles)
         last_len = None
-
+        atk.sync_atk(self.attack, self.eknights, self.epawns)
         while (length := [k for k in self.attack if not k.used]):
 
             atk.hunt(self.attack, self.epawns, self.eknights)
