@@ -227,7 +227,7 @@ def get_eknights(y: int, x: int) -> list[tuple]:
     """Renvoie la liste des chevaliers présents sur une case donnée."""
     try:
         d = get_map()[y][x][other(current_player())]
-    except IndexError as e:
+    except Exception as e:
         print("y = ", y)
         print("x = ", x)
         print("map = ", get_map())
