@@ -158,6 +158,7 @@ def create_units(player: Player):
                 print("prices = ", consts.PRICES, consts.PRICES[consts.KNIGHT])
         create_units_with_economy(player, missing_money)
     else:
+        print("build_order: ", build_order)
         for castle in player.castles:
             if build_order[-1] == 'pawn':
                 if player.gold >= consts.PRICES[consts.PAWN]:
