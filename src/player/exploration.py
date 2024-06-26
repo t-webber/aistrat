@@ -31,9 +31,9 @@ def path_simple_bis(unit,destination:tuple[int,int], eknights : Knight):
     """Cherche un bon chemin en un déplacement pour une unité"""
     moves=connection.get_moves(unit.y,unit.x)
     rd.shuffle(moves)
-    best_moves=sorted(moves,key=lambda x:cl.scalar((unit.y,unit.x),x,destination))
+    best_moves=sorted(moves,key=lambda x:abs(x[1]-destination[1]) + abs(x[0]-destination[0]))
     for move in best_moves:
-        if cl.scalar((unit.y,unit.x),move,destination)<0:
+        if abs(move[1]-destination[1]) + abs(move[0]-destination[0]) > abs(unit.x - destination[1]) + abs(unit.y-destination[0]):
             return None
         if len(connection.get_eknights(move[0], move[1])) == 0:
             return move

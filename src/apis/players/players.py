@@ -25,7 +25,7 @@ class Player(Player_struct):
         self.turn += 1
 
         # if self.turn%10 == 0:
-        #     print_heatmaps(self.pawns, self.knights, self.castles, self.eknights, self.ecastles, self.epawns, self._gold_map, self.id)
+        #      print_heatmaps(self.pawns, self.knights, self.castles, self.eknights, self.ecastles, self.epawns, self._gold_map, self.id)
 
         self.checks_turn_data()
         self.update_golds()
@@ -48,7 +48,7 @@ class Player(Player_struct):
         peons.fuite(self.pawns, self.knights, self.eknights)
 
         log_func("castle")
-        cstl.build_castle(self)
+        build_castle(self)
         peons.free_gold(self.pawns, self.bad_gold)
         peons.free_gold(self.pawns, self.good_gold)
         # je farm d'abord ce que je vois

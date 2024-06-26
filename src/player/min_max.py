@@ -86,13 +86,13 @@ def eval_config(config):
         if knight==[0,0] and not exist:
             score+=30 #Si on est arrivé au centre, gros bonus
             exist=True
-        else:
+        elif knight[0] != 2400:
             score+=0.5-(abs(knight[0])+abs(knight[1]))/100
         if abs(knight[0])!=2400: #On récompense la non mort
             score+=1
     for knight in config[1]:
         if abs(knight[0])!=2400: #Chaque ennemi non mort nous pénalise
-            score-=2
+            score-=1.1
     return score #On met pas de score négatif
 
 

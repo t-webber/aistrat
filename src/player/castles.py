@@ -105,35 +105,37 @@ def nb_units_near_castles(castle: Castle, coords: list[Coord], radius: int):
     return len([0 for unit in coords if cl.distance(*unit.coord, *castle.coord) <= radius])
 
 
-def create_units_with_economy(player: Player, economy: int = 0):
+def create_units_with_economy(player: Player, economy: int):
+    economy = max(economy, 0)
     """Créé des unitées, en gardant la quantité `economy` d'argent."""
     len_golds = len(player._golds)
     eknight_offset = len(player.eknights) - len(player.knights)
+    print("début de la phase d'achat")
     for castle in player.castles:
         # 1. Nous sommes attaqués, production de défenseurs
-        if nb_units_near_castles(castle, player.eknights, 6) > 1.5 * nb_units_near_castles(castle, player.defense, 6):
+        if nb_units_near_castles(castle, player.eknights, 6) > 1.5 * nb_units_near_castles(castle, player.knights, 6):
             print("---priory1---")
-            if player.gold >= consts.PRICES[consts.KNIGHT] + economy:
+            if player.gold >= (consts.PRICES[consts.KNIGHT] + economy):
                 castle.create_defense()
                 eknight_offset -= 1
             break
         # 2. Vraiment pas assez de péon
         elif nb_units_near_castles(castle, player.good_gold, settings.DISTANCE_BETWEEN_CASTLES) >= len(player.pawns):
             print("---priory2---")
-            if player.gold >= consts.PRICES[consts.PAWN] + economy:
+            if player.gold >= (consts.PRICES[consts.PAWN] + economy):
                 castle.create_pawn()
         # 3. Il y a des péons ennemis
-        elif len(player.epawns) >= settings.PAWNS_KNIGHTS_RATIO * len(player.attack):
+        elif len(player.epawns) >= settings.PAWNS_KNIGHTS_RATIO * len(player.knights):
             print("---priory3---")
-            if player.gold >= consts.PRICES[consts.KNIGHT] + consts.PRICES[consts.KNIGHT] + economy:
+            if player.gold >= (consts.PRICES[consts.KNIGHT] + consts.PRICES[consts.KNIGHT] + economy):
                 castle.create_attack()
         # 4. Pas assez de péons
         elif len_golds > 1.5 * len(player.pawns):
             print("---priory4---")
-            if player.gold >= consts.PRICES[consts.PAWN] + consts.PRICES[consts.KNIGHT] + economy:
+            if player.gold >= (consts.PRICES[consts.PAWN] + consts.PRICES[consts.KNIGHT] + economy):
                 castle.create_pawn()
         # 5. Production d'attaquants
-        elif player.gold >= consts.PRICES[consts.KNIGHT] + consts.PRICES[consts.KNIGHT] + economy:
+        elif player.gold >= (consts.PRICES[consts.KNIGHT] + consts.PRICES[consts.KNIGHT] + economy):
             print("---priory5---")
             castle.create_attack()
 
@@ -143,7 +145,7 @@ def create_units(player: Player):
     if not build_order:
         missing_money = 0
         for castle in player.castles:
-            missing_castle_defense = nb_units_near_castles(castle, player.eknights, 2) - nb_units_near_castles(castle, player.defense, 0)
+            missing_castle_defense = nb_units_near_castles(castle, player.eknights, 2) - nb_units_near_castles(castle, player.knights, 0)
             if missing_castle_defense > 0:
                 if player.gold >= consts.PRICES[consts.KNIGHT]:
                     castle.create_defense()

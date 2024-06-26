@@ -9,21 +9,24 @@ import matplotlib.pyplot as plt
 import math
 from player.min_max import min_max_alpha_beta_result
 
-defHeat={"Pawn":3,"Knight":-2,"Castle":5,"Eknight":30,"ChosenKnight":-30}
-attHeat={"Epawn":5,"Ecastle":30, "Epawn_adj" : 100, "Ecastle_adj" : 120}
 
 
-
+IMPORTANCE_ATT = 5
 AVANCEMENT = 0.03
 VAL_GOLD = 1/100
+
+defHeat={"Pawn":3,"Knight":-2,"Castle":5,"Eknight":30,"ChosenKnight":-50}
+attHeat={"Epawn":10*IMPORTANCE_ATT,"Ecastle":30*IMPORTANCE_ATT, "Epawn_adj" : 100*IMPORTANCE_ATT, "Ecastle_adj" : 120*IMPORTANCE_ATT, "Eknight":50*IMPORTANCE_ATT}
+
+
 
 
 def genMask(intensity: int):
     """Génère les masques pour les heatmap"""
-    mask=np.zeros((2*abs(intensity)+1,2*abs(intensity)+1)) #Crée une carte de coté 2*taille de l'éclairage + 1 centré sur la "lampe"
+    mask=np.zeros((int(2*abs(intensity))+1,int(2*abs(intensity))+1)) #Crée une carte de coté 2*taille de l'éclairage + 1 centré sur la "lampe"
     center=len(mask[0])//2
-    for i in range(2*abs(intensity)+1): #Dans la portée du masque...
-        for j in range(2*abs(intensity)+1):
+    for i in range(int(2*abs(intensity))+1): #Dans la portée du masque...
+        for j in range(int(2*abs(intensity))+1):
             mask[i][j]=intensity/(cl.distance(center,center,i,j)+1)**2 #Y inscrit une intensité en Max/(Distance^2)
     return mask
 
@@ -53,7 +56,7 @@ def heatMapDefenseGen(pawns: list[Pawn], castles : list[Castle], eknights : list
     for eknight in eknights:
         for unit in pawns + castles:
             if cl.distance(*unit.coord, *eknight.coord) < 2:
-                addLight(heat_map, maskHeatDef["Eknight"], (unit.y, unit.x), 1) #Les chevaliers ennemis placent leur lumière sur les cases a protéger.
+                addLight(heat_map, maskHeatDef["Eknight"], (unit.y, unit.x), 1/(0.01 + cl.distance(*unit.coord, *eknight.coord))) #Les chevaliers ennemis placent leur lumière sur les cases a protéger.
     for knight in knights:
         if knight.used:
             addLight(heat_map, maskHeatDef["ChosenKnight"], (knight.y, knight.x), 1) #Les chevaliers alliés déjà utilisés
@@ -145,6 +148,9 @@ def heatMapAttackGen(epawns : list[Pawn], ecastles : list[Castle], id : str, kni
     for ecastle in ecastles:
         addLight(heat_map,maskHeatAtt["Ecastle"],(ecastle.y,ecastle.x), 1/(1+ (cl.distance(*ecastle.coord, *corner))**(1/4))) #Et on considère aussi les châteaux à attaquer
 
+    for eknight in eknights:
+        addLight(heat_map,maskHeatAtt["Eknight"],(eknight.y,eknight.x), 1/(1+ (cl.distance(*eknight.coord, *corner))**(1/4))) #Et on considère aussi les knights ennemis.
+
     return heat_map
 
 
@@ -208,14 +214,17 @@ def heatMapMove(pawns :list[Pawn], knights : list[Knight], castles : list[Castle
     proximité et le bouge intelligemment dans sa direction, enlève le mask knight à son point de départ
     et rajoute le mask chosenknight à son arrivée
     """
-    forbiden_case = []
+    forbiden_case_def = []
+    forbiden_case_att = []
     while any( [not knight.used for knight in knights]) and (len(knights) != 0): 
         #Si on a au moins un chevalier non déjà déplacé...
         
         attmap = heatMapAttackGen(epawns, ecastles, id, knights, eknights, gold_map) #On génère les cartes...
         defmap = heatMapDefenseGen(pawns, castles, eknights, knights)
-        for coord in forbiden_case:
+        for coord in forbiden_case_def:
             defmap[coord[0]][coord[1]]=-100
+        for coord in forbiden_case_att:
+            attmap[coord[0]][coord[1]]=-100
         max = 0
         co=(-1,-1)
         tp=None
@@ -238,15 +247,16 @@ def heatMapMove(pawns :list[Pawn], knights : list[Knight], castles : list[Castle
                     co=(i,j)
                     tp="D"
         if tp=="A": #Et ensuite en fonction d'où est le résultat on va attaquer ou défendre en priorité
-            attackHere(knights, eknights,co)
+            attackHere(knights, eknights,co, forbiden_case_att)
         else:
-            defendHere(knights, eknights,co, forbiden_case)
+            defendHere(knights, eknights,co, forbiden_case_def)
 
 
 
-def defendHere(knights : list[Knight], eknights : list[Knight],case:tuple[int,int], forbiden_case : tuple[int,int]):
+def defendHere(knights : list[Knight], eknights : list[Knight],case:tuple[int,int], forbiden_case : list[tuple[int,int]]):
     '''Pour les ordres de défense'''
     print("Def")
+    print("cible : ", case)
     nearestKnights=sorted(knights,key = lambda x:cl.distance(*x.coord,*case)) 
     #On trie les chevaliers par proximité au point d'intérêt
     i=0
@@ -259,22 +269,28 @@ def defendHere(knights : list[Knight], eknights : list[Knight],case:tuple[int,in
     if movement is None: #Si movement est None à la fin on a rien pu bouger donc on sort
         forbiden_case.append(case)
         return
-    if (nearest.y != case[0] or nearest.x != case[1]): #Et tant qu'on est pas exactement sur la case on se déplacé
+    if (nearest.y != case[0] or nearest.x != case[1]): #Et tant qu'on est pas exactement sur la case on se déplace
         nearest.move(movement[0], movement[1])
+        if(movement[1] < 5):
+            print("Ici ca casse les couilles", case)
+            print(movement)
     else:
         nearest.used = True #Sinon on immobilise le chevalier.
 
 
-def attackHere(knights : list[Knight], eknights : list[Knight],case:tuple[int,int]):
+def attackHere(knights : list[Knight], eknights : list[Knight],case:tuple[int,int], forbiden_case : list[tuple[int,int]]):
     '''Pour les ordres d'attaque'''
     print("Att")
     print(case)
+    forbiden_case.append(case)
     nearestKnights=sorted([knight for knight in knights if not knight.used],key = lambda x:cl.distance(x.y,x.x,case[0],case[1]))
     #On trie les chevaliers par proximité à la case d'intérêt. 
     if len(eknights) == 0: 
         #S'il n'y a aucun ennemis, on avance directement vers l'objectif
         knight = nearestKnights[0]
         movement = path_simple_bis(knight, case, eknights)
+        if movement is None:
+            return
         if (movement[0] != knight.y or movement[1] != knight.x):
             knight.move(movement[0], movement[1])
         else:
@@ -298,19 +314,21 @@ def attackHere(knights : list[Knight], eknights : list[Knight],case:tuple[int,in
     hired_Eknights=[]
     i = 0
     #On répète la même chose pour les ennemis... sans le forçage car vérifié précédemment 
-
-    while i<len(nearestEKnights) and cl.distance(nearestEKnights[i].y,nearestEKnights[i].x,case[0],case[1])<3: 
+    while i<len(nearestEKnights) and (cl.distance(nearestEKnights[i].y,nearestEKnights[i].x,case[0],case[1])<max(3, abs(hired_knights[0][0]) + abs(hired_knights[0][1]))): 
         nearest=nearestEKnights[i]
         hired_Eknights.append([nearest.y - case[0], nearest.x - case[1]])
         i+=1
 
     print("chevaliers en actions : ",[hired_knights, hired_Eknights])
 
+    if len([knight for knight in hired_Eknights if knight == (0,0)]) > len(hired_knights) :
+        print("Trop dangereux")
+        return
+
     next_moves=min_max_alpha_beta_result([hired_knights,hired_Eknights]) 
     #Pour choisir comment déplacer les unités, on fait un min-max
 
     print("moves proposés : ",next_moves)
-
     for i, movement in enumerate(next_moves): 
         #Et on opère ensuite les déplacements en fonction du résultat du min_max
         if (nearestKnights[i].y != movement[0] + case[0] or nearestKnights[i].x != movement[1] + case[1]):
