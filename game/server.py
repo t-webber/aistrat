@@ -240,8 +240,8 @@ def changeturn(player, token):
     global farmed
     global winner
     global tokenOf
-    print(f"======================= {player} ==================================")
-    print(mapdata)
+    # print(f"======================= {player} ==================================")
+    # print(mapdata)
     assert (tokenOf[player] == token)
     assert (player == curPlayer)
     solveBattles(player, opponent[player])

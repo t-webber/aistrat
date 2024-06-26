@@ -23,24 +23,25 @@ def agressiv_defense(defense: list[Knight], epawns: list[Pawn], eknigths: list[K
     for d in defense:
         if d.used:
             continue
-        dir_knights, near_eknights = cl.neighbors((d.y,d.x), eknigths)
-        dir_pawns, near_epawns = cl.neighbors((d.y,d.x), epawns)
-        dir_castles, near_ecastles = cl.neighbors((d.y,d.x), ecastles)
+        dir_knights, near_eknights = cl.neighbors((d.y, d.x), eknigths)
+        dir_pawns, near_epawns = cl.neighbors((d.y, d.x), epawns)
+        dir_castles, near_ecastles = cl.neighbors((d.y, d.x), ecastles)
 
         agressiv_defenders = []
         for d2 in defense:
             if d2.used or d.used:
                 continue
-            if (d2.y, d2.x) == (d.y, d.x) :
+            if (d2.y, d2.x) == (d.y, d.x):
                 agressiv_defenders.append(d2)
         print(dir_knights)
-        options = [(len(dir_castles[d]),d) for d in dir_castles if len(dir_castles[d])]+[(len(dir_pawns[d]), d) for d in dir_pawns if len(dir_pawns[d])]+[(len(dir_knights[d]), d) for d in dir_knights if len(dir_knights[d])]
+        options = [(len(dir_castles[d]), d) for d in dir_castles if len(dir_castles[d])] + [(len(dir_pawns[d]), d)
+                                                                                            for d in dir_pawns if len(dir_pawns[d])] + [(len(dir_knights[d]), d) for d in dir_knights if len(dir_knights[d])]
         options.sort()
         for op in options:
             _, direction = op
 
             will_attack = []
-            
+
             for i in agressiv_defenders:
                 if not i.used:
                     will_attack.append(i)
@@ -65,7 +66,7 @@ def move_defense(defense: list[Knight], pawns: list[Pawn], eknight: list[Knight]
     hongroise = cl.hongrois_distance(defense, pawns)
     for d, p in hongroise:
         yp, xp = pawns[p].coord
-        cl.move_safe_random(defense[d], eknight, [], yp,xp)
+        cl.move_safe_random(defense[d], eknight, [], yp, xp)
 
 
 def defend(pawns: list[Pawn], defense: list[Knight], eknights: list[Knight], castle: list[Castle]):

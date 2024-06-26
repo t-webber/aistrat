@@ -18,19 +18,20 @@ def fuite(pawns: list[Pawn], knights: list[Knight], eknights: list[Knight]):
     while i < len(pawns):
         p = pawns[i]
         i += 1
+        if p.used:
+            continue
         _, total_enemies = cl.neighbors((p.y, p.x), eknights)
         if total_enemies > 0:
             direc_allies, allies_backup = cl.movable_neighbors((p.y, p.x), knights_not_used)
             allies = 0
             allies_defense = 0
             on_case = []
-            for k in knights_not_used:
-                if k.used:
-                    continue
+            for k in knights:
                 if k.y == p.y and k.x == p.x:
                     on_case.append(k)
                     allies += 1
-
+            on_case.sort(key=lambda x: x.used)
+            print(on_case)
             if cl.prediction_combat(total_enemies, allies + allies_backup)[0]:
                 # si on perd le combat même avec les alliés on fuit
                 if cl.move_safe_random_without_purpose(p, eknights, knights):
@@ -38,6 +39,7 @@ def fuite(pawns: list[Pawn], knights: list[Knight], eknights: list[Knight]):
             else:
                 while cl.prediction_combat(total_enemies, allies_defense)[0] and len(on_case) > 0:
                     on_case[-1].used = True
+                    on_case.pop()
                     allies_defense += 1
                 # on peut réussir à gagner le combat avec les alliés et on le fait venir
                 while cl.prediction_combat(total_enemies, allies)[0] and allies_backup > 0:

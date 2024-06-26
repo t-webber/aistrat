@@ -8,7 +8,7 @@ from typing import Dict, List, Union
 
 
 IP = "http://localhost:8080"
-TIME_OUT = 0.3
+TIME_OUT = 0.4
 
 
 MAP_SIZE = None

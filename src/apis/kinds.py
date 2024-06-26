@@ -2,11 +2,12 @@
 
 
 from __future__ import annotations
+import sys
 from typing import TYPE_CHECKING
 
 from apis import connection
 from config import consts
-
+import debug as db
 if TYPE_CHECKING:
     from apis.players.players import Player
 
@@ -123,6 +124,9 @@ class Person(Unit):
         except ValueError as e:
             raise ValueError(f"Tried to move {self} to {y, x} but not allowed: {e}") from e
 
+        if len(sys.argv) > 2 and sys.argv[2] == "debug":
+            print(f"* Moved {self} to {y, x}")
+
         self.y = y
         self.x = x
         self.used = True
@@ -161,7 +165,8 @@ class Pawn(Person):
             raise ValueError(f"Gold {gold} not found in {golds}.\n The client golds where {self.player.good_gold + self.player.bad_gold}")
         connection.farm(
             self.y, self.x, self.player.id, self.player.token)
-
+        if len(sys.argv) > 2 and sys.argv[2] == "debug":
+            print(f"* Farmed {self} on {gold}")
         self.used = True
         self.player.gold += 1
         gold.reduce()
@@ -208,27 +213,30 @@ class Castle(Unit):
 
     def create_defense(self):
         """Crée un défenseur."""
-        cost = consts.PRICES[connection.KNIGHT]
+        cost = consts.PRICES[consts.KNIGHT]
         if self.player.gold < cost:
-            raise ValueError(f"Not enough gold to proceed: {self.player.gold}")
-        connection.build(connection.KNIGHT, self.y, self.x, self.player.id, self.player.token)
+            raise ValueError(f"Not enough gold to proceed: trying to build DEFENSE with {self} and gold = {self.player.gold}.")
+        connection.build(consts.KNIGHT, self.y, self.x, self.player.id, self.player.token)
+        db.log_create_unit(self, "defense")
         self.player.gold -= cost
         self.player.defense.append(Knight(*self.coord, self.player))
 
     def create_attack(self):
         """Crée un défenseur."""
-        cost = consts.PRICES[connection.KNIGHT]
+        cost = consts.PRICES[consts.KNIGHT]
         if self.player.gold < cost:
-            raise ValueError(f"Not enough gold to proceed: {self.player.gold}")
-        connection.build(connection.KNIGHT, self.y, self.x, self.player.id, self.player.token)
+            raise ValueError(f"Not enough gold to proceed: trying to build ATTACK with {self} and gold = {self.player.gold}.")
+        connection.build(consts.KNIGHT, self.y, self.x, self.player.id, self.player.token)
+        db.log_create_unit(self, "attack")
         self.player.gold -= cost
         self.player.attack.append(Knight(*self.coord, self.player))
 
     def create_pawn(self):
         """Crée un défenseur."""
-        cost = consts.PRICES[connection.PAWN]
+        cost = consts.PRICES[consts.PAWN]
         if self.player.gold < cost:
-            raise ValueError(f"Not enough gold to proceed: {self.player.gold}")
-        connection.build(connection.PAWN, self.y, self.x, self.player.id, self.player.token)
+            raise ValueError(f"Not enough gold to proceed: trying to build PAWN with {self} and gold = {self.player.gold}.")
+        connection.build(consts.PAWN, self.y, self.x, self.player.id, self.player.token)
+        db.log_create_unit(self, "pawn")
         self.player.gold -= cost
         self.player.pawns.append(Pawn(*self.coord, self.player))
