@@ -39,8 +39,9 @@ class Player(Player_struct):
         log_func("castle_flee")
         castle_flee(self.castles, self.defense + self.attack, self.eknights, self)
         log_func("fuite")
-        peons.fuite(self.pawns, self.defense + self.attack, self.eknights)
-
+        if self =='B':
+            peons.fuite(self.attack, self.defense + self.attack, self.eknights)
+        print(self.turn)
         log_func("castle")
         build_castle(self)
         peons.free_gold(self.pawns, self.bad_gold)
@@ -57,17 +58,36 @@ class Player(Player_struct):
         log_func("agressiv_defense")
         dfd.agressiv_defense(self.defense, self.epawns, self.eknights, self.ecastles)
         last_len = None
-        log_func("sync atk")
-        atk.sync_atk(self.attack, self.eknights, self.epawns, self)
-        while (length := [k for k in self.attack if not k.used]):
-            log_func("hunt")
-            atk.hunt(self.attack, self.epawns, self.eknights)
-            log_func("destroy")
-            atk.destroy_castle(self.attack + self.defense, self.ecastles, self.eknights)
-            if last_len == length:
-                break
+        atk.free_pawn(self.attack, self.eknights, self.epawns, self.ecastles)
+        print('test1:',self.ecastles == [])
+        #print('test2:',len(self.fog)<connection.size_map()[0]*connection.size_map()[1]*0.2)
+        print('test3 :',self.turn>=200)
+        print('test4',self.epawns == [])
+        if self.ecastles == [] and self.turn >= 200 and self.epawns == []:
+            print('ONFAIT DU ENDTURN')
+            atk.free_pawn(self.attack, self.eknights, self.eknights, self.eknights)
+            print('debut sync atk')
+            atk.sync_atk(self.attack, self.eknights, self.eknights, self, True)
+            print('fin de sync atk 1')
+            while (length := [k for k in self.attack if not k.used]):
+                log_func("hunt1")
+                atk.hunt(self.attack,self.eknights, self.eknights)
+                if last_len == length:
+                    break
 
-            last_len = length
+                last_len = length
+        else:
+            log_func("sync atk")
+            atk.sync_atk(self.attack, self.eknights, self.epawns, self)
+            while (length := [k for k in self.attack if not k.used]):
+                log_func("hunt")
+                atk.hunt(self.attack, self.epawns, self.eknights)
+                log_func("destroy")
+                atk.destroy_castle(self.attack + self.defense, self.ecastles, self.eknights)
+                if last_len == length:
+                    break
+
+                last_len = length
         log_func("explore_knight")
         peons.explore_knight(self, self.pawns + self.castles)
 
