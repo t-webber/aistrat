@@ -56,7 +56,8 @@ class Player(Player_struct):
         dfd.defend(self.pawns, self.defense, self.eknights, self.castles)
         # dfd.agressiv_defense(self.defense, self.epawns, self.eknights, self.ecastles)
         last_len = None
-        atk.sync_atk(self.attack, self.eknights, self.epawns)
+        log_func("sync atk")
+        atk.sync_atk(self.attack, self.eknights, self.epawns, self)
         while (length := [k for k in self.attack if not k.used]):
             log_func("hunt")
             atk.hunt(self.attack, self.epawns, self.eknights)
