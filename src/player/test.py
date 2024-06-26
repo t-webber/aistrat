@@ -333,18 +333,19 @@ def attackHere(knights : list[Knight], eknights : list[Knight],case:tuple[int,in
                 nearestKnights[i].used = True
         return
     
-    liste_trie_conjoint=[(hired_knights[i],nearestKnights[i])for i in range(len(hired_knights))]
+    liste_trie_conjoint=[(hired_knights[i],nearestKnights[i])]
     liste_trie_conjoint=sorted(liste_trie_conjoint)
     nearestKnights = [liste_trie_conjoint[i][1] for i in range(len(liste_trie_conjoint))]
-    hired_knights = [liste_trie_conjoint[i][0] for i in range(len(liste_trie_conjoint))]
-
-    hired_EKnights=sorted(hired_Eknights)
-
+    hired_knights = [liste_trie_conjoint[i][1] for i in range(len(liste_trie_conjoint))]
+    next_moves=min_max_alpha_beta_result([hired_knights,hired_Eknights]) 
+    liste_trie_conjoint=[(hired_Eknights[i],nearestEKnights[i])]
+    liste_trie_conjoint=sorted(liste_trie_conjoint)
+    nearestEKnights = [liste_trie_conjoint[i][1] for i in range(len(liste_trie_conjoint))]
+    hired_Eknights = [liste_trie_conjoint[i][1] for i in range(len(liste_trie_conjoint))]
     next_moves=min_max_alpha_beta_result([hired_knights,hired_Eknights]) 
     #Pour choisir comment déplacer les unités, on fait un min-max
 
     print("moves proposés : ",next_moves)
-    print(case)
     for i, movement in enumerate(next_moves): 
         #Et on opère ensuite les déplacements en fonction du résultat du min_max
         if (nearestKnights[i].y != movement[0] + case[0] or nearestKnights[i].x != movement[1] + case[1]):

@@ -1,9 +1,10 @@
 import copy 
-import random as rd
 import time
+import random as rd
 #import logic.client_logic as cl
 
-config=[[[0,1],[0,1],[0,1],[0,1],[0,1],[0,1]],[[0,0],[0,0],[0,0],[1,1],[1,1],[1,1]]]
+config=[[[0,1],[0,1]],[[0,0],[0,3]]]
+
 def min_max_alpha_beta_result(base_map:list[list[int,int]]):
     '''
     Permet d'appliquer min_max_alpha_beta dans les conditions standard
@@ -16,9 +17,17 @@ def min_max_alpha_beta_result(base_map:list[list[int,int]]):
     player=0
     offsetGood=[rd.randint(0,3) for _ in range(len(base_map[player]))]
     offsetBad=[rd.randint(0,3) for _ in range(len(base_map[1-player]))]
+    for i in range(1,len(base_map[0])):
+        if base_map[0][i]==base_map[0][i-1]:
+            offsetGood[i]=offsetGood[i-1]
+    for i in range(1,len(base_map[1])):
+        if base_map[1][i]==base_map[1][i-1]:
+            offsetGood[i]=offsetGood[i-1]
+            
     #print(offsetGood,offsetBad)
-    _,move=min_max_alpha_beta(depth,alpha,beta,base_map,0,offsetGood,offsetBad)
+    score,move=min_max_alpha_beta(depth,alpha,beta,base_map,0,offsetGood,offsetBad)
     next=next_match(base_map[player],move,offsetGood)
+
     return next
     #return [[next[k][0]-base_map[player][k][0],next[k][1]-base_map[player][k][1]] for k in range(len(next))] #Si c'était en relatif
     
@@ -27,7 +36,6 @@ def min_max_alpha_beta(depth:int,alpha:int,beta:int, base_map:list[list[int,int]
     '''
     algorithme min-max avec elaguage alpha beta, au quel sont ajoutees les contraintes suivantes:
         o impossible de s'eloigner de la case ciblee (consideree en 0,0)
-        o possibilite de sortir de 0,0
         o possibilite de s'eloigner du centre si cela permet d'attaquer 7
     '''
     extrem=player*10000 - 100
@@ -46,7 +54,12 @@ def min_max_alpha_beta(depth:int,alpha:int,beta:int, base_map:list[list[int,int]
                 val=eval_config(next_move)+depth 
             else:
                 #Sinon on s'enfonce
-                val,_ = min_max_alpha_beta(depth-1,new_alpha,new_beta,next_move,1-player,offsetBad,offsetGood)
+                next_move=[sorted(next_move[0]),sorted(next_move[1])]
+                new_offsetBad=[rd.randint(0,3) for i in range(len(offsetGood))]
+                for i in range(1,len(next_move[player])):
+                    if next_move[player][i]==next_move[player][i-1] :
+                        new_offsetBad[i]=new_offsetBad[i-1]
+                val,_ = min_max_alpha_beta(depth-1,new_alpha, new_beta, [sorted(next_move[0]),sorted(next_move[1])],1-player,offsetBad,new_offsetBad)
                 #On inverse les offset ici comme on considère l'autre joueur
             if val> extrem and not player:
                 #Lorsqu'on atteind un nouveau extremum et si on est l'allié...
@@ -122,7 +135,7 @@ def next_match(units,new_vector,offsets):
                 new_units.append(unit)
     return new_units
 
-def good_move(last_vector:list[int],new_move:list[int],units:list[list[int,int]],baddies:list[list[int,int]],offsets:list[int]):
+def good_move(last_vector:list[int],new_move:list[int],units:list[int,int],baddies:list[int,int],offsets:list[int]):
     '''
     Vérifie de la viabilité de l'alternative avant de brancher
     '''
@@ -131,11 +144,14 @@ def good_move(last_vector:list[int],new_move:list[int],units:list[list[int,int]]
     new=next_match(units,new_move,offsets)
     for ind in range(len(new_move)): #On vérifie pour chaque unité déplacée
         if new[ind]!=origin[ind]:
-            if (distance(new[ind][0],new[ind][1],0,0)>distance(origin[ind][0],origin[ind][1],0,0) and not new[ind] in baddies) \
-                    and not (origin[ind][0]==0 and origin[ind][1]==0):
+            if (distance(new[ind][0],new[ind][1],0,0)>distance(origin[ind][0],origin[ind][1],0,0) and not new[ind] in baddies) :
                 #Si on ne se rapproche PAS du centre ou on ne fight pas, on a un mauvais move
                 #On autorise tous les moves au centre
                 return False
+    #elimination des branches redondantes:
+    for i in range(1,len(last_vector)):
+        if (last_vector[i]>last_vector[i-1] and units[i-1]==units[i]):
+            return False
     #RAS = branche valide 
     return True
 
@@ -200,14 +216,14 @@ def fight_resolver(all_units,player):
                 i=0
                 while i<removing[2]: #On marque removing[2] alliés morts sur la case de ally comme morts (lui le premier)
                     if allies[index]==ally: 
-                        allies[index]=(2400,2400)
+                        allies[index]=[2400,2400]
                         i+=1
                     index+=1
                 i=0
                 index=0
                 while i<removing[3]: #On marque removing[3] ennemis morts sur la case de ally comme morts
                     if ennemies[index]==ally: 
-                        ennemies[index]=(-2400,-2400)
+                        ennemies[index]=[-2400,-2400]
                         i+=1
                     index+=1
                 #Complexité au pire O(n^2*m) avec n nombres d'alliés, m nombre d'ennemis
