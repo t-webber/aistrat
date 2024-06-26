@@ -22,9 +22,7 @@
 
 1. [Stratégies]()
       1. [Stratégie 'Gloutonne'](./strategies/glouton.md)
-      1. [Stratégie 'Avec Mémoire'](./strategies/memory/introduction.md)
-         1. [API d'abstraction du joueur](./strategies/memory/player.md)
-         1. [API d'abstraction pour les unités](./strategies/memory/units.md)
+      1. [Stratégie 'Avec Mémoire'](./strategies/memory.md)
       1. [Stratégie 'Heatmap'](./strategies/heatmap.md)
       1. [Stratégie 'Blitzkrieg'](./strategies/blitzkrieg.md)
 
