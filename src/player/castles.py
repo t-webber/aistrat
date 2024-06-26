@@ -12,6 +12,8 @@ from apis.kinds import Castle, Coord
 if TYPE_CHECKING:
     from apis.players.players import Player
 
+build_order = []
+
 
 def move_peon_to_first_location(player: Player, border: int, border_y: int, border_x: int):
     """Construit le premier château."""
@@ -20,8 +22,8 @@ def move_peon_to_first_location(player: Player, border: int, border_y: int, bord
     # si d == 0, le pion est au bon endroit
     # donc il va construire un château ici
     if not d:
-        global HARD_CODE
-        HARD_CODE = False
+        global move_to_first_castle
+        move_to_first_castle = False
         return
 
     for pawn in player.pawns:
@@ -44,7 +46,8 @@ def move_peon_to_first_location(player: Player, border: int, border_y: int, bord
             break
 
 
-HARD_CODE = True
+move_to_first_castle = True
+first_castle_built = False
 
 
 def build_castle(player: Player):
@@ -63,7 +66,7 @@ def build_castle(player: Player):
 
     # Si aucun château n'a été construit, prend le controle d'un pion,
     # le met en (2,2) pour construire un château
-    if not len(player.castles) and HARD_CODE:
+    if not len(player.castles) and move_to_first_castle:
         move_peon_to_first_location(player, border, border_y, border_x)
 
     # Si il y a suffisemment de châteaux ou pas assez d'argent, on ne peut pas construire
@@ -81,7 +84,13 @@ def build_castle(player: Player):
             if cl.distance_to_list((y, x), player.castles)[0] >= settings.DISTANCE_BETWEEN_CASTLES:
                 # suffisamment loin des autres péons
                 if not cl.exists_close(pawn, player.eknights, 2):
+                    global first_castle_built
+                    if not first_castle_built:
+                        global build_order
+                        build_order = ['attack'] + (len(player.good_gold) + 1) * ['pawn']
+                        print('build_order: ', build_order)
                     pawn.build()
+                    first_castle_built = True
                     return
 
 
@@ -98,33 +107,45 @@ def nb_units_near_castles(castle: Castle, coords: list[Coord], radius: int):
 
 def create_units(player: Player):
     """Création des unités par le château."""
-    eknight_offset = len(player.eknights) - len(player.defense)
-    len_golds = len(player._golds)
-    for castle in player.castles:
-        # 1. Nous sommes attaqués, production de défenseurs
-        if (nb_units_near_castles(castle, player.eknights, 6) > 1.5 * nb_units_near_castles(castle, player.defense, 6)
-                or nb_units_near_castles(castle, player.eknights, 2) > nb_units_near_castles(castle, player.defense, 0)):
-            print("---priory1---")
-            if player.gold >= consts.PRICES[consts.KNIGHT]:
-                castle.create_defense()
-                eknight_offset -= 1
-            break
-        # 2. Vraiment pas assez de péon
-        elif nb_units_near_castles(castle, player.good_gold, settings.DISTANCE_BETWEEN_CASTLES) >= len(player.pawns):
-            print("---priory2---")
-            if player.gold >= consts.PRICES[consts.PAWN]:
-                castle.create_pawn()
-        # 3. Il y a des péons ennemis
-        elif len(player.epawns) >= settings.PAWNS_KNIGHTS_RATIO * len(player.attack):
-            print("---priory3---")
-            if player.gold >= consts.PRICES[consts.KNIGHT] + consts.PRICES[consts.KNIGHT]:
+    if not build_order:
+        eknight_offset = len(player.eknights) - len(player.defense)
+        len_golds = len(player._golds)
+        missing_priority_castles = len(player.castles) < get_nb_castles() // settings.PRIORITISED_CASTLES_RATIO
+        for castle in player.castles:
+            # 1. Nous sommes attaqués, production de défenseurs
+            if (nb_units_near_castles(castle, player.eknights, 6) > 1.5 * nb_units_near_castles(castle, player.defense, 6)
+                    or nb_units_near_castles(castle, player.eknights, 2) > nb_units_near_castles(castle, player.defense, 0)):
+                print("---priory1---")
+                if player.gold >= consts.PRICES[consts.KNIGHT]:
+                    castle.create_defense()
+                    eknight_offset -= 1
+                break
+            # 2. Vraiment pas assez de péon
+            elif nb_units_near_castles(castle, player.good_gold, settings.DISTANCE_BETWEEN_CASTLES) >= len(player.pawns):
+                print("---priory2---")
+                if player.gold >= consts.PRICES[consts.PAWN]:
+                    castle.create_pawn()
+            # 3. Il y a des péons ennemis
+            elif len(player.epawns) >= settings.PAWNS_KNIGHTS_RATIO * len(player.attack):
+                print("---priory3---")
+                if player.gold >= consts.PRICES[consts.KNIGHT] + consts.PRICES[consts.KNIGHT]:
+                    castle.create_attack()
+            # 4. Pas assez de péons
+            elif len_golds > 1.5 * len(player.pawns):
+                print("---priory4---")
+                if player.gold >= consts.PRICES[consts.PAWN] + consts.PRICES[consts.KNIGHT]:
+                    castle.create_pawn()
+            # 5. Production d'attaquants
+            elif player.gold >= consts.PRICES[consts.KNIGHT] + consts.PRICES[consts.KNIGHT]:
+                print("---priory5---")
                 castle.create_attack()
-        # 4. Pas assez de péons
-        elif len_golds > 1.5 * len(player.pawns):
-            print("---priory4---")
-            if player.gold >= consts.PRICES[consts.PAWN] + consts.PRICES[consts.KNIGHT]:
-                castle.create_pawn()
-        # 5. Production d'attaquants
-        elif player.gold >= consts.PRICES[consts.KNIGHT] + consts.PRICES[consts.KNIGHT]:
-            print("---priory5---")
-            castle.create_attack()
+    else:
+        for castle in player.castles:
+            if build_order[-1] == 'pawn':
+                if player.gold >= consts.PRICES[consts.PAWN]:
+                    castle.create_pawn()
+                    build_order.pop()
+            elif build_order[-1] == 'attack':
+                if player.gold >= consts.PRICES[consts.KNIGHT]:
+                    castle.create_attack()
+                    build_order.pop()
