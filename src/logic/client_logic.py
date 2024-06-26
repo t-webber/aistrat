@@ -6,6 +6,12 @@ from apis.kinds import Unit, Knight, Pawn, Castle, GoldPile, Coord
 from apis import connection
 import debug as db
 
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from apis.players.players import Player
+
+
 defense_knights = {"A": [], "B": []}
 
 
@@ -202,37 +208,42 @@ def in_obj(object: Coord, object_list: list[Coord]):
             return True
     return False
 
-def left_p(unit : Unit, i : int, j : int, eknights : list[Knight], ecastles : list[Castle]) -> bool:
+
+def left_p(unit: Unit, i: int, j: int, eknights: list[Knight], ecastles: list[Castle]) -> bool:
     if unit.x > j and not in_obj(Coord(unit.y, unit.x - 1), eknights) and (unit.y, unit.x - 1) not in ecastles and \
-                    (neighbors((unit.y, unit.x - 1), eknights)[1] == 0 or neighbors((unit.y, unit.x - 1), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
-                unit.move(unit.y, unit.x - 1)
-                db.log_func_destination(i,j)
-                return True
+            (neighbors((unit.y, unit.x - 1), eknights)[1] == 0 or neighbors((unit.y, unit.x - 1), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
+        unit.move(unit.y, unit.x - 1)
+        db.log_func_destination(i, j)
+        return True
     return False
+
 
 def right_p(unit: Unit, i: int, j: int, eknights: list[Knight], ecastles: list[Castle]) -> bool:
     if unit.x < j and not in_obj(Coord(unit.y, unit.x + 1), eknights) and (unit.y, unit.x + 1) not in ecastles and \
-        (neighbors((unit.y, unit.x + 1), eknights)[1] == 0 or neighbors((unit.y, unit.x + 1), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
-            unit.move(unit.y, unit.x + 1)
-            db.log_func_destination(i, j)
-            return True
+            (neighbors((unit.y, unit.x + 1), eknights)[1] == 0 or neighbors((unit.y, unit.x + 1), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
+        unit.move(unit.y, unit.x + 1)
+        db.log_func_destination(i, j)
+        return True
     return False
+
 
 def up_p(unit: Unit, i: int, j: int, eknights: list[Knight], ecastles: list[Castle]) -> bool:
     if unit.y > i and not in_obj(Coord(unit.y - 1, unit.x), eknights) and (unit.y - 1, unit.x) not in ecastles and \
-                (neighbors((unit.y - 1, unit.x), eknights)[1] == 0 or neighbors((unit.y - 1, unit.x), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
-            unit.move(unit.y - 1, unit.x)
-            db.log_func_destination(i, j)
-            return True
-    return False
-
-def down_p(unit: Unit, i:int, j:int, eknights: list[Knight], ecastles: list[Castle]):
-    if unit.y < i and not in_obj(Coord(unit.y + 1, unit.x), eknights) and (unit.y + 1, unit.x) not in ecastles and \
-    (neighbors((unit.y + 1, unit.x), eknights)[1] == 0 or neighbors((unit.y + 1, unit.x), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
-        unit.move(unit.y + 1, unit.x)
-        db.log_func_destination(i,j)
+            (neighbors((unit.y - 1, unit.x), eknights)[1] == 0 or neighbors((unit.y - 1, unit.x), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
+        unit.move(unit.y - 1, unit.x)
+        db.log_func_destination(i, j)
         return True
     return False
+
+
+def down_p(unit: Unit, i: int, j: int, eknights: list[Knight], ecastles: list[Castle]):
+    if unit.y < i and not in_obj(Coord(unit.y + 1, unit.x), eknights) and (unit.y + 1, unit.x) not in ecastles and \
+            (neighbors((unit.y + 1, unit.x), eknights)[1] == 0 or neighbors((unit.y + 1, unit.x), eknights)[1] <= len(connection.get_eknights(unit.y, unit.x))):
+        unit.move(unit.y + 1, unit.x)
+        db.log_func_destination(i, j)
+        return True
+    return False
+
 
 def down_up_right_left(unit: Unit, i: int, j: int, eknights: list[Knight], ecastles: list[Castle]):
     """Déplace une unité ddans l'ordre cet ordre de priorité."""
@@ -246,6 +257,7 @@ def down_up_right_left(unit: Unit, i: int, j: int, eknights: list[Knight], ecast
         return True
     return False
 
+
 def right_left_down_up(unit: Unit, i: int, j: int, eknights: list[Knight], ecastles: list[Castle]):
     """Déplace une unité ddans l'ordre cet ordre de priorité."""
     if right_p(unit, i, j, eknights, ecastles):
@@ -257,6 +269,7 @@ def right_left_down_up(unit: Unit, i: int, j: int, eknights: list[Knight], ecast
     if up_p(unit, i, j, eknights, ecastles):
         return True
     return False
+
 
 def down_right_left_up(unit: Unit, i: int, j: int, eknights: list[Knight], ecastles: list[Castle]):
     """Déplace une unité ddans l'ordre cet ordre de priorité."""
@@ -270,6 +283,7 @@ def down_right_left_up(unit: Unit, i: int, j: int, eknights: list[Knight], ecast
         return True
     return False
 
+
 def right_down_up_left(unit: Unit, i: int, j: int, eknights: list[Knight], ecastles: list[Castle]):
     """Déplace une unité ddans l'ordre cet ordre de priorité."""
     if right_p(unit, i, j, eknights, ecastles):
@@ -281,6 +295,7 @@ def right_down_up_left(unit: Unit, i: int, j: int, eknights: list[Knight], ecast
     if left_p(unit, i, j, eknights, ecastles):
         return True
     return False
+
 
 def up_right_left_down(unit: Unit, i: int, j: int, eknights: list[Knight], ecastles: list[Castle]):
     """Déplace une unité ddans l'ordre cet ordre de priorité."""
@@ -294,6 +309,7 @@ def up_right_left_down(unit: Unit, i: int, j: int, eknights: list[Knight], ecast
         return True
     return False
 
+
 def left_down_up_right(unit: Unit, i: int, j: int, eknights: list[Knight], ecastles: list[Castle]):
     """Déplace une unité ddans l'ordre cet ordre de priorité."""
     if left_p(unit, i, j, eknights, ecastles):
@@ -306,10 +322,11 @@ def left_down_up_right(unit: Unit, i: int, j: int, eknights: list[Knight], ecast
         return True
     return False
 
+
 def move_safe_random(unit: Unit, eknights: list[Knight], ecastles: list[Castle], i: int, j: int):
     """Déplace une unité de manière aléatoire vers une case sûre."""
     len_y, len_x = connection.size_map()
-    if (unit.x > 2 and unit.x < len_x - 3 and unit.y > 2 and unit.y < len_y - 3) :
+    if (unit.x > 2 and unit.x < len_x - 3 and unit.y > 2 and unit.y < len_y - 3):
         if rd.random() > 0.5:
             if down_up_right_left(unit, i, j, eknights, ecastles):
                 return True
@@ -321,41 +338,40 @@ def move_safe_random(unit: Unit, eknights: list[Knight], ecastles: list[Castle],
     else:
         if rd.random() > 0.5:  # pour ne pas que le chevalier aille toujours d'abord en haut puis à gauche
             for k in range(3):
-                if unit.y == k :
+                if unit.y == k:
                     if down_right_left_up(unit, i, j, eknights, ecastles):
                         return True
                     return False
-                if unit.x == k :
+                if unit.x == k:
                     if right_down_up_left(unit, i, j, eknights, ecastles):
                         return True
                     return False
-                if unit.y == len_y - 1 - k :
+                if unit.y == len_y - 1 - k:
                     if up_right_left_down(unit, i, j, eknights, ecastles):
                         return True
                     return False
-                if unit.x == len_x - 1 - k :
+                if unit.x == len_x - 1 - k:
                     if left_down_up_right(unit, i, j, eknights, ecastles):
                         return True
                     return False
         else:
             for k in range(3):
-                if unit.x == k :
+                if unit.x == k:
                     if right_down_up_left(unit, i, j, eknights, ecastles):
                         return True
                     return False
-                if unit.y == k :
+                if unit.y == k:
                     if down_right_left_up(unit, i, j, eknights, ecastles):
                         return True
                     return False
-                if unit.x == len_x - 1 - k :
+                if unit.x == len_x - 1 - k:
                     if left_down_up_right(unit, i, j, eknights, ecastles):
                         return True
                     return False
-                if unit.y == len_y - 1 - k :
+                if unit.y == len_y - 1 - k:
                     if up_right_left_down(unit, i, j, eknights, ecastles):
                         return True
                     return False
-
 
 
 def move_without_suicide(unit: Unit, eknights: list[Knight], i: int, j: int):
@@ -396,3 +412,24 @@ def move_safe_random_without_purpose(unit: Unit, eknights: list[Knight], ecastle
             unit.move(i, j)
             return True
     return False
+
+
+def nb_units_near_units(centre: Coord, units: list[Coord], radius: int):
+    """Renvoie le nombre d'unités dans un rayon donné autour d'un château."""
+    return len([0 for unit in units if cl.distance(*unit.coord, *centre.coord) <= radius])
+
+
+def gold_expectation_minimal(player: Player, turn: int):
+    """
+    Get the minimum amount of gold available in next few turns.
+
+    turn is the offset of turns between now, and the wanted time.
+    turn = 0 for the current turn.
+    """
+    future_gold = player.gold
+    for gold in player._golds:
+        y, x = gold.coord
+        if in_obj(gold.coord, player.pawns):
+            eknight_d = distance_to_list((y, x), player.eknights)
+            future_gold += max(0, turn - eknight_d, gold.gold)
+    return future_gold
