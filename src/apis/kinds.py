@@ -191,7 +191,7 @@ class Knight(Person):
 
     def __str__(self):
         """Affiche un chevalier."""
-        return f"K({self.y}, {self.x}, {self.used})"
+        return f"K({self.y}, {self.x}, {self.used}, {self.target})"
 
     __repr__ = __str__
 
