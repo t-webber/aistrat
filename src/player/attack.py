@@ -176,8 +176,7 @@ def endgame(knights: list[Knight], eknights: list[Knight]):
 
 
 def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy], player):
-    not_used_knights = list(filter(lambda knight: not knight.used, knights))
-    not_used_knights = list(filter(lambda knight: (knight.target is not None), not_used_knights))
+    not_used_knights = list(filter(lambda knight: (knight.target is not None), knights))
     dicoattaque = {}
     for k in not_used_knights:
         dist = 2
