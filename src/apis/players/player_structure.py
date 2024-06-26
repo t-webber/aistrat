@@ -179,6 +179,7 @@ class Player_struct:
             raise ValueError(f"{instance} changed: server {server_units} != client {client_units}")
 
     def check_two_set_list_coord(self, attack: list[Knight], defense: list[Knight], server_knights: list[(int, int)]):
+        """Vérifie si les listes contenants les attaquants et les défenseurs sont cohérentes avec les données du serveur."""
         server = server_knights.copy()
         log_attack = attack.copy()
         log_defense = defense.copy()

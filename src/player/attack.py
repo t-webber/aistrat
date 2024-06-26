@@ -101,7 +101,7 @@ def hunt(knights: list[Knight], epawns: list[Pawn], eknights: list[Knight]):
     not_used_knights = list(filter(lambda knight: not knight.used, knights))
     if not_used_knights and epawns:
 
-        # affecation problem
+        # > problème d'affectation <
         # choisis les mines d'or vers lesquelles vont se diriger les peons
         # pour en minimiser le nombre total de mouvements
         vus = []
@@ -135,7 +135,6 @@ def destroy_castle(knights: list[Knight], castles: list[Castle],
                 attaque((i, j), knights_not_used, eknights)
             else:
                 if not knights_not_used[k].used:
-                if not knights_not_used[k].used:
                     cl.move_without_suicide(knights_not_used[k], eknights, i, j)
 
 
@@ -144,16 +143,16 @@ def free_pawn(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy]
     for knight in knights:
         if not knight.used:
             for castle in castles:
-                if cl.distance(knight.x, knight.y, castle.x, castle.y) == 1 and prediction_attaque((castle.y,castle.x),knights,eknights):
-                    a= cl.movable_neighbors(castle.coord, knights)[0]
+                if cl.distance(knight.x, knight.y, castle.x, castle.y) == 1 and prediction_attaque((castle.y, castle.x), knights, eknights):
+                    a = cl.movable_neighbors(castle.coord, knights)[0]
                     allies_voisins_exploitable = []
                     for e in a:
                         allies_voisins_exploitable += a[e]
                     move_everyone(castle.coord, allies_voisins_exploitable)
         if not knight.used:
             for epawn in epawns:
-                if cl.distance(knight.x, knight.y, epawn.x, epawn.y) == 1 and prediction_attaque((epawn.y,epawn.x),knights,eknights):
-                    a= cl.movable_neighbors(epawn.coord, knights)[0]
+                if cl.distance(knight.x, knight.y, epawn.x, epawn.y) == 1 and prediction_attaque((epawn.y, epawn.x), knights, eknights):
+                    a = cl.movable_neighbors(epawn.coord, knights)[0]
                     allies_voisins_exploitable = []
                     for e in a:
                         allies_voisins_exploitable += a[e]
@@ -174,6 +173,7 @@ def endgame(knights: list[Knight], eknights: list[Knight]):
                 cl.move_without_suicide(knights_not_used[k], eknights, i, j)
         knights_not_used = list(filter(lambda knight: not knight.used, knights))
 
+
 def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy]):
     print("sync")
     not_used_knights = list(filter(lambda knight: (knight.target != None), knights))
@@ -188,36 +188,36 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy])
             if dist2 < dist:
                 dist = dist2
                 k.target = ep
-                print("maj target")            
+                print("maj target")
     for k in not_used_knights:
-        dicoattaque[k.target]=[]
+        dicoattaque[k.target] = []
     for k in not_used_knights:
         epawn = k.target
-        dicoattaque[epawn]= dicoattaque[epawn] + [k]
+        dicoattaque[epawn] = dicoattaque[epawn] + [k]
     for ep in dicoattaque:
-        if ep != None:
-            i,j = ep.coord
-            newpos=[]
+        if ep is not None:
+            i, j = ep.coord
+            newpos = []
             Y1 = 0
             Y2 = 0
             Y3 = 0
             X1 = 0
             X2 = 0
             X3 = 0
-            for k2 in dicoattaque[ep] :
+            for k2 in dicoattaque[ep]:
                 if k2.y == i:
                     Y1 += 1
-                elif k2.y - i==1:
+                elif k2.y - i == 1:
                     Y2 += 1
-                elif k2.y - i==-1:
+                elif k2.y - i == -1:
                     Y3 += 1
                 if k2.x == j:
                     X1 += 1
-                elif k2.x - j==1:
+                elif k2.x - j == 1:
                     X2 += 1
-                elif k2.x - j==1:
+                elif k2.x - j == 1:
                     X3 += 1
-            print(Y1,Y2,Y3,X1,X2,X3)
+            print(Y1, Y2, Y3, X1, X2, X3)
             for k in dicoattaque[ep]:
                 if k.used:
                     continue
@@ -225,30 +225,30 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy])
                     y, x = k.coord
                     a = i - y
                     b = j - x
-                    y2=0
-                    x2=0
-                    
-                    if a >0:
+                    y2 = 0
+                    x2 = 0
+
+                    if a > 0:
                         y2 = 1
                     else:
                         y2 = -1
-                    if b >0:
+                    if b > 0:
                         x2 = 1
                     else:
                         x2 = -1
-                    if abs(b) >=  abs(a):
+                    if abs(b) >= abs(a):
                         print(a)
                         if Y1:
                             if Y2 or Y3:
                                 if y == i:
                                     if not (connection.get_eknights(y, x + x2)):
-                                        k.move(y, x+x2)
-                                    elif  (y + 1 < connection.size_map()[0]) and not (connection.get_eknights(y + 1, x)):
-                                        k.move(y+1, x)
+                                        k.move(y, x + x2)
+                                    elif (y + 1 < connection.size_map()[0]) and not (connection.get_eknights(y + 1, x)):
+                                        k.move(y + 1, x)
                                         Y2 += 1
                                         Y1 -= 1
-                                    elif (y-1 >= 0) and not (connection.get_eknights(y - 1, x)):
-                                        k.move(y-1, x)
+                                    elif (y - 1 >= 0) and not (connection.get_eknights(y - 1, x)):
+                                        k.move(y - 1, x)
                                         Y3 += 1
                                         Y1 -= 1
                                     else:
@@ -256,9 +256,9 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy])
                                         Y1 -= 1
                                 elif y - i == 1:
                                     if not (connection.get_eknights(y, x + x2)):
-                                        k.move(y, x+x2)
+                                        k.move(y, x + x2)
                                     elif not (connection.get_eknights(y - 1, x)):
-                                        k.move(y-1, x)
+                                        k.move(y - 1, x)
                                         Y1 += 1
                                         Y2 -= 1
                                     else:
@@ -266,9 +266,9 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy])
                                         Y2 -= 1
                                 elif y - i == -1:
                                     if not (connection.get_eknights(y, x + x2)):
-                                        k.move(y, x+x2)
+                                        k.move(y, x + x2)
                                     elif not (connection.get_eknights(y + 1, x)):
-                                        k.move(y+1, x)
+                                        k.move(y + 1, x)
                                         Y1 += 1
                                         Y3 -= 1
                                     else:
@@ -280,15 +280,15 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy])
                                 print("j en decale 1")
                                 if y == i:
                                     if (y + 1 < connection.size_map()[0]) and not (connection.get_eknights(y + 1, x)):
-                                        k.move(y+1, x)
+                                        k.move(y + 1, x)
                                         Y2 += 1
                                         Y1 -= 1
-                                    elif (y-1 >= 0) and not (connection.get_eknights(y - 1, x)):
-                                        k.move(y-1, x)
+                                    elif (y - 1 >= 0) and not (connection.get_eknights(y - 1, x)):
+                                        k.move(y - 1, x)
                                         Y3 += 1
                                         Y1 -= 1
                                     elif not (connection.get_eknights(y, x + x2)):
-                                        k.move(y, x+x2)
+                                        k.move(y, x + x2)
                                     else:
                                         k.target = None
                                         Y1 -= 1
@@ -327,7 +327,7 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy])
                                         k.move(y, x + 1)
                                         X2 += 1
                                         X1 -= 1
-                                    elif (x-1 >= 0) and not (connection.get_eknights(y, x - 1)):
+                                    elif (x - 1 >= 0) and not (connection.get_eknights(y, x - 1)):
                                         k.move(y, x - 1)
                                         X3 += 1
                                         X1 -= 1
@@ -363,7 +363,7 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy])
                                         k.move(y, x + 1)
                                         X2 += 1
                                         X1 -= 1
-                                    elif (x-1 >= 0) and not (connection.get_eknights(y, x - 1)):
+                                    elif (x - 1 >= 0) and not (connection.get_eknights(y, x - 1)):
                                         k.move(y, x - 1)
                                         X3 += 1
                                         X1 -= 1
@@ -397,4 +397,3 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy])
                                     X3 -= 1
                         else:
                             cl.move_without_suicide(k, eknights, i, j)
-                        
