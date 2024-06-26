@@ -1,4 +1,5 @@
 import copy 
+import random as rd
 import logic.client_logic as cl
 
 config=[[[1,0],[1,0],[1,0],[1,0]],[[1,1],[0,0]]]
@@ -13,13 +14,16 @@ def min_max_alpha_beta_result(base_map:list[list[int,int]]):
     alpha=-100
     beta=1000
     player=0
-    _,move=min_max_alpha_beta(depth,alpha,beta,base_map,0)
-    next=next_match(base_map[player],move)
+    offsetGood=[rd.randint(0,3) for _ in range(len(base_map[player]))]
+    offsetBad=[rd.randint(0,3) for _ in range(len(base_map[1-player]))]
+    #print(offsetGood,offsetBad)
+    _,move=min_max_alpha_beta(depth,alpha,beta,base_map,0,offsetGood,offsetBad)
+    next=next_match(base_map[player],move,offsetGood)
     return next
     #return [[next[k][0]-base_map[player][k][0],next[k][1]-base_map[player][k][1]] for k in range(len(next))] #Si c'était en relatif
     
 
-def min_max_alpha_beta(depth:int,alpha:int,beta:int, base_map:list[list[int,int]],player:int):
+def min_max_alpha_beta(depth:int,alpha:int,beta:int, base_map:list[list[int,int]],player:int,offsetGood:list[int],offsetBad:list[int]):
     '''
     algorithme min-max avec elaguage alpha beta, au quel sont ajoutees les contraintes suivantes:
         o impossible de s'eloigner de la case ciblee (consideree en 0,0)
@@ -42,7 +46,8 @@ def min_max_alpha_beta(depth:int,alpha:int,beta:int, base_map:list[list[int,int]
                 val=eval_config(next_move)+depth 
             else:
                 #Sinon on s'enfonce
-                val,_ = min_max_alpha_beta(depth-1,new_alpha,new_beta,next_move,1-player)
+                val,_ = min_max_alpha_beta(depth-1,new_alpha,new_beta,next_move,1-player,offsetBad,offsetGood)
+                #On inverse les offset ici comme on considère l'autre joueur
             if val> extrem and not player:
                 #Lorsqu'on atteind un nouveau extremum et si on est l'allié...
                 extrem = val
@@ -60,7 +65,7 @@ def min_max_alpha_beta(depth:int,alpha:int,beta:int, base_map:list[list[int,int]
                 if val <= alpha:
                     return val,(map_id_max,config)  
                 
-            next_move,map_id = next_turn(base_map,player,map_id)
+            next_move,map_id = next_turn(base_map,player,map_id,offsetGood)
             #On récupère ensuite les paramètres pour le nouveau tour
             if map_id is not None:
                 fight_resolver(next_move,player)
@@ -91,36 +96,39 @@ def eval_config(config):
     return score #On met pas de score négatif
 
 
-def next_match(units,new_vector):
+def next_match(units,new_vector,offsets):
     '''
     Crée des listes d'unités qui ont été déplacées d'après la valeur du vecteur donné
     '''
     new_units=[]
+    matchers=[1,2,3,4]
+    #print("Offset:",offsets)
+    #print("Unité:",units)
     for i,unit in enumerate(units):
         if abs(unit[0])==2400:
             #Si l'unité est morte, n'y touche pas
             new_units.append(unit)
-        else: 
-            match(new_vector[i]): #0 on bonge pas, 1 haut, 2 bas, 3 gauche, 4 droites
-                case 1:
-                    new_units.append([unit[0]-1,unit[1]]) 
-                case 2:
-                    new_units.append([unit[0]+1,unit[1]])
-                case 3:
-                    new_units.append([unit[0],unit[1]-1])
-                case 4:
-                    new_units.append([unit[0],unit[1]+1])
-                case _: 
-                    new_units.append(unit)
+        else:  
+            #0 on bonge pas, 1 haut, 2 bas, 3 gauche, 4 droites
+            if new_vector[i]==matchers[(0+offsets[i])%4]:
+                new_units.append([unit[0]-1,unit[1]]) 
+            elif new_vector[i]==matchers[(1+offsets[i])%4]:
+                new_units.append([unit[0]+1,unit[1]])
+            elif new_vector[i]==matchers[(2+offsets[i])%4]:
+                new_units.append([unit[0],unit[1]-1])
+            elif new_vector[i] == matchers[(3+offsets[i])%4]:
+                new_units.append([unit[0],unit[1]+1])
+            else: 
+                new_units.append(unit)
     return new_units
 
-def good_move(last_vector:list[int],new_move:list[int],units:list[list[int,int]],baddies:list[list[int,int]]):
+def good_move(last_vector:list[int],new_move:list[int],units:list[list[int,int]],baddies:list[list[int,int]],offsets:list[int]):
     '''
     Vérifie de la viabilité de l'alternative avant de brancher
     '''
     #return True
-    origin=next_match(units,[0 for _ in range(len(last_vector))])
-    new=next_match(units,new_move)
+    origin=next_match(units,[0 for _ in range(len(last_vector))],offsets)
+    new=next_match(units,new_move,offsets)
     for ind in range(len(new_move)): #On vérifie pour chaque unité déplacée
         if new[ind]!=origin[ind]:
             if (cl.distance(new[ind][0],new[ind][1],0,0)>cl.distance(origin[ind][0],origin[ind][1],0,0) and not new[ind] in baddies) \
@@ -148,7 +156,7 @@ def cinq_adder(last_vector,indice,units):
         last_vector[indice]+=1
         return last_vector
 
-def next_turn(units:list[list[int,int]],player:int,last_vector:list[int]=None):
+def next_turn(units:list[list[int,int]],player:int,last_vector:list[int],offsets:list[int]):
     '''
     Itère sur les états de la carte possible
 
@@ -161,12 +169,12 @@ def next_turn(units:list[list[int,int]],player:int,last_vector:list[int]=None):
     units=copy.deepcopy(units) #On ne veut pas modifier les unités en entrée
     my_units=units[player]
     new_move=cinq_adder(last_vector,0,my_units) #Prochain mouvement = incrémentation du vecteur encodé en pentaire (1-2-3-4 pour déplacements latéraux, 0= immobile)
-    while (new_move is not None) and (not good_move(last_vector,new_move,my_units,units[1-player])):
+    while (new_move is not None) and (not good_move(last_vector,new_move,my_units,units[1-player],offsets)):
         #Si on a un move qui est vraiment pas bien (éloignant sans attaque), on évite de créer une branche pour rien et on refait
         new_move=cinq_adder(last_vector,0,my_units)
     if new_move is None: #Si on a None, cinq_adder a complètement overflow donc on a tout vu
         return None,None
-    units[player]=next_match(my_units,new_move) #On effectue le déplacement une fois le move vérifié et on le renvoie avec le vecteur
+    units[player]=next_match(my_units,new_move,offsets) #On effectue le déplacement une fois le move vérifié et on le renvoie avec le vecteur
     return units,new_move
 
 def fight_resolver(all_units,player):

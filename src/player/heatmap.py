@@ -51,7 +51,9 @@ def heatMapDefenseGen(pawns: list[Pawn], castles : list[Castle], eknights : list
     for castle in castles:
         addLight(heat_map,maskHeatDef["Castle"],(castle.y,castle.x), 1) #Les châteaux
     for eknight in eknights:
-        addLight(heat_map, maskHeatDef["Eknight"], (eknight.y, eknight.x), 1) #Les chevaliers ennemis
+        for unit in pawns + castles:
+            if cl.distance(*unit.coord, *eknight.coord) < 3:
+                addLight(heat_map, maskHeatDef["Eknight"], (eknight.y, eknight.x), 1) #Les chevaliers ennemis placent leur lumière sur les cases a protéger.
     for knight in knights:
         if knight.used:
             addLight(heat_map, maskHeatDef["ChosenKnight"], (knight.y, knight.x), 1) #Les chevaliers alliés déjà utilisés
@@ -131,6 +133,7 @@ def heatMapAttackGen(epawns : list[Pawn], ecastles : list[Castle], id : str, kni
             heat_map[i][j] += heatbattle(knights, eknights, j, i, 2, 2, 2) + gold_here #Et on l'utilise aussi comme pondération
 
         #rajout du rayonnement des péons et chateaux ennemis qui sont les cibles
+        #Les cibles sont moins importantes si elles sont loins, permettant ainsi d'avoir une structuration du front
     for epawn in epawns:
         done = False
         for knight in knights:
@@ -138,9 +141,9 @@ def heatMapAttackGen(epawns : list[Pawn], ecastles : list[Castle], id : str, kni
                 addLight(heat_map,maskHeatAtt["Epawn_adj"],(epawn.y,epawn.x), 1) #... on ajoute de la lumière associée
                 done = True
         if not done : #Si aucun chevalier à côté, on ajoute une autre lumière plus faible
-            addLight(heat_map,maskHeatAtt["Epawn"],(epawn.y,epawn.x), 1/(1 + cl.distance(*epawn.coord, *corner)))
+            addLight(heat_map,maskHeatAtt["Epawn"],(epawn.y,epawn.x), 1/(1 + (cl.distance(*epawn.coord, *corner))**(1/4)))
     for ecastle in ecastles:
-        addLight(heat_map,maskHeatAtt["Ecastle"],(ecastle.y,ecastle.x), 1/(1+ cl.distance(*ecastle.coord, *corner))) #Et on considère aussi les châteaux à attaquer
+        addLight(heat_map,maskHeatAtt["Ecastle"],(ecastle.y,ecastle.x), 1/(1+ (cl.distance(*ecastle.coord, *corner))**(1/4))) #Et on considère aussi les châteaux à attaquer
 
     return heat_map
 
@@ -183,11 +186,18 @@ def heatMapMove(pawns :list[Pawn], knights : list[Knight], castles : list[Castle
         tp=None
         for i in range(con.size_map()[0]):
             for j in range(con.size_map()[1]):
+
+                # Cas particulier : la attmap a vue une défaite un 1 sur certaine cases, on l'indique ainsi aussi a defmap  
+                if attmap[i][j] < 0:
+                    defmap[i][j] = -10
+
+
                 #Quand des valeurs se distinguent sur les cates on va essayer d'agir en conséquence en prennant la plus grande
                 if attmap[i][j]>max:
                     max=attmap[i][j]
                     co=(i,j)
                     tp="A"
+
                 if defmap[i][j]>max:
                     max=defmap[i][j]
                     co=(i,j)
