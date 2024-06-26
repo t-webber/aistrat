@@ -103,7 +103,7 @@
 
 ## 22/06
 
-- Tom: amélioration de la logique des chateaux, avec des constantes empiriques facilement modifiables
+- Tom : amélioration de la logique des chateaux, avec des constantes empiriques facilement modifiables (cf. le fichier `settings.py`)
 
 ## 24/06
 
@@ -126,6 +126,8 @@
 - Martin : correction d'un bug de l'attaque d'opportunité, amorce d'un algorithme pour coordonner les attaquants chassant une même cible.
 
 ### 26/06
+
 - Erwan : Amélioration des constantes de heatmap en jouant avec ces dernières, et en comparant notre IA avec celle présente actuellement sur le main.
-Débuggage de heatmap et fusion propre avec oop10 pour profiter du travail sur la gestion des péons et des châteaux.s
+  Débuggage de heatmap et fusion propre avec oop10 pour profiter du travail sur la gestion des péons et des châteaux.s
 - Martin : implémentation finale de l'attaque synchronisé et debuggage en tout genre sur l'attaque.
+- Tom : Amélioration de la logique des châteaux, avec un système intelligent qui prend en compte tous les châteaux (cf. `economy`). Correction de bugs sur l'attaque synchronisée, debug de l'attaque, des châteaux et des mouvements de péons. Écriture du rapport final. Correction et écriture de la documentation du mdbook.
