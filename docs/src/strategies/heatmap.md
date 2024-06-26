@@ -40,4 +40,5 @@ Pour l'attaque avec les heat map, deux cas se présentent:
 
 # Defense avec la heat_map
 
-Pour la défense avec la heat map
+Pour la défense avec la heat map on prend uniquement le chevalier le plus proche, et on le déplace. 
+Les chevaliers déjà utilisé à un tour donné ont une plus grande influence sur la heatmap de défense car ils sont à leur position définitive ce qui fait que rapprocher le chevalier le plus proche à de grande chance d'influer sur l'importance de la case séléctionnée et empêche ainsi que tous les chevaliers tentent de défendre un seule et même case.
