@@ -176,7 +176,7 @@ def endgame(knights: list[Knight], eknights: list[Knight]):
 
 
 def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy], player):
-    not_used_knights = list(filter(lambda knight: not knight.used , knights))
+    not_used_knights = list(filter(lambda knight: not knight.used, knights))
     not_used_knights = list(filter(lambda knight: (knight.target != None), not_used_knights))
     dicoattaque = {}
     for k in not_used_knights:
@@ -218,24 +218,29 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                 connection.get_data(player.id, player.token)
                 if k.used:
                     continue
-                if (connection.get_map()[k.target.y][k.target.x ][player.id][consts.KNIGHT]):
+                if (connection.get_map()[k.target.y][k.target.x][player.id][consts.KNIGHT]):
                     k.target = None
                 else:
+                    print("target = ", k.target)
                     y, x = k.coord
                     a = i - y
                     b = j - x
                     y2 = 0
                     x2 = 0
-                    l,L = connection.size_map()
+                    l, L = connection.size_map()
                     if a > 0:
                         y2 = 1
-                    else:
+                    elif a < 0:
                         y2 = -1
+                    else:
+                        y2 = 0
                     if b > 0:
                         x2 = 1
-                    else:
+                    elif b < 0:
                         x2 = -1
-                    if abs(b) > abs(a) or (abs(b) == abs(a) and (l-y)>=(L-x) ):
+                    else:
+                        x2 = 0
+                    if abs(b) > abs(a) or (abs(b) == abs(a) and (l - y) >= (L - x)):
                         if Y1:
                             if Y2 or Y3:
                                 if y == i:

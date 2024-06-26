@@ -107,7 +107,7 @@ def create_units_with_economy(player: Player, economy: int = 0):
     """Créé des unitées, en gardant la quantité `economy` d'argent."""
     if economy < 0:
         raise ValueError(f"economy not valid: {economy} < 0")
-    len_golds = len(player._golds)
+    len_golds = len(player.good_golds)
     eknight_offset = len(player.eknights) - len(player.defense)
     for castle in player.castles:
         if castle.used:
