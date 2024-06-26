@@ -3,7 +3,6 @@
 from apis import connection
 from apis.connection import Coord
 from apis.kinds import Pawn, Knight, Castle, Enemy
-from config import consts
 import logic.client_logic as cl
 
 
@@ -176,16 +175,20 @@ def endgame(knights: list[Knight], eknights: list[Knight]):
 
 
 def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy], player):
-    not_used_knights = list(filter(lambda knight: not knight.used , knights))
-    not_used_knights = list(filter(lambda knight: (knight.target != None), not_used_knights))
+    print("sync")
+    not_used_knights = list(filter(lambda knight: (knight.target is not None), knights))
     dicoattaque = {}
+    print(not_used_knights)
+    print("epawns", epawns)
     for k in not_used_knights:
         dist = 2
         for ep in epawns:
             dist2 = (abs(ep.x - k.target.x) + abs(ep.y - k.target.y))
+            print("dist2 =", dist2)
             if dist2 <= dist:
                 dist = dist2
                 k.target = ep
+                print("maj target")
     for k in not_used_knights:
         dicoattaque[k.target] = []
     for k in not_used_knights:
@@ -214,19 +217,17 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                     X2 += 1
                 elif k2.x - j == 1:
                     X3 += 1
+            print(Y1, Y2, Y3, X1, X2, X3)
             for k in dicoattaque[ep]:
-                connection.get_data(player.id, player.token)
                 if k.used:
                     continue
-                if (connection.get_map()[k.target.y][k.target.x ][player.id][consts.KNIGHT]):
-                    k.target = None
                 else:
                     y, x = k.coord
                     a = i - y
                     b = j - x
                     y2 = 0
                     x2 = 0
-                    l,L = connection.size_map()
+
                     if a > 0:
                         y2 = 1
                     else:
@@ -235,13 +236,14 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                         x2 = 1
                     else:
                         x2 = -1
-                    if abs(b) > abs(a) or (abs(b) == abs(a) and (l-y)>=(L-x) ):
+                    if abs(b) >= abs(a):
+                        print(a)
                         if Y1:
                             if Y2 or Y3:
                                 if y == i:
                                     if not (connection.get_eknights(y, x + x2)):
                                         k.move(y, x + x2)
-                                    elif (y + 1 < l) and not (connection.get_eknights(y + 1, x)):
+                                    elif (y + 1 < connection.size_map()[0]) and not (connection.get_eknights(y + 1, x)):
                                         k.move(y + 1, x)
                                         Y2 += 1
                                         Y1 -= 1
@@ -275,8 +277,9 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                                 else:
                                     cl.move_without_suicide(k, eknights, i, j)
                             elif Y1 > 1:
+                                print("j en decale 1")
                                 if y == i:
-                                    if (y + 1 < l) and not (connection.get_eknights(y + 1, x)):
+                                    if (y + 1 < connection.size_map()[0]) and not (connection.get_eknights(y + 1, x)):
                                         k.move(y + 1, x)
                                         Y2 += 1
                                         Y1 -= 1
@@ -291,51 +294,6 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                                         Y1 -= 1
                             else:
                                 cl.move_without_suicide(k, eknights, i, j)
-                        elif Y2 and Y3 and (abs(b) + abs(a) > 2):
-                            if y - i == 1:
-                                if not (connection.get_eknights(y, x + x2)):
-                                    k.move(y, x + x2)
-                                elif not (connection.get_eknights(y - 1, x)):
-                                    k.move(y - 1, x)
-                                    Y1 += 1
-                                    Y2 -= 1
-                                else:
-                                    k.target = None
-                                    Y2 -= 1
-                            if y - i == -1:
-                                if not (connection.get_eknights(y, x + x2)):
-                                    k.move(y, x + x2)
-                                elif not (connection.get_eknights(y + 1, x)):
-                                    k.move(y + 1, x)
-                                    Y1 += 1
-                                    Y3 -= 1
-                                else:
-                                    k.target = None
-                                    Y3 -= 1
-                        elif Y2 and Y3 and (abs(b) + abs(a) == 2):
-                            if (connection.get_map()[k.target.y + y2][k.target.x][player.id][consts.KNIGHT]):
-                                k.used = True
-                            else:
-                                if y - i == 1:
-                                    if not (connection.get_eknights(y, x + x2)):
-                                        k.move(y, x + x2)
-                                    elif not (connection.get_eknights(y - 1, x)):
-                                        k.move(y - 1, x)
-                                        Y1 += 1
-                                        Y2 -= 1
-                                    else:
-                                        k.target = None
-                                        Y2 -= 1
-                                if y - i == -1:
-                                    if not (connection.get_eknights(y, x + x2)):
-                                        k.move(y, x + x2)
-                                    elif not (connection.get_eknights(y + 1, x)):
-                                        k.move(y + 1, x)
-                                        Y1 += 1
-                                        Y3 -= 1
-                                    else:
-                                        k.target = None
-                                        Y3 -= 1
                         elif Y2 or Y3:
                             if y - i == 1:
                                 if not (connection.get_eknights(y - 1, x)):
@@ -365,7 +323,7 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                                 if x == j:
                                     if not (connection.get_eknights(y + y2, x)):
                                         k.move(y + y2, x)
-                                    elif (x + 1 < L) and not (connection.get_eknights(y, x + 1)):
+                                    elif (x + 1 < connection.size_map()[1]) and not (connection.get_eknights(y, x + 1)):
                                         k.move(y, x + 1)
                                         X2 += 1
                                         X1 -= 1
@@ -399,8 +357,9 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                                 else:
                                     cl.move_without_suicide(k, eknights, i, j)
                             elif X1 > 1:
+                                print("j en decale 1")
                                 if x == j:
-                                    if (x + 1 < L) and not (connection.get_eknights(y, x + 1)):
+                                    if (x + 1 < connection.size_map()[1]) and not (connection.get_eknights(y, x + 1)):
                                         k.move(y, x + 1)
                                         X2 += 1
                                         X1 -= 1
@@ -415,51 +374,6 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                                         Y1 -= 1
                             else:
                                 cl.move_without_suicide(k, eknights, i, j)
-                        elif X2 and X3 and (abs(b) + abs(a) > 2):
-                            if x - j == 1:
-                                if not (connection.get_eknights(y + y2, x)):
-                                    k.move(y + y2, x)
-                                elif not (connection.get_eknights(y, x - 1)):
-                                    k.move(y, x - 1)
-                                    X1 += 1
-                                    X2 -= 1
-                                else:
-                                    k.target = None
-                                    X2 -= 1
-                            if x - j == -1:
-                                if not (connection.get_eknights(y + y2, x)):
-                                    k.move(y + x2, x)
-                                elif not (connection.get_eknights(y, x + 1)):
-                                    k.move(y, x + 1)
-                                    X1 += 1
-                                    X3 -= 1
-                                else:
-                                    k.target = None
-                                    X3 -= 1
-                        elif X2 and X3 and (abs(b) + abs(a) == 2):
-                            if (connection.get_map()[k.target.y][k.target.x + x2][player.id][consts.KNIGHT]):
-                                k.used = True
-                            else:
-                                if x - j == 1:
-                                    if not (connection.get_eknights(y + y2, x)):
-                                        k.move(y, x + x2)
-                                    elif not (connection.get_eknights(y, x - 1)):
-                                        k.move(y, x - 1)
-                                        X1 += 1
-                                        Y2 -= 1
-                                    else:
-                                        k.target = None
-                                        X2 -= 1
-                                if x - j == -1:
-                                    if not (connection.get_eknights(y + y2, x)):
-                                        k.move(y + y2, x)
-                                    elif not (connection.get_eknights(y, x + 1)):
-                                        k.move(y, x + 1)
-                                        X1 += 1
-                                        X3 -= 1
-                                    else:
-                                        k.target = None
-                                        X3 -= 1
                         elif X2 or X3:
                             if x - j == 1:
                                 if not (connection.get_eknights(y, x - 1)):
@@ -486,16 +400,17 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
     connection.get_data(player.id, player.token)
     player.update_ennemi_data()
     epawnsf = player.epawns
+    print('player.epawns', epawnsf)
     for k in not_used_knights:
-        if k.target is None:
-            continue
         if k.target is None:
             continue
         dist = 2
         for ep in epawnsf:
             dist2 = (abs(ep.x - k.target.x) + abs(ep.y - k.target.y))
+            print("dist2 =", dist2)
             if dist2 <= dist:
                 dist = dist2
                 k.target = ep
+                print("maj target 222222222222222")
         if dist == 2:
             k.target = None
