@@ -101,10 +101,15 @@
 - Pierre et Nicolas : Programmation des fonctions essentielles pour utiliser la Heatmap (abstraction, itération, génération)
 - Erwan : Mise a jour de la branche Blitzkrieg pour pouvoir l'utiliser avec le refactor de code, et ainsi pouvoir s'en servir pour comparer différente IA entre elles et éviter les machup miroirs.
 
+## 22/06
+
+- Tom: amélioration de la logique des chateaux, avec des constantes empiriques facilement modifiables
+
 ## 24/06
 
 - Jules et Nicolas : correction de l stratégie d'exploration sur la branche oop10
-- Jules : correction de multiples bugs concernant la fonction pour récupérer les chevaliers ennemis d'une case, l'update des golds, la fuite. Il n'y a maintenant que les attaquants qui explorent s'ils n'ont rien à faire
+- Jules et Tom: correction de multiples bugs concernant la fonction pour récupérer les chevaliers ennemis d'une case, l'update des golds, la fuite. Il n'y a maintenant que les attaquants qui explorent s'ils n'ont rien à faire
+- Tom : correction de bugs sur les déplacements des péons et des chevaliers, et amélioration des piles vides.
 - Pierre et Nicolas : Continuation du travail sur le min-max avec application de l'itération, résolution des éventuels combats...
 - Erwan : rajout d'un système de débug dans la branche heatmap pour tester les heatmaps sur des configurations personnalisées et ainsi mieux approcher les comportemants souhaité. Puis aide de Pierre et Nicolas pour le débug du min-max.
 
@@ -114,4 +119,6 @@
 - Nicolas : Aide au débug de heatmap et minmax. Commentaire de tout heatmap et minmax + nettoyage du code pour plus de lisibilité.
 - Jules et Pierre: Ajout de la défense dans la branche oop10.
 - Jules : réflexion sur la fonction buil_castle et début d'implémentation d'un autre choix pour la construction de châteaux. Correction d'erreurs concernant des tests dans move_safe, du fait de regarder si un gold est used avant de le considérer comme une destination par un autre péon1. On regarde maintenant aussi si un péon est used avant de le faire fuir (même si ce cas ne devrait pas arriver, il arrive parfois)
+- Tom: debuggage des mouvements des unités et de la gestion d'exploration, creations d'un système de 24 match concurrents pour tester les différentes versions de l'IA.
 - Tom et Jules: ajout d'outils pour mieux débuguer, notamment le debugage tour par tour et l'option debut avec start_match
+- Tom: fix des tests de vérification de cohérence avec le serveur (gérer les attaquants défenseurs et les comparer avec le serveur pour savoir quand est-ce qu'ils meurent ou change de type).
