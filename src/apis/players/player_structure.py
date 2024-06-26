@@ -15,7 +15,7 @@ class Player_struct:
         self.id, self.token = connection.create_player()
         connection.get_data(self.id, self.token)
         self.height, self.width = connection.size_map()
-        self.turn = 200
+        self.turn = 0
         # units
         self.pawns: list[Pawn] = [Pawn(y, x, self) for y, x in connection.get_kinds(self.id)[connection.PAWN]]
         self.epawns: list[Enemy] = []
