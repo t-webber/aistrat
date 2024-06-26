@@ -177,7 +177,7 @@ def endgame(knights: list[Knight], eknights: list[Knight]):
 
 def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy], player):
     not_used_knights = list(filter(lambda knight: not knight.used, knights))
-    not_used_knights = list(filter(lambda knight: (knight.target != None), not_used_knights))
+    not_used_knights = list(filter(lambda knight: (knight.target is not None), not_used_knights))
     dicoattaque = {}
     for k in not_used_knights:
         dist = 2
@@ -194,7 +194,6 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
     for ep in dicoattaque:
         if ep is not None:
             i, j = ep.coord
-            newpos = []
             Y1 = 0
             Y2 = 0
             Y3 = 0
@@ -215,13 +214,13 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                 elif k2.x - j == 1:
                     X3 += 1
             for k in dicoattaque[ep]:
+                print("target = ", k.target)
                 connection.get_data(player.id, player.token)
                 if k.used:
                     continue
                 if (connection.get_map()[k.target.y][k.target.x][player.id][consts.KNIGHT]):
                     k.target = None
                 else:
-                    print("target = ", k.target)
                     y, x = k.coord
                     a = i - y
                     b = j - x
@@ -442,7 +441,7 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                                     k.target = None
                                     X3 -= 1
                         elif X2 and X3 and (abs(b) + abs(a) == 2):
-                            if (connection.get_map()[k.target.y][k.target.x + x2][player.id][consts.KNIGHT]):
+                            if (connection.get_kinds_on_coord(k.target.y, k.target.x + x2, id, consts.KNIGHT)):
                                 k.used = True
                             else:
                                 if x - j == 1:
@@ -492,8 +491,6 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
     player.update_ennemi_data()
     epawnsf = player.epawns
     for k in not_used_knights:
-        if k.target is None:
-            continue
         if k.target is None:
             continue
         dist = 2

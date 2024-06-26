@@ -239,3 +239,8 @@ def get_eknights(y: int, x: int) -> list[tuple]:
         for _ in range(d[KNIGHT]):
             result.append((y, x))
     return result
+
+
+def get_kind_on_coord(y: int, x: int, id: str, kind: str):
+    """Récupérer toutes les unitées d'un type donné sur une case donnée."""
+    return get_map()[y][x][id][kind]
