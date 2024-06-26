@@ -8,7 +8,6 @@ import player.attack as atk
 # import player.decisions as dec
 import player.defense as dfd
 from player import peons
-import sys
 from debug import log_func, pause
 
 
@@ -28,8 +27,7 @@ class Player(Player_struct):
         self.update_ennemi_data()
         self.update_fog()
 
-        if self == "A" and len(sys.argv) >= 3 and sys.argv[2] == "debug":
-            input("Press enter to continue...")
+        pause(self.id)
 
         serv = connection.get_gold()[self.id]
         if serv != self.gold:
@@ -44,7 +42,7 @@ class Player(Player_struct):
         peons.fuite(self.pawns, self.defense + self.attack, self.eknights)
 
         log_func("castle")
-        cstl.build_castle(self)
+        build_castle(self)
         peons.free_gold(self.pawns, self.bad_gold)
         peons.free_gold(self.pawns, self.good_gold)
         # je farm d'abord ce que je vois
@@ -63,7 +61,7 @@ class Player(Player_struct):
             log_func("hunt")
             atk.hunt(self.attack, self.epawns, self.eknights)
             log_func("destroy")
-            atk.destroy_castle(self.attack, self.ecastles, self.eknights)
+            atk.destroy_castle(self.attack + self.defense, self.ecastles, self.eknights)
             if last_len == length:
                 break
 

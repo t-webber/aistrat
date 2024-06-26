@@ -213,30 +213,30 @@ class Castle(Unit):
 
     def create_defense(self):
         """Crée un défenseur."""
-        cost = consts.PRICES[connection.KNIGHT]
+        cost = consts.PRICES[consts.KNIGHT]
         if self.player.gold < cost:
-            raise ValueError(f"Not enough gold to proceed: {self.player.gold}")
-        connection.build(connection.KNIGHT, self.y, self.x, self.player.id, self.player.token)
+            raise ValueError(f"Not enough gold to proceed: trying to build DEFENSE with {self} and gold = {self.player.gold}.")
+        connection.build(consts.KNIGHT, self.y, self.x, self.player.id, self.player.token)
         db.log_create_unit(self, "defense")
         self.player.gold -= cost
         self.player.defense.append(Knight(*self.coord, self.player))
 
     def create_attack(self):
         """Crée un défenseur."""
-        cost = consts.PRICES[connection.KNIGHT]
+        cost = consts.PRICES[consts.KNIGHT]
         if self.player.gold < cost:
-            raise ValueError(f"Not enough gold to proceed: {self.player.gold}")
-        connection.build(connection.KNIGHT, self.y, self.x, self.player.id, self.player.token)
+            raise ValueError(f"Not enough gold to proceed: trying to build ATTACK with {self} and gold = {self.player.gold}.")
+        connection.build(consts.KNIGHT, self.y, self.x, self.player.id, self.player.token)
         db.log_create_unit(self, "attack")
         self.player.gold -= cost
         self.player.attack.append(Knight(*self.coord, self.player))
 
     def create_pawn(self):
         """Crée un défenseur."""
-        cost = consts.PRICES[connection.PAWN]
+        cost = consts.PRICES[consts.PAWN]
         if self.player.gold < cost:
-            raise ValueError(f"Not enough gold to proceed: {self.player.gold}")
-        connection.build(connection.PAWN, self.y, self.x, self.player.id, self.player.token)
+            raise ValueError(f"Not enough gold to proceed: trying to build PAWN with {self} and gold = {self.player.gold}.")
+        connection.build(consts.PAWN, self.y, self.x, self.player.id, self.player.token)
         db.log_create_unit(self, "pawn")
         self.player.gold -= cost
         self.player.pawns.append(Pawn(*self.coord, self.player))
