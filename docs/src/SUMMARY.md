@@ -44,4 +44,4 @@
       1. [La fonction `neighbors`](./annexes/neighbors.md)
       1. [Le min-max](./annexes/min-max.md)
       1. [L'estimation de nos gains futurs](./annexes/estimation_gold.md)
-      1. [Fonctions annexes de l'attaque](./annexes/annexeattaque.md)
+      1. [Fonctions annexes pour l'attaque](./annexes/annexeattaque.md)
