@@ -36,3 +36,7 @@ On en a profiter pour sécuriser tous les appels au serveur, en *crashant* si le
 Ces erreurs consistent principalement en des mouvements illégaux (vers une case non voisine), de farm des piles d'or plus qu'une fois, ou encore bougé un même chevalier dans un même tour.
 
 ## Efficacité
+
+À cause notamment des vérifications à chaque mouvement que le coup est valide et que les données sont cohérentes, le code est devenu très lent. En fin de partie, on a des temps par tour qui vont jusqu'à une dizaine de secondes. Voici les temps, en seconde, de chaque fonction, en début de partie:
+
+![times](../images/time.png)
