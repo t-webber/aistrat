@@ -135,6 +135,7 @@
 - Jules et Tom: implémentation d'une fuite des châteaux ( appel de chevaliers alliés vers le château ) avec une prise en compte de l'estimation des golds produits pour les prochains tours.
 - Jules : changement sur move_safe_random pour qu'il privilégie quand même d'abord un exploration vers le centre, correction de fuite qui encore une fois ne faisait pas tout à fait ce que l'on souhaitait mais tout est à présent bon d'après nos observations et le débugage. Rajout de defense agressiv un peu modifiée pour éliminer les chevaliers adverses trop proches.
 - nouvelles features d'optimisation du min-max notemment enlever les cas redondant, documentation des heatmaps et min-max, aide pour le débug des heatmaps.
+- Nicolas : Aide à Erwan et Pierre pour finaliser le travail sur Heatmap et Min-Max. Travail sur le rapport initial d'état de l'art et son implémentation dans notre code durant l'après-midi
 
 ### 27/06
 
