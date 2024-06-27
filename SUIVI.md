@@ -140,4 +140,4 @@
 ### 27/06
 
 - Tout le Monde : Travail sur le rapport final, nettoyage de la base de code.
-- Tom : merge des branches et réorganisation de la branche main.
+- Tom : merge des branches et réorganisation de la branche main. Amélioration CLIs pour pouvoir lancer des matchs avec les différentes IAs.
