@@ -24,11 +24,8 @@ class Player_struct:
         self.ecastles: list[Pawn] = []
         self.attack: list[Knight] = [Knight(y, x, self) for y, x in connection.get_kinds(self.id)[connection.KNIGHT]]
         self.defense: list[Knight] = []
-<<<<<<<< HEAD:strategies/memory/apis/players/player_structure.py
-========
         self.knights: list[Knight] = []
 
->>>>>>>> origin/heatmap:strategies/heatmap/apis/players/player_structure.py
         # resources
         self._golds: list[GoldPile] = [GoldPile(coord[0], coord[1], coord[2], self) for coord in connection.get_kinds(self.id)[
             connection.GOLD]]
@@ -42,9 +39,6 @@ class Player_struct:
         self.good_gold, self.bad_gold = cl.clean_golds(
             self._golds, self.pawns, self.ecastles)
         self.fog: list[GoldPile] = []
-        self.build_order = []
-        self.move_to_first_castle = True
-        self.first_castle_built = False
         # private
         self._gold_map: list[int | GoldPile] = np.full(connection.size_map(), None)
 
@@ -188,12 +182,7 @@ class Player_struct:
         if server:
             raise ValueError(f"{instance} changed: server {server_units} != client {client_units}")
 
-<<<<<<<< HEAD:strategies/memory/apis/players/player_structure.py
-    def check_two_set_list_coord(self, attack: list[Knight], defense: list[Knight], server_knights: list[(int, int)]):
-        """Vérifie si les listes contenants les attaquants et les défenseurs sont cohérentes avec les données du serveur."""
-========
     def check_two_set_list_coord(self, knights: list[Knight], server_knights: list[(int, int)]):
->>>>>>>> origin/heatmap:strategies/heatmap/apis/players/player_structure.py
         server = server_knights.copy()
         log_knights = knights.copy()
 

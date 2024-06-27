@@ -8,7 +8,7 @@ from typing import Dict, List, Union
 
 
 IP = "http://localhost:8080"
-TIME_OUT = 0.4
+TIME_OUT = 0.3
 
 
 MAP_SIZE = None
@@ -196,11 +196,11 @@ def get_seen_coordinates():
     return results
 
 
-def get_visible(units: list[Unit | tuple[int, int]]) -> list[int]:
+def get_visible(units: list[Unit]) -> list[int]:
     """Renvoie une carte avec des nombres donnant le "nombre de fois" que chaque case est visible."""
     carte = np.zeros(size_map())
     for boy in units:
-        if not isinstance(boy, tuple):
+        if type(boy) != tuple:
             for y in [boy.y + k for k in [-2, -1, 0, 1, 2]]:
                 for x in [boy.x + k for k in [-2, -1, 0, 1, 2]]:
                     if (0 <= (y) < len(carte)) and (0 <= (x) < len(carte[0])):
@@ -225,32 +225,9 @@ def add_visible(carte, unit: Coord) -> list[int]:
 
 def get_eknights(y: int, x: int) -> list[tuple]:
     """Renvoie la liste des chevaliers présents sur une case donnée."""
-    try:
-        d = get_map()[y][x][other(current_player())]
-    except Exception as e:
-        print("y = ", y)
-        print("x = ", x)
-        print("map = ", get_map())
-        print("map_y = ", get_map()[y])
-        print("map_x = ", get_map())
-        raise e
+    d = get_map()[y][x][other(current_player())]
     result = []
     if d[KNIGHT]:
         for _ in range(d[KNIGHT]):
             result.append((y, x))
     return result
-
-
-def get_kind_on_coord(y: int, x: int, player_id: str, kind: str):
-    """Récupérer toutes les unitées d'un type donné sur une case donnée."""
-    try:
-        return get_map()[y][x][player_id][kind]
-    except Exception as e:
-        print("y = ", y)
-        print("x = ", x)
-        print("kind = ", kind)
-        print("map = ", get_map())
-        print("map_y = ", get_map()[y])
-        print("map_x = ", get_map()[y][x])
-        print("map_kind = ", get_map()[y][x][kind])
-        raise e
