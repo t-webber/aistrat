@@ -6,23 +6,23 @@ from apis import connection
 from apis.players.players import Player
 from apis.kinds import Knight, Pawn
 
+
 if len(sys.argv) > 2 and sys.argv[2] and sys.argv[2] != "debug":
     connection.init(sys.argv[2])
 else:
     connection.init("http://localhost:8080")
+
+# print("IP = ", connection.IP)
 
 if len(sys.argv) > 1:
     TWO_PLAYERS = sys.argv[1] == '2'
 else:
     TWO_PLAYERS = False
 
-<<<<<<<< HEAD:strategies/memory/main.py
-========
 print(sys.argv)
 print("TWO_PLAYERS ? = ", TWO_PLAYERS)
 debug = False
 
->>>>>>>> origin/heatmap:strategies/heatmap/main.py
 player1 = Player()
 if TWO_PLAYERS:
     player2 = Player()

@@ -51,7 +51,8 @@ def path_simple_bis(unit,destination:tuple[int,int], eknights : Knight):
 
 def path_one(units_to_move: list[Pawn], other_units: list[Pawn], eknights: list[Knight]):
     """Cherche le meilleur chemin pour une unité de units_to_move pour voir plus de la map."""
-    maxscore = cl.visibility_score(connection.get_visible(units_to_move + other_units))
+    maxscore = cl.visibility_score(
+        connection.get_visible(units_to_move + other_units))
     bestpawn = (-1, -1)
     bestmove = (-1, -1)
     for boy in units_to_move:
