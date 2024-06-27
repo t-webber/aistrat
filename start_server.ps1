@@ -1,2 +1,14 @@
+param(
+    [int]$port,
+    [Alias("two")]
+    [switch]$twoplayers
+)
+
 clear-host
-python "$PSScriptRoot/game/server.py" $args[0] $args[1] $args[2] $args[3]
+
+if (!$port) {
+    $port = 8080
+}
+
+
+    Start-Process PowerShell -ArgumentList "-NoExit", "-Command", "python $PSscriptRoot/game/server.py $port"
