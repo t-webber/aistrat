@@ -1,11 +1,11 @@
+"""Game server."""
+
 import os
 import sys
 from math import ceil
-from flask import Flask
-from flask import jsonify
+from flask import Flask, jsonify
 import random
 from collections import defaultdict
-from flask import send_from_directory
 import string
 
 import logging
@@ -18,11 +18,11 @@ players = []
 
 app = Flask(__name__, static_url_path='', static_folder='static')
 
-#####  AUTH PARAMETERS #####
+# ####  AUTH PARAMETERS #### #
 
 tokenOf = {}
 
-#####  GAME PARAMETERS #####
+# ####  GAME PARAMETERS #### #
 
 MAX_NB_ROUNDS = 2000
 MAP_WIDTH = 16
@@ -54,15 +54,15 @@ CASTLE = 'B'
 requires = {'C': 'B', 'M': 'B', 'B': 'C'}  # what do we need to build
 winner = ''
 curPlayer = 'A'  # initial player
-gold = {'A': 25, 'B': 25 }  # initial gold
-
-mapdata[0][0]['A'][PAWN] = 3
-mapdata[-1][-1]['B'][PAWN] = 3
+gold = {'A': 25, 'B': 25}  # initial gold
 
 
+mapdata[0][0]['A']['C'] = 3  # initial units of A
+mapdata[-1][-1]['B']['C'] = 3  # initial units of B
 opponent = {'A': 'B', 'B': 'A'}
-#### END GAME PARAMETER ####
 
+
+# ### END GAME PARAMETER ### #
 score = {'A': 0, 'B': 0}
 nbRounds = 0
 
@@ -117,6 +117,7 @@ def giveView(player, token):
     visible = getVisibility(player)
     if len(visible) == 0:
         winner = opponent[player]
+        log()
     for y in range(0, MAP_HEIGHT):
         for x in range(0, MAP_WIDTH):
             if (y, x) in visible:
@@ -242,7 +243,6 @@ def changeturn(player, token):
     global tokenOf
     assert (tokenOf[player] == token)
     assert (player == curPlayer)
-    print("Player", player, " at turn", nbRounds, "with score", score)
     solveBattles(player, opponent[player])
     curPlayer = opponent[player]
     nbMoves = defaultdict(int)
@@ -257,7 +257,21 @@ def changeturn(player, token):
             winner = 'No one'
     if winner != "":
         tokenOf = defaultdict(lambda x: "")
+    log()
     return "ok"
+
+
+def log():
+    if len(sys.argv) > 2:
+        if winner:
+            s = f"{nbRounds},{score}\nWINNER = {winner}\nNotes = '{sys.argv[3]}'\n"
+            with open(sys.argv[2], 'a') as f:
+                f.write(s)
+            print(s)
+            os._exit(0)
+        elif nbRounds % 100 == 0:
+            with open(sys.argv[2], 'a') as f:
+                f.write(f"{nbRounds},{score}\n")
 
 
 @app.route('/')
