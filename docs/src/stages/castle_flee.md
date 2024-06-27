@@ -1,6 +1,6 @@
-# fuite des chateaux
+# Fuite des chateaux
 
-Cette fonction très similaire à [fuite](../stages/castle_flee.md) permet au châteaux d'appeler en défense en cas d'attaque ennemie.
+Cette fonction très similaire à [fuite](../stages/fuite.md) permet au châteaux d'appeler en défense en cas d'attaque ennemie.
 Elle passe prioritaire par rapport à fuite et en diffère par plusieurs aspects :
 
 - Les chateaux ne peuvent pas bouger donc en cas de prévision de perte du combat, on essaie quand même de placer un maximum de garder nos défenseurs sur la carte en espérant que cela dissuadera l'ennemi
