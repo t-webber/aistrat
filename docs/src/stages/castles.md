@@ -6,9 +6,9 @@
 
 - fonction: `build_castle`
 
-Cette fonctions s'occupe de la construction châteaux. On commence par prendre le contrôle d'un péon au début, afin de construire un château le plus rapidement possible en (2, 2). Puis on construit les autres châteaux en fonction de règles :
+Cette fonctions s'occupe de la construction de châteaux. On commence par prendre le contrôle d'un péon au début, afin de construire un château le plus rapidement possible en (2, 2). Puis on construit les autres châteaux en fonction de règles :
 
-- **règle d'or:** il faut asser d'or pour construire le château (le coût d'un château pour l'instant, soit 15 or)
+- **règle d'or:** il faut assez d'or pour construire le château (le coût d'un château pour l'instant, soit 15 ors)
 - **règle d'espacement:** on ne construit pas de châteaux trop proches les uns des autres (fixé à une distance de 4 cases pour l'instant)
 - **règle de distance:** on ne construit pas de châteaux trop proches des bords de la carte (fixé à une distance de 2 cases pour l'instant)
 - **règle de quantité:** on a une majoration du nombre de châteaux qu'on peut construire (dépend de la taille de la carte)
@@ -17,13 +17,13 @@ Cette fonctions s'occupe de la construction châteaux. On commence par prendre l
 
 - fonction: `create_units`
 
-`create_units` s'occupe de créer les unites avec nos châteaux. La construction des unités se fait selon les étapes suivantes, sachant qu'elles s'excluent (si on a pas assez d'or pour la première condition et qu'elle est vraie, on saute toutes les autres conditions pour garder l'or nécessaire pour le tour d'après) :
+`create_units` s'occupe de créer les unités avec nos châteaux. La construction des unités se fait selon les étapes suivantes, sachant qu'elles s'excluent (si on a pas assez d'or pour la première condition et qu'elle est vraie, on saute toutes les autres conditions pour garder l'or nécessaire pour le tour d'après) :
 
 - si nous sommes attaqués, production de défenseurs
 - si on a pas assez de châteaux
   - si on a pas assez de péons pour construire des châteaux, on en crée
 - si il y a trop de péons ennemis sur les cases voisines, on crée des attaquants
 - si on a pas assez de péons par rapport aux piles d'or voisines, on en crée
-- sinon, on créé des attaquants
+- sinon, on crée des attaquants
 
-Néanmoins tout cette logique peut être cout-circuité dans le cas où nos chateaux sont sous menace de chevaliers ennemis. Dans ce cas, les chateaux réservent une partie de de notre or pour la dépenser lors de prochains tours pour produire des défendeurs pour répondre à la menace des attaquants. Les autre chateaux ne peuvent pas dépenser cet or réservé.
+Néanmoins tout cette logique peut être cout-circuité dans le cas où nos châteaux sont sous menace de chevaliers ennemis. Dans ce cas, les châteaux réservent une partie de de notre or pour la dépenser lors de prochains tours pour produire des défenseurs pour répondre à la menace des attaquants. Les autre châteaux ne peuvent pas dépenser cet or réservé.
