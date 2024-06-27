@@ -7,6 +7,7 @@ from config import consts
 import logic.client_logic as cl
 import inspect
 
+
 def prediction_combat(a: int, d: int):
     """
     Prédit le gaganant d'un combat.
@@ -159,7 +160,6 @@ def free_pawn(knights: list[Knight], eknights: list[Enemy], epawns: list[Enemy],
                     for e in a:
                         allies_voisins_exploitable += a[e]
                     move_everyone(epawn.coord, allies_voisins_exploitable)
-                    
 
 
 def endgame(knights: list[Knight], eknights: list[Knight]):
@@ -183,8 +183,8 @@ def endgame(knights: list[Knight], eknights: list[Knight]):
         a = len(knights_not_used)
 
 
-def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy], player, endgame = False):
-    """coordonne les chevaliers alliés qui attaquent la même cible pour optimiser l'attaque"""
+def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy], player, endgame=False):
+    """Coordonne les chevaliers alliés qui attaquent la même cible pour optimiser l'attaque."""
     not_used_knights = list(filter(lambda knight: (knight.target is not None), knights))
     dicoattaque = {}
     for k in not_used_knights:
@@ -520,7 +520,7 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                             cl.move_without_suicide(k, eknights, i, j)
     connection.get_data(player.id, player.token)
     player.update_ennemi_data()
-    if endgame :
+    if endgame:
         epawnsf = player.eknights
     else:
         epawnsf = player.epawns
