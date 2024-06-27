@@ -25,3 +25,5 @@ Cette fonctions s'occupe de la construction châteaux. On commence par prendre l
 - si il y a trop de péons ennemis sur les cases voisines, on crée des attaquants
 - si on a pas assez de péons par rapport aux piles d'or voisines, on en crée
 - sinon, on créé des attaquants
+
+Néanmoins tout cette logique peut être cout-circuité dans le cas où nos chateaux sont sous menace de chevaliers ennemis. Dans ce cas, les chateaux réservent une partie de de notre or pour la dépenser lors de prochains tours pour produire des défendeurs pour répondre à la menace des attaquants. Les autre chateaux ne peuvent pas dépenser cet or réservé.
