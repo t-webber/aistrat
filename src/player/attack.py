@@ -1,11 +1,15 @@
 """Fonctions pour définir les actions d'un attaquant."""
-
+from __future__ import annotations
+from typing import TYPE_CHECKING
+import inspect
 from apis import connection
 from apis.connection import Coord
 from apis.kinds import Pawn, Knight, Castle, Enemy
 from config import consts
 import logic.client_logic as cl
-import inspect
+from debug import log_func
+if TYPE_CHECKING:
+    from apis.players.players import Player
 
 def prediction_combat(a: int, d: int):
     """
@@ -93,19 +97,8 @@ def hunt(knights: list[Knight], epawns: list[Pawn], eknights: list[Knight]):
     for k in knights:
         if k.used:
             continue
-        voisins, nb_allies = cl.neighbors(k.coord, epawns)
-        voisins_ennemis, _ = cl.neighbors(k.coord, eknights)
-        # if somme:
-        #     for coord, neighbor in voisins.items():
-        #         if neighbor and not voisins_ennemis[]:
-        #             k.move(k.y + i[0], k.x + i[1])
-
     not_used_knights = list(filter(lambda knight: not knight.used, knights))
     if not_used_knights and epawns:
-
-        # > problème d'affectation <
-        # choisis les mines d'or vers lesquelles vont se diriger les peons
-        # pour en minimiser le nombre total de mouvements
         vus = []
         for k, ep in cl.hongrois_distance(not_used_knights, epawns):
             vus.append(not_used_knights[k])
@@ -162,28 +155,28 @@ def free_pawn(knights: list[Knight], eknights: list[Enemy], epawns: list[Enemy],
                     
 
 
-def endgame(knights: list[Knight], eknights: list[Knight]):
-    knights_not_used = list(filter(lambda knight: not knight.used, knights))
-    l = len(knights_not_used)
-    a = len(knights_not_used)
-    while a == l and eknights:
-        vus = []
-        for k, ep in cl.hongrois_distance(knights_not_used, eknights):
-            vus.append(knights_not_used[k])
-            y, x = knights_not_used[k].coord
-            i, j = eknights[ep].coord
-            if abs(y - i) + abs(x - j) == 1:
-                attaque((i, j), knights_not_used, eknights)
-            else:
-                if knights_not_used[k].used:
-                    continue
-                else:
-                    cl.move_without_suicide(knights_not_used[k], eknights, i, j)
-        knights_not_used = list(filter(lambda knight: not knight.used, knights_not_used))
-        a = len(knights_not_used)
+# def endgame(knights: list[Knight], eknights: list[Knight]):
+#     knights_not_used = list(filter(lambda knight: not knight.used, knights))
+#     l = len(knights_not_used)
+#     a = len(knights_not_used)
+#     while a == l and eknights:
+#         vus = []
+#         for k, ep in cl.hongrois_distance(knights_not_used, eknights):
+#             vus.append(knights_not_used[k])
+#             y, x = knights_not_used[k].coord
+#             i, j = eknights[ep].coord
+#             if abs(y - i) + abs(x - j) == 1:
+#                 attaque((i, j), knights_not_used, eknights)
+#             else:
+#                 if knights_not_used[k].used:
+#                     continue
+#                 else:
+#                     cl.move_without_suicide(knights_not_used[k], eknights, i, j)
+#         knights_not_used = list(filter(lambda knight: not knight.used, knights_not_used))
+#         a = len(knights_not_used)
 
 
-def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy], player, endgame = False):
+def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy], player : Player , endgame = False):
     """coordonne les chevaliers alliés qui attaquent la même cible pour optimiser l'attaque"""
     not_used_knights = list(filter(lambda knight: (knight.target is not None), knights))
     dicoattaque = {}
@@ -538,3 +531,44 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
         if not vus:
             print('on a perdu la cible ligne', inspect.currentframe().f_lineno)
             k.target = None
+
+
+def condition_end_turn(player : Player):
+    """décide si on passe en mode endturn et donc si on veut éliminer des chevaliers ennemis"""
+    #print('test2:',len(player.fog)<connection.size_map()[0]*connection.size_map()[1]*0.2)
+    if player.castles == [] and player.epawns == [] and player.turn >= 200:
+        return True
+    return False
+
+def coordination(player : Player):
+    """coordonne les actions des chevaliers d'attaque"""
+    last_len = None
+    if condition_end_turn(player):
+        print('ON FAIT DU ENDTURN')
+        log_func("free_pawn")
+        free_pawn(player.attack, player.eknights, player.eknights, player.eknights)
+        log_func("sync atk")
+        sync_atk(player.attack, player.eknights, player.eknights, player, True)
+        while (length := [k for k in player.attack if not k.used]):
+            log_func("hunt")
+            hunt(player.attack,player.eknights, player.eknights)
+            if last_len == length:
+                break
+
+            last_len = length
+    else:
+        log_func("free_pawn")
+        free_pawn(player.attack, player.eknights, player.epawns, player.ecastles)
+        log_func("sync atk")
+        sync_atk(player.attack, player.eknights, player.epawns, player)
+        while (length := [k for k in player.attack if not k.used]):
+            log_func("hunt")
+            hunt(player.attack, player.epawns, player.eknights)
+            log_func("destroy")
+            destroy_castle(player.attack + player.defense, player.ecastles, player.eknights)
+            if last_len == length:
+                break
+
+            last_len = length
+
+            

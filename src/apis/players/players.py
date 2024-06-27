@@ -1,6 +1,5 @@
 
 """Fichier qui implémente la class `Player`."""
-
 from apis import connection
 from apis.players.player_structure import Player_struct
 from player.castles import create_units, build_castle, castle_flee
@@ -27,68 +26,50 @@ class Player(Player_struct):
         self.update_ennemi_data()
         self.update_fog()
 
+        # fonction pour le debug
         pause(self.id)
 
-        serv = connection.get_gold()[self.id]
-        if serv != self.gold:
-            raise ValueError(f"wrong gold value: S({serv}) != P({self.gold})")
-
-        # print('golds', self.good_gold, self.bad_gold)
+        # je crée des unités en premier
         create_units(self)
 
-        log_func("castle_flee")
+        # j'appelle des chevaliers pour défendre mes chateaux et mes péons
+        log_func("castle_flee and fuite")
         castle_flee(self.castles, self.defense + self.attack, self.eknights, self)
-        log_func("fuite")
         peons.fuite(self.pawns, self.defense + self.attack, self.eknights)
+
+        # je vois d'abord si un péons veut construire un chateau
         log_func("castle")
         build_castle(self)
-        peons.free_gold(self.pawns, self.bad_gold)
-        peons.free_gold(self.pawns, self.good_gold)
-        # je farm d'abord ce que je vois
+
+        # je farm ensuite l'or que je vois
         log_func("farm")
-        peons.farm(self, self.good_gold)
-        # j'explore ensuite dans la direction opposée au spawn
+        peons.coordination_farm(self)
+
+        # puis j'explore dans la direction opposée au spawn
         log_func("explore")
         peons.explore(self, self._knights + self.castles)
-        # atk.free_pawn(self.attack + self.defense, self.eknights, self.epawns, self.ecastles)
+        
+        # les defenseurs se dirigent vers les peons les plus fragiles
         log_func("defend")
         dfd.defend(self.pawns, self.defense, self.eknights, self.castles)
+
+        # si des chevaliers ennemis sont proches et qu'on ne perd rien à les attaquer 
         log_func("agressiv_defense")
-        dfd.agressiv_defense(self.defense, self.epawns, self.eknights, self.ecastles)
-        last_len = None
-        #print('test2:',len(self.fog)<connection.size_map()[0]*connection.size_map()[1]*0.2)
-        if self.ecastles == [] and self.turn >= 200 and self.epawns == []:
-            print('ON FAIT DU ENDTURN')
-            log_func("free_pawn")
-            atk.free_pawn(self.attack, self.eknights, self.eknights, self.eknights)
-            log_func("sync atk")
-            atk.sync_atk(self.attack, self.eknights, self.eknights, self, True)
-            while (length := [k for k in self.attack if not k.used]):
-                log_func("hunt")
-                atk.hunt(self.attack,self.eknights, self.eknights)
-                if last_len == length:
-                    break
+        dfd.agressiv_defense(self.defense + self.attack, self.epawns, self.eknights, self.ecastles)
 
-                last_len = length
-        else:
-            log_func("free_pawn")
-            atk.free_pawn(self.attack, self.eknights, self.epawns, self.ecastles)
-            log_func("sync atk")
-            atk.sync_atk(self.attack, self.eknights, self.epawns, self)
-            while (length := [k for k in self.attack if not k.used]):
-                log_func("hunt")
-                atk.hunt(self.attack, self.epawns, self.eknights)
-                log_func("destroy")
-                atk.destroy_castle(self.attack + self.defense, self.ecastles, self.eknights)
-                if last_len == length:
-                    break
+        # je gère mes chevaliers d'attaques pour attaquer les cibles ennemis
+        atk.coordination(self)
 
-                last_len = length
+        # si je n'ai pas de cible, nos attaquants vont explorer
         log_func("explore_knight")
         peons.explore_knight(self, self.pawns + self.castles)
 
+        # comme on a gagné de l'or par le farm pendant le tour, on regarde si jamais on ne peut pas en créer d'autres
         log_func("second create unit")
         create_units(self)
+
+        # je mets à jour la map de l'or
         self.update_gold_map()
 
+        # je mets fin à mon tour
         connection.end_turn(self.id, self.token)

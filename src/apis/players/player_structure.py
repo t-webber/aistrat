@@ -68,6 +68,10 @@ class Player_struct:
 
         self.check_two_set_list_coord(self.attack, self.defense, kinds[connection.KNIGHT])
 
+        serv = connection.get_gold()[self.id]
+        if serv != self.gold:
+            raise ValueError(f"wrong gold value: S({serv}) != P({self.gold})")
+
     def update_ennemi_data(self):
         """Récupère les données des ennemis."""
         other_player = connection.other(self.id)
