@@ -24,11 +24,6 @@ class Player_struct:
         self.ecastles: list[Pawn] = []
         self.attack: list[Knight] = [Knight(y, x, self) for y, x in connection.get_kinds(self.id)[connection.KNIGHT]]
         self.defense: list[Knight] = []
-<<<<<<<< HEAD:strategies/memory/apis/players/player_structure.py
-========
-        self.knights: list[Knight] = []
-
->>>>>>>> origin/heatmap:strategies/heatmap/apis/players/player_structure.py
         # resources
         self._golds: list[GoldPile] = [GoldPile(coord[0], coord[1], coord[2], self) for coord in connection.get_kinds(self.id)[
             connection.GOLD]]
@@ -46,6 +41,7 @@ class Player_struct:
         self.move_to_first_castle = True
         self.first_castle_built = False
         # private
+        self._knights: list[Knight] = []
         self._gold_map: list[int | GoldPile] = np.full(connection.size_map(), None)
 
     def __eq__(self, other):
@@ -68,10 +64,9 @@ class Player_struct:
         # print(connection.get_map())
 
         self.check_set_list_coord(self.pawns, kinds[connection.PAWN], "PAWN")
-        self.check_set_list_coord(self.knights, kinds[connection.KNIGHT], "KNIGHT")
         self.check_set_list_coord(self.castles, kinds[connection.CASTLE], "CASTLES")
 
-        self.check_two_set_list_coord(self.knights, kinds[connection.KNIGHT])
+        self.check_two_set_list_coord(self.attack, self.defense, kinds[connection.KNIGHT])
 
     def update_ennemi_data(self):
         """Récupère les données des ennemis."""
@@ -102,8 +97,6 @@ class Player_struct:
             k.used = False
         for c in self.castles:
             c.used = False
-        for k in self.knights:
-            k.used = False
 
     def update_golds(self):
         """Met à jour les données des mines d'or."""
@@ -188,22 +181,25 @@ class Player_struct:
         if server:
             raise ValueError(f"{instance} changed: server {server_units} != client {client_units}")
 
-<<<<<<<< HEAD:strategies/memory/apis/players/player_structure.py
     def check_two_set_list_coord(self, attack: list[Knight], defense: list[Knight], server_knights: list[(int, int)]):
         """Vérifie si les listes contenants les attaquants et les défenseurs sont cohérentes avec les données du serveur."""
-========
-    def check_two_set_list_coord(self, knights: list[Knight], server_knights: list[(int, int)]):
->>>>>>>> origin/heatmap:strategies/heatmap/apis/players/player_structure.py
         server = server_knights.copy()
-        log_knights = knights.copy()
+        log_attack = attack.copy()
+        log_defense = defense.copy()
+        for unit in attack.copy():
+            if unit.coord in server:
+                server.remove(unit.coord)
+            else:
+                print(f'ATTACK {unit} was killed')
+                attack.remove(unit)
 
-        for unit in knights.copy():
+        for unit in defense.copy():
             if unit.coord in server:
                 server.remove(unit.coord)
             else:
                 print(f'DEFENSE {unit} was killed')
-                knights.remove(unit)
+                defense.remove(unit)
 
         if server:
             # print(connection.get_map())
-            raise ValueError(f"KNIGHT changed: {server} left in {server_knights} != client knights {log_knights}")
+            raise ValueError(f"KNIGHT changed: {server} left in {server_knights} != client attack {log_attack} + defense {log_defense}")

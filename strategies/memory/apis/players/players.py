@@ -8,11 +8,6 @@ import player.attack as atk
 # import player.decisions as dec
 import player.defense as dfd
 from player import peons
-<<<<<<<< HEAD:strategies/memory/apis/players/players.py
-========
-from player.heatmap import heatMapMove, print_heatmaps
-import sys
->>>>>>>> origin/heatmap:strategies/heatmap/apis/players/players.py
 from debug import log_func, pause
 
 
@@ -26,9 +21,6 @@ class Player(Player_struct):
         print(f"============= Begin {self.turn} turn for player {self.id} =====================")
 
         self.turn += 1
-
-        # if self.turn%10 == 0:
-        #      print_heatmaps(self.pawns, self.knights, self.castles, self.eknights, self.ecastles, self.epawns, self._gold_map, self.id)
 
         self.checks_turn_data()
         self.update_golds()
@@ -45,16 +37,9 @@ class Player(Player_struct):
         create_units(self)
 
         log_func("castle_flee")
-<<<<<<<< HEAD:strategies/memory/apis/players/players.py
         castle_flee(self.castles, self.defense + self.attack, self.eknights, self)
         log_func("fuite")
         peons.fuite(self.pawns, self.defense + self.attack, self.eknights)
-========
-        castle_flee(self.castles, self.knights, self.eknights)
-        log_func("fuite")
-        peons.fuite(self.pawns, self.knights, self.eknights)
-
->>>>>>>> origin/heatmap:strategies/heatmap/apis/players/players.py
         log_func("castle")
         build_castle(self)
         peons.free_gold(self.pawns, self.bad_gold)
@@ -63,7 +48,6 @@ class Player(Player_struct):
         log_func("farm")
         peons.farm(self, self.good_gold)
         # j'explore ensuite dans la direction opposée au spawn
-<<<<<<<< HEAD:strategies/memory/apis/players/players.py
         log_func("explore")
         peons.explore(self, self._knights + self.castles)
         # atk.free_pawn(self.attack + self.defense, self.eknights, self.epawns, self.ecastles)
@@ -102,14 +86,6 @@ class Player(Player_struct):
                 last_len = length
         log_func("explore_knight")
         peons.explore_knight(self, self.pawns + self.castles)
-========
-        peons.explore(self, self.knights + self.castles)
-
-        heatMapMove(self.pawns, self.knights, self.castles, self.epawns, self.eknights, self.ecastles, self._gold_map, self.id)
-
-
-
->>>>>>>> origin/heatmap:strategies/heatmap/apis/players/players.py
 
         log_func("second create unit")
         create_units(self)

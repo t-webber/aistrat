@@ -51,6 +51,7 @@ def distance(x1: int, y1: int, x2: int, y2: int):
     """
     return abs(x1 - x2) + abs(y1 - y2)
 
+
 def distance_to_list(current_position: tuple[int, int], list_units: list[Unit]):
     """Donne la distance au château le plus proche."""
     d = float('inf')
@@ -411,7 +412,6 @@ def move_safe_random_without_purpose(unit: Unit, eknights: list[Knight], ecastle
             return True
     return False
 
-<<<<<<<< HEAD:strategies/memory/logic/client_logic.py
 
 def nb_units_near_units(centre: Coord, units: list[Coord], radius: int):
     """Renvoie le nombre d'unités dans un rayon donné autour d'un château."""
@@ -432,12 +432,3 @@ def gold_expectation_minimal(player: Player, turn: int):
             eknight_d = distance_to_list((y, x), player.eknights)[0]
             future_gold += min(turn, eknight_d - 1, gold.gold)
     return future_gold
-========
-def scalar(origin,move,destination):
-    '''
-    Fait le produit scalaire entre un vecteur de déplacement et le vecteur vers la destination
-    '''
-    vect0=(destination[0]-origin[0],destination[1]-origin[1])
-    vect1=(move[0]- origin[0],move[1]-origin[1])
-    return vect0[0]*vect1[0]+vect0[1]+vect1[1]
->>>>>>>> origin/heatmap:strategies/heatmap/logic/client_logic.py
