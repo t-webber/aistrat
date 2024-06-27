@@ -134,3 +134,8 @@ def explore_knight(player: Player, otherunits=[]):
     knights = player.attack
     path(knights, otherunits, eknights)
     ex.path_trou(knights, otherunits, eknights)
+
+def coordination_farm(player: Player):
+    free_gold(player.pawns, player.bad_gold)
+    free_gold(player.pawns, player.good_gold)
+    farm(player, player.good_gold)
