@@ -34,3 +34,5 @@ Les unités aussi ont chacune leur classe (qui sont en fait des API). Ces classe
 On en a profiter pour sécuriser tous les appels au serveur, en *crashant* si le serveur n'aime pas notre mouvement. En effet, dans la première version de notre code, nous partions du principe que notre code fonctionnait, mais on s'est rendu compte que ce n'était absolument pas le cas. On a pris donc beaucoup de temps à corriger toutes les erreurs de logique.
 
 Ces erreurs consistent principalement en des mouvements illégaux (vers une case non voisine), de farm des piles d'or plus qu'une fois, ou encore bougé un même chevalier dans un même tour.
+
+## Efficacité
