@@ -1,7 +1,5 @@
 param(
-    [int]$port,
-    [Alias("two")]
-    [switch]$twoplayers
+    [int]$port
 )
 
 clear-host
@@ -11,4 +9,4 @@ if (!$port) {
 }
 
 
-    Start-Process PowerShell -ArgumentList "-NoExit", "-Command", "python $PSscriptRoot/game/server.py $port"
+Start-Process PowerShell -ArgumentList "-NoExit", "-Command", "python $PSscriptRoot/game/server.py $port"

@@ -2,25 +2,51 @@
 
 ## Lancer une partie
 
-Si le serveur est déjà lancé et qu'on veut simplement connecter notre algorithme au serveur, il suffit d'exécuter la commande suivante
+### Sur Windows
+
+Le CLI `./start_match` permet de lancer une partie entre deux algorithmes. Il permet de choisir quelles stratégies utiliser pour analyser les résultats d'une IA contre une autre. Pour lancer une partie, il suffit d'executer la commande suivante:
+
+```bash
+./start_match.ps1 [-url <url>] [-port <port>] [-strategy1 <strategy1>] [-strategy2 <strategy2>] [-two] [-help]       
+```
+
+Par exemple, pour faire jouer l'IA `glouton` contre l'IA `memory`, on peut executer la commande suivante:
+
+```bash
+./start_match.ps1 -strategy1 glouton -strategy2 memory -two
+```
+
+Autre exemple, pour faire tourner que l'IA `memory` sur un serveur distant, on peut executer la commande suivante:
+
+```bash
+./start_match.ps1 -strategy1 memory -url <url-du-server>
+```
+
+Avec l'option `-two`, il n'y a pas besoin de lancer le serveur.
+
+### Sur Linux
+
+Les CLIs ne sont pas à jour, et ne permettent que de lancer l'IA `memory` sur un serveur distant avec la commande
 
 ```bash
 ./start_match <url-du-server>
 ```
 
-Si on ommet l'url du serveur, l'algorithme se connectera au serveur par défaut sur`http://localhost:8080`. Pour lancer ce serveur, il faut executer la commande
+## Lancer le serveur
+
+Cette partie concerne `Windows` et `Linux`.
+
+On peut aussi uniquement lancer le serveur, avec la commande suivante:
 
 ```bash
 ./start_server
 ```
 
-Pour lancer l'algorithme contre lui-même, on peut utiliser rajouter l'options `-two`
+On peut préciser le port sur lequel il est lancé, avec
 
 ```bash
-./start_match  <url-du-server> -two
+./start_server 8080
 ```
-
-> DISCLAIMER: Le CLI ne marche pas sur MacOS, et l'option `-two` ne marche que sur Windows.
 
 ## Présentation globale de notre algorithme
 
