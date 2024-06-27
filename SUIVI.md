@@ -110,7 +110,7 @@
 - Jules et Nicolas : correction de l stratégie d'exploration sur la branche oop10
 - Jules et Tom: correction de multiples bugs concernant la fonction pour récupérer les chevaliers ennemis d'une case, l'update des golds, la fuite. Il n'y a maintenant que les attaquants qui explorent s'ils n'ont rien à faire
 - Tom : correction de bugs sur les déplacements des péons et des chevaliers, et amélioration des piles vides.
-- Pierre et Nicolas : Continuation du travail sur le min-max avec application de l'itération, résolution des éventuels combats...
+- Pierre et Nicolas : Continuation du travail sur le min-max avec débug, implémentation des supressions de cas inintéressants...
 - Erwan : rajout d'un système de débug dans la branche heatmap pour tester les heatmaps sur des configurations personnalisées et ainsi mieux approcher les comportemants souhaité. Puis aide de Pierre et Nicolas pour le débug du min-max.
 - Martin : modification de l'algorithme pour gérer la fin de partie et modification de l'attaque pour corriger des bugs apparuent avec l'orienté objet.
 
@@ -124,12 +124,19 @@
 - Tom et Jules: ajout d'outils pour mieux débuguer, notamment le debugage tour par tour et l'option debut avec start_match
 - Tom: fix des tests de vérification de cohérence avec le serveur (gérer les attaquants défenseurs et les comparer avec le serveur pour savoir quand est-ce qu'ils meurent ou change de type).
 - Martin : correction d'un bug de l'attaque d'opportunité, amorce d'un algorithme pour coordonner les attaquants chassant une même cible.
+-Pierre : Débug du min-max, aide débug de heat_maps.
 
 ### 26/06
 
 - Erwan : Amélioration des constantes de heatmap en jouant avec ces dernières, et en comparant notre IA avec celle présente actuellement sur le main.
-  Débuggage de heatmap et fusion propre avec oop10 pour profiter du travail sur la gestion des péons et des châteaux.s
+  Débuggage de heatmap et fusion propre avec oop10 pour profiter du travail sur la gestion des péons et des châteaux.
 - Martin : implémentation finale de l'attaque synchronisé et debuggage en tout genre sur l'attaque.
 - Tom : Amélioration de la logique des châteaux, avec un système intelligent qui prend en compte tous les châteaux (cf. `economy`). Correction de bugs sur l'attaque synchronisée, debug de l'attaque, des châteaux et des mouvements de péons. Écriture du rapport final. Correction et écriture de la documentation du mdbook. Lancement de tests sur une VM pour optimiser les paramètres de `settings.py`.
-- Jules et Tom: implémentation d'une fuite des châteaux ( appel de chevaliers alliés vers le château ) avec une prise en compte de l'estimation des golds produits pour les prochains tours
+- Jules et Tom: implémentation d'une fuite des châteaux ( appel de chevaliers alliés vers le château ) avec une prise en compte de l'estimation des golds produits pour les prochains tours.
 - Jules : changement sur move_safe_random pour qu'il privilégie quand même d'abord un exploration vers le centre, correction de fuite qui encore une fois ne faisait pas tout à fait ce que l'on souhaitait mais tout est à présent bon d'après nos observations et le débugage. Rajout de defense agressiv un peu modifiée pour éliminer les chevaliers adverses trop proches.
+- nouvelles features d'optimisation du min-max notemment enlever les cas redondant, documentation des heatmaps et min-max, aide pour le débug des heatmaps.
+
+### 27/06
+
+- Tout le Monde : Travail sur le rapport final, nettoyage de la base de code.
+- Tom : merge des branches et réorganisation de la branche main.
