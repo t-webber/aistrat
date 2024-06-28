@@ -20,7 +20,8 @@ class PlayerId:
     pass
 
 
-turn_data: Dict[str, Union[Dict[str, int], List[List[Dict[str, Union[Dict[str, int], int]]]]]] = {}
+turn_data: Dict[str, Union[Dict[str, int],
+                           List[List[Dict[str, Union[Dict[str, int], int]]]]]] = {}
 
 
 def server_action(url: str) -> tuple[bool, any]:
@@ -56,7 +57,8 @@ def create_player():
 
 def move(kind: str, oldy: int, oldx: int, newy: int, newx: int, player_id: str, token: str) -> bool:
     """Essaie de bouger une unité."""
-    server_action(f"{IP}/move/{player_id}/{kind}/{oldy}/{oldx}/{newy}/{newx}/{token}")
+    server_action(
+        f"{IP}/move/{player_id}/{kind}/{oldy}/{oldx}/{newy}/{newx}/{token}")
 
 
 def build(kind: str, y: int, x: int, player_id: str, token: str) -> bool:
@@ -252,5 +254,5 @@ def get_kind_on_coord(y: int, x: int, player_id: str, kind: str):
         print("map = ", get_map())
         print("map_y = ", get_map()[y])
         print("map_x = ", get_map()[y][x])
-        print("map_kind = ", get_map()[y][x][kind])
+        print("map_kind = ", get_map()[y][x][player_id])
         raise e

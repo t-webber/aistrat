@@ -66,14 +66,17 @@ def prediction_attaque(case_attaquee: tuple[int, int], knights: list[Knight], ek
     _, attaquants = cl.movable_neighbors(case_attaquee, knights)
     _, defenseurs_voisins_nombre = cl.neighbors(case_attaquee, eknights)
     try:
-        defenseurs = connection.get_map()[case_attaquee[0]][case_attaquee[1]][eknights[0].player][connection.KNIGHT]
+        defenseurs = connection.get_map(
+        )[case_attaquee[0]][case_attaquee[1]][eknights[0].player][connection.KNIGHT]
     except Exception as e:
         raise ValueError(f'data = {connection.get_map()} with case = {case_attaquee} on eknights = {eknights}') from e
 
-    b1, b2, pertes_attaque, pertes_defense = prediction_combat(attaquants, defenseurs)
+    b1, b2, pertes_attaque, pertes_defense = prediction_combat(
+        attaquants, defenseurs)
     if b1 and b2:
         attaquants -= pertes_attaque
-        b1, b2, pertes_attaque2, pertes_defense2 = prediction_combat(attaquants, defenseurs_voisins_nombre)
+        b1, b2, pertes_attaque2, pertes_defense2 = prediction_combat(
+            attaquants, defenseurs_voisins_nombre)
         return (pertes_attaque + pertes_attaque2) <= (pertes_defense + pertes_defense2)
     else:
         return False
@@ -82,9 +85,12 @@ def prediction_attaque(case_attaquee: tuple[int, int], knights: list[Knight], ek
 def attaque(case_attaquee: tuple[int, int], knights: list[Knight], eknights: list[Knight]):
     """Si l'attaque sur case_attaquee depuis toutes les cases adjacentes est gagnante alors bouge tous les chevaliers concernés en attaque."""
     allies_voisins = cl.neighbors(case_attaquee, knights)[0]
-    allies_voisins_exploitable = allies_voisins[(1, 0)] + allies_voisins[(0, 1)] + allies_voisins[(-1, 0)] + allies_voisins[(0, -1)]
-    allies_voisins_exploitable = list(filter(lambda ally: not (ally.used), allies_voisins_exploitable))
-    present_eknight = list(filter(lambda ennemy: (ennemy.y, ennemy.x) == case_attaquee, eknights))
+    allies_voisins_exploitable = allies_voisins[(
+        1, 0)] + allies_voisins[(0, 1)] + allies_voisins[(-1, 0)] + allies_voisins[(0, -1)]
+    allies_voisins_exploitable = list(
+        filter(lambda ally: not (ally.used), allies_voisins_exploitable))
+    present_eknight = list(filter(lambda ennemy: (
+        ennemy.y, ennemy.x) == case_attaquee, eknights))
     if prediction_attaque(case_attaquee, allies_voisins_exploitable, present_eknight):
         move_everyone(case_attaquee, allies_voisins_exploitable)
 
@@ -118,7 +124,8 @@ def hunt(knights: list[Knight], epawns: list[Pawn], eknights: list[Knight]):
                 attaque((i, j), not_used_knights, eknights)
             else:
                 if not not_used_knights[k].used:
-                    cl.move_without_suicide(not_used_knights[k], eknights, i, j)
+                    cl.move_without_suicide(
+                        not_used_knights[k], eknights, i, j)
 
 
 def destroy_castle(knights: list[Knight], castles: list[Castle],
@@ -138,7 +145,8 @@ def destroy_castle(knights: list[Knight], castles: list[Castle],
                 attaque((i, j), knights_not_used, eknights)
             else:
                 if not knights_not_used[k].used:
-                    cl.move_without_suicide(knights_not_used[k], eknights, i, j)
+                    cl.move_without_suicide(
+                        knights_not_used[k], eknights, i, j)
 
 
 def free_pawn(knights: list[Knight], eknights: list[Enemy], epawns: list[Enemy], castles: list[Castle]):
@@ -178,14 +186,17 @@ def endgame(knights: list[Knight], eknights: list[Knight]):
                 if knights_not_used[k].used:
                     continue
                 else:
-                    cl.move_without_suicide(knights_not_used[k], eknights, i, j)
-        knights_not_used = list(filter(lambda knight: not knight.used, knights_not_used))
+                    cl.move_without_suicide(
+                        knights_not_used[k], eknights, i, j)
+        knights_not_used = list(
+            filter(lambda knight: not knight.used, knights_not_used))
         a = len(knights_not_used)
 
 
 def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy], player, endgame=False):
     """Coordonne les chevaliers alliés qui attaquent la même cible pour optimiser l'attaque."""
-    not_used_knights = list(filter(lambda knight: (knight.target is not None), knights))
+    not_used_knights = list(
+        filter(lambda knight: (knight.target is not None), knights))
     dicoattaque = {}
     for k in not_used_knights:
         dist = 2
@@ -197,7 +208,8 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
         if (k.target.coord == k.coord):
             print('on a perdu la cible ligne', inspect.currentframe().f_lineno)
             k.target = None
-    not_used_knights = list(filter(lambda knight: (knight.target is not None), not_used_knights))
+    not_used_knights = list(filter(lambda knight: (
+        knight.target is not None), not_used_knights))
     for k in not_used_knights:
         dicoattaque[k.target] = []
     for k in not_used_knights:
@@ -263,7 +275,8 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                                         Y3 += 1
                                         Y1 -= 1
                                     else:
-                                        print('on a perdu la cible ligne', inspect.currentframe().f_lineno)
+                                        print('on a perdu la cible ligne',
+                                              inspect.currentframe().f_lineno)
                                         k.target = None
                                         Y1 -= 1
                                 elif y - i == 1:
@@ -274,7 +287,8 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                                         Y1 += 1
                                         Y2 -= 1
                                     else:
-                                        print('on a perdu la cible ligne', inspect.currentframe().f_lineno)
+                                        print('on a perdu la cible ligne',
+                                              inspect.currentframe().f_lineno)
                                         k.target = None
                                         Y2 -= 1
                                 elif y - i == -1:
@@ -285,7 +299,8 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                                         Y1 += 1
                                         Y3 -= 1
                                     else:
-                                        print('on a perdu la cible ligne', inspect.currentframe().f_lineno)
+                                        print('on a perdu la cible ligne',
+                                              inspect.currentframe().f_lineno)
                                         k.target = None
                                         Y3 -= 1
                                 else:
@@ -303,7 +318,8 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                                     elif not (connection.get_eknights(y, x + x2)):
                                         k.move(y, x + x2)
                                     else:
-                                        print('on a perdu la cible ligne', inspect.currentframe().f_lineno)
+                                        print('on a perdu la cible ligne',
+                                              inspect.currentframe().f_lineno)
                                         k.target = None
                                         Y1 -= 1
                             else:
@@ -317,7 +333,8 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                                     Y1 += 1
                                     Y2 -= 1
                                 else:
-                                    print('on a perdu la cible ligne', inspect.currentframe().f_lineno)
+                                    print('on a perdu la cible ligne',
+                                          inspect.currentframe().f_lineno)
                                     k.target = None
                                     Y2 -= 1
                             if y - i == -1:
@@ -328,7 +345,8 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                                     Y1 += 1
                                     Y3 -= 1
                                 else:
-                                    print('on a perdu la cible ligne', inspect.currentframe().f_lineno)
+                                    print('on a perdu la cible ligne',
+                                          inspect.currentframe().f_lineno)
                                     k.target = None
                                     Y3 -= 1
                         elif Y2 and Y3 and (abs(b) + abs(a) == 2):
@@ -344,7 +362,8 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                                         Y1 += 1
                                         Y2 -= 1
                                     else:
-                                        print('on a perdu la cible ligne', inspect.currentframe().f_lineno)
+                                        print('on a perdu la cible ligne',
+                                              inspect.currentframe().f_lineno)
                                         k.target = None
                                         Y2 -= 1
                                 if y - i == -1:
@@ -355,7 +374,8 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                                         Y1 += 1
                                         Y3 -= 1
                                     else:
-                                        print('on a perdu la cible ligne', inspect.currentframe().f_lineno)
+                                        print('on a perdu la cible ligne',
+                                              inspect.currentframe().f_lineno)
                                         k.target = None
                                         Y3 -= 1
                         elif Y2 or Y3:
@@ -367,7 +387,8 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                                 elif not (connection.get_eknights(y, x + x2)):
                                     k.move(y, x + x2)
                                 else:
-                                    print('on a perdu la cible ligne', inspect.currentframe().f_lineno)
+                                    print('on a perdu la cible ligne',
+                                          inspect.currentframe().f_lineno)
                                     k.target = None
                                     Y2 -= 1
                             if y - i == -1:
@@ -378,7 +399,8 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                                 elif not (connection.get_eknights(y, x + x2)):
                                     k.move(y, x + x2)
                                 else:
-                                    print('on a perdu la cible ligne', inspect.currentframe().f_lineno)
+                                    print('on a perdu la cible ligne',
+                                          inspect.currentframe().f_lineno)
                                     k.target = None
                                     Y3 -= 1
                         else:
@@ -398,7 +420,8 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                                         X3 += 1
                                         X1 -= 1
                                     else:
-                                        print('on a perdu la cible ligne', inspect.currentframe().f_lineno)
+                                        print('on a perdu la cible ligne',
+                                              inspect.currentframe().f_lineno)
                                         k.target = None
                                         X1 -= 1
                                 elif x - j == 1:
@@ -409,7 +432,8 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                                         X1 += 1
                                         X2 -= 1
                                     else:
-                                        print('on a perdu la cible ligne', inspect.currentframe().f_lineno)
+                                        print('on a perdu la cible ligne',
+                                              inspect.currentframe().f_lineno)
                                         k.target = None
                                         X2 -= 1
                                 elif x - j == -1:
@@ -420,7 +444,8 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                                         X1 += 1
                                         X3 -= 1
                                     else:
-                                        print('on a perdu la cible ligne', inspect.currentframe().f_lineno)
+                                        print('on a perdu la cible ligne',
+                                              inspect.currentframe().f_lineno)
                                         k.target = None
                                         X3 -= 1
                                 else:
@@ -438,7 +463,8 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                                     elif not (connection.get_eknights(y + y2, x)):
                                         k.move(y + y2, x)
                                     else:
-                                        print('on a perdu la cible ligne', inspect.currentframe().f_lineno)
+                                        print('on a perdu la cible ligne',
+                                              inspect.currentframe().f_lineno)
                                         k.target = None
                                         Y1 -= 1
                             else:
@@ -452,7 +478,8 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                                     X1 += 1
                                     X2 -= 1
                                 else:
-                                    print('on a perdu la cible ligne', inspect.currentframe().f_lineno)
+                                    print('on a perdu la cible ligne',
+                                          inspect.currentframe().f_lineno)
                                     k.target = None
                                     X2 -= 1
                             if x - j == -1:
@@ -463,12 +490,13 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                                     X1 += 1
                                     X3 -= 1
                                 else:
-                                    print('on a perdu la cible ligne', inspect.currentframe().f_lineno)
+                                    print('on a perdu la cible ligne',
+                                          inspect.currentframe().f_lineno)
                                     k.target = None
                                     X3 -= 1
                         elif X2 and X3 and (abs(b) + abs(a) == 2):
                             connection.get_data(player.id, player.token)
-                            if (connection.get_kind_on_coord(k.target.y, k.target.x + x2, id, consts.KNIGHT)):
+                            if (connection.get_kind_on_coord(k.target.y, k.target.x + x2, player.id, consts.KNIGHT)):
                                 k.used = True
                             else:
                                 if x - j == 1:
@@ -479,7 +507,8 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                                         X1 += 1
                                         Y2 -= 1
                                     else:
-                                        print('on a perdu la cible ligne', inspect.currentframe().f_lineno)
+                                        print('on a perdu la cible ligne',
+                                              inspect.currentframe().f_lineno)
                                         k.target = None
                                         X2 -= 1
                                 if x - j == -1:
@@ -490,7 +519,8 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                                         X1 += 1
                                         X3 -= 1
                                     else:
-                                        print('on a perdu la cible ligne', inspect.currentframe().f_lineno)
+                                        print('on a perdu la cible ligne',
+                                              inspect.currentframe().f_lineno)
                                         k.target = None
                                         X3 -= 1
                         elif X2 or X3:
@@ -502,7 +532,8 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                                 elif not (connection.get_eknights(y + y2, x)):
                                     k.move(y + y2, x)
                                 else:
-                                    print('on a perdu la cible ligne', inspect.currentframe().f_lineno)
+                                    print('on a perdu la cible ligne',
+                                          inspect.currentframe().f_lineno)
                                     k.target = None
                                     X2 -= 1
                             if x - j == -1:
@@ -513,7 +544,8 @@ def sync_atk(knights: list[Knight], eknights: list[Knight], epawns: list[Enemy],
                                 elif not (connection.get_eknights(y + y2, x)):
                                     k.move(y + x2, x)
                                 else:
-                                    print('on a perdu la cible ligne', inspect.currentframe().f_lineno)
+                                    print('on a perdu la cible ligne',
+                                          inspect.currentframe().f_lineno)
                                     k.target = None
                                     X3 -= 1
                         else:
