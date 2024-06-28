@@ -24,7 +24,9 @@ if ($help) {
     write-output "Usage: start_match.ps1 [-url <url>] [-port <port>] [-strat1 <strategy1>] [-strat2 <strategy2>] [-two] [-h]" 
 } elseif ($twoplayers) {
     Start-Process PowerShell -ArgumentList "-NoExit", "-Command", "python $PSscriptRoot/game/server.py $port"
+    start-sleep 1
     Start-Process PowerShell -ArgumentList "-NoExit", "-Command", "python $PSScriptRoot/strategies/$strategy1/main.py 1 $url"
+    start-sleep 1
     Start-Process PowerShell -ArgumentList "-NoExit", "-Command", "python $PSScriptRoot/strategies/$strategy2/main.py 1 $url"
 } else {
     Start-Process PowerShell -ArgumentList "-NoExit", "-Command", "python $PSScriptRoot/strategies/$strategy1/main.py 1 $url"
